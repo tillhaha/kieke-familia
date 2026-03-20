@@ -1,7 +1,7 @@
 // src/app/settings/GoogleSection.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import styles from "./settings.module.css"
 
 type GoogleCalendar = { id: string; name: string; color: string | null }
@@ -15,11 +15,13 @@ export function GoogleSection() {
   const [selectedError, setSelectedError] = useState<string | null>(null)
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [saveError, setSaveError] = useState<string | null>(null)
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const fetchData = async () => {
     setLoading(true)
     setAvailableError(null)
     setSelectedError(null)
+    setSaveError(null)
 
     const [availResult, selectedResult] = await Promise.allSettled([
       fetch("/api/settings/calendars/available").then((r) => r.json()),
@@ -53,6 +55,12 @@ export function GoogleSection() {
 
   useEffect(() => {
     fetchData()
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+    }
   }, [])
 
   const handleToggle = (calendarId: string) => {
@@ -89,7 +97,8 @@ export function GoogleSection() {
       }
 
       setSaveState("saved")
-      setTimeout(() => setSaveState("idle"), 2000)
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
+      savedTimerRef.current = setTimeout(() => setSaveState("idle"), 2000)
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : "Failed to save")
       setSaveState("idle")

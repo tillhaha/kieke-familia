@@ -1,0 +1,212 @@
+/* src/app/settings/settings.module.css */
+
+/* ── Page Layout ─────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  gap: 2rem;
+  min-height: calc(100vh - 57px);
+}
+
+.sidebar {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.sidebarTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.sectionBtn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+
+.sectionBtn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.sectionBtn.active {
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+/* ── Content Area ────────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.section {
+  max-width: 560px;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.sectionDesc {
+  font-size: 0.875rem;
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* ── Calendar List ───────────────────────────────────────── */
+
+.calendarList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.calendarRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  cursor: pointer;
+  transition: background-color 150ms;
+  border-bottom: 1px solid var(--border);
+}
+
+.calendarRow:last-child {
+  border-bottom: none;
+}
+
+.calendarRow:hover {
+  background: var(--surface);
+}
+
+.colorDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.calendarName {
+  flex: 1;
+  font-size: 0.9375rem;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+/* ── Save Button ─────────────────────────────────────────── */
+
+.saveBtn {
+  padding: 0.5rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms, opacity 150ms;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saveError {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin-bottom: 0.75rem;
+}
+
+/* ── States ──────────────────────────────────────────────── */
+
+.spinner {
+  color: var(--secondary);
+  font-size: 0.875rem;
+  padding: 1rem 0;
+}
+
+.emptyMsg {
+  font-size: 0.875rem;
+  color: var(--secondary);
+  padding: 1.5rem 0;
+}
+
+.errorBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  color: #991b1b;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .errorBox {
+    background: #2d0a0a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+  }
+  .saveError {
+    color: #f87171;
+  }
+}
+
+.retryBtn {
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 150ms;
+}
+
+.retryBtn:hover {
+  opacity: 1;
+}

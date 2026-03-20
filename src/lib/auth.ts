@@ -21,16 +21,27 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  // Use default database strategy when using an adapter
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, user }) {
+      // `user` is only present on initial sign-in
+      if (user) {
+        token.id = user.id
+        token.familyId = (user as any).familyId
+        token.role = (user as any).role
+      }
+      return token
+    },
+    async session({ session, token }) {
       if (session && session.user) {
-        (session.user as any).id = user.id;
-        (session.user as any).familyId = (user as any).familyId;
-        (session.user as any).role = (user as any).role;
+        (session.user as any).id = token.id as string | undefined
+        (session.user as any).familyId = token.familyId as string | undefined
+        (session.user as any).role = token.role as string | undefined
       }
       return session
-    }
+    },
   },
   debug: true, // Enable debug logs
   pages: {

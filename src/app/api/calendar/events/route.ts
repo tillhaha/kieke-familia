@@ -19,6 +19,10 @@ export async function GET(request: Request) {
     ? new Date(searchParams.get("timeMax")!)
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 
+  if (isNaN(timeMin.getTime()) || isNaN(timeMax.getTime())) {
+    return NextResponse.json({ error: "Invalid date parameters" }, { status: 400 })
+  }
+
   try {
     const userId = (session.user as any).id
     const familyId = (session.user as any).familyId
@@ -46,8 +50,8 @@ export async function GET(request: Request) {
       : await prisma.travel.findMany({ where: { userId } })
 
     return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Calendar fetch error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

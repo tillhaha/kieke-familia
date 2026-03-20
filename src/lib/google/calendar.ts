@@ -23,32 +23,26 @@ export async function getGoogleCalendarClient(userId: string) {
     expiry_date: account.expires_at ? account.expires_at * 1000 : undefined,
   })
 
-  oauth2Client.on('tokens', async (tokens) => {
-    if (tokens.refresh_token) {
-      await prisma.account.update({
-        where: {
-          provider_providerAccountId: {
-            provider: 'google',
-            providerAccountId: account.providerAccountId,
-          },
-        },
-        data: { refresh_token: tokens.refresh_token },
-      })
-    }
+  oauth2Client.on('tokens', (tokens) => {
+    const data: Record<string, unknown> = {}
+    if (tokens.refresh_token) data.refresh_token = tokens.refresh_token
     if (tokens.access_token) {
-      await prisma.account.update({
+      data.access_token = tokens.access_token
+      if (tokens.expiry_date) data.expires_at = Math.floor(tokens.expiry_date / 1000)
+    }
+    if (Object.keys(data).length === 0) return
+
+    prisma.account
+      .update({
         where: {
           provider_providerAccountId: {
             provider: 'google',
             providerAccountId: account.providerAccountId,
           },
         },
-        data: {
-          access_token: tokens.access_token,
-          expires_at: tokens.expiry_date ? Math.floor(tokens.expiry_date / 1000) : undefined,
-        },
+        data,
       })
-    }
+      .catch((err) => console.error('Failed to update Google token:', err))
   })
 
   return google.calendar({ version: 'v3', auth: oauth2Client })

@@ -26,7 +26,7 @@ export async function GET() {
     return NextResponse.json(calendars)
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : ""
-    if (msg.includes("No Google account")) {
+    if (msg.includes("no Google account")) {
       return NextResponse.json({ error: "No Google account linked" }, { status: 400 })
     }
     const code = (error as any).code ?? (error as any).status

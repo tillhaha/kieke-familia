@@ -1,0 +1,405 @@
+/* src/app/calendar/calendar.module.css */
+
+.calendarContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.monthTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+
+.navBtn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.todayBtn {
+  height: 32px;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms;
+}
+
+.todayBtn:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.loadingIndicator {
+  font-size: 0.75rem;
+  color: var(--secondary);
+  opacity: 0.7;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toolbarBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+.toolbarBtn:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ── Error Banner ────────────────────────────────────────── */
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .errorBanner {
+    background: #2d0a0a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+  }
+}
+
+.retryBtn {
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
+  border: 1px solid #fca5a5;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.retryBtn:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Calendar Grid ───────────────────────────────────────── */
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.weekdayHeader {
+  background: var(--surface);
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.weekdayHeader:last-child {
+  border-right: none;
+}
+
+.dayCell {
+  background: var(--background);
+  min-height: 110px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 150ms;
+}
+
+.dayCell:nth-child(7n) {
+  border-right: none;
+}
+
+.dayCell:hover {
+  background: var(--surface);
+}
+
+.notCurrentMonth {
+  background: var(--surface);
+}
+
+.notCurrentMonth .dayNumber {
+  color: var(--secondary);
+  opacity: 0.5;
+}
+
+.today {
+  background: var(--accent-soft);
+}
+
+.today:hover {
+  background: var(--accent-soft);
+}
+
+/* ── Day Number ──────────────────────────────────────────── */
+
+.dayNumber {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.todayBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ── Event Pills ─────────────────────────────────────────── */
+
+.eventItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.15rem 0.375rem;
+  border-radius: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.googleEvent {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.birthdayEvent {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.travelEvent {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .googleEvent {
+    background: #1e3a5f;
+    color: #93c5fd;
+  }
+  .birthdayEvent {
+    background: #4a1030;
+    color: #f9a8d4;
+  }
+  .travelEvent {
+    background: #3b2800;
+    color: #fcd34d;
+  }
+}
+
+/* ── Modal ───────────────────────────────────────────────── */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: var(--background);
+  padding: 1.75rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+}
+
+.modalContent h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.formGroup label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--secondary);
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  transition: border-color 150ms;
+  outline: none;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.formRow {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.formRow .formGroup {
+  flex: 1;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.cancelBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.cancelBtn:hover {
+  background: var(--surface-hover);
+}
+
+.saveBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.saveBtn:hover {
+  background: var(--primary-hover);
+}
+
+/* ── No Calendars Prompt ─────────────────────────────────── */
+
+.noCalendarsPrompt {
+  font-size: 0.875rem;
+  color: var(--secondary);
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.noCalendarsLink {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.noCalendarsLink:hover {
+  text-decoration: underline;
+}

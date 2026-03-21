@@ -2,6 +2,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { Baby } from "lucide-react"
 import ReactDOM from "react-dom"
 import styles from "./calendar.module.css"
 
@@ -115,7 +116,7 @@ export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Pr
         onClick={(e) => { e.stopPropagation(); handlePatch("WITH_US") }}
         disabled={loading}
       >
-        🏠 With us
+        <Baby size={12} strokeWidth={2} /> With us
       </button>
 
       <button
@@ -123,7 +124,7 @@ export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Pr
         onClick={(e) => { e.stopPropagation(); handlePatch("WITH_MONA") }}
         disabled={loading}
       >
-        👤 With Mona
+        <Baby size={12} strokeWidth={2} /> With Mona
       </button>
 
       <button

@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Home } from "lucide-react"
+import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Home, Baby } from "lucide-react"
 import styles from "./calendar.module.css"
 import CustodyPopover from "./CustodyPopover"
 
@@ -36,7 +36,8 @@ function CustodyPill({
         style={{ cursor: "pointer" }}
         onClick={(e) => { e.stopPropagation(); onToggle() }}
       >
-        <span>{entry.location === "WITH_US" ? "🏠 Emilia home" : "👤 Emilia @ Mona"}</span>
+        <Baby size={10} strokeWidth={2} />
+        <span>{entry.location === "WITH_US" ? "Emilia @ Us" : "Emilia @ Mona"}</span>
       </div>
       {isOpen && (
         <CustodyPopover
@@ -686,7 +687,7 @@ export default function CalendarPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  🏠 With us
+                  🧒 With us
                 </button>
                 <button
                   type="button"
@@ -703,7 +704,7 @@ export default function CalendarPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  👤 With Mona
+                  🧒 With Mona
                 </button>
               </div>
             </div>

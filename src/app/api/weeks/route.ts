@@ -116,7 +116,7 @@ export async function POST() {
     const existingCount = await prisma.dayPlan.count({
       where: {
         familyId,
-        date: { in: nextWeekDates },
+        date: { in: nextWeekDates.map((d) => d.toISOString().split("T")[0]) },
       },
     })
     if (existingCount === 7) {
@@ -134,7 +134,7 @@ export async function POST() {
 
     // Fetch and return the newly created week
     const created = await prisma.dayPlan.findMany({
-      where: { familyId, date: { in: nextWeekDates } },
+      where: { familyId, date: { in: nextWeekDates.map((d) => d.toISOString().split("T")[0]) } },
       orderBy: { date: "asc" },
     })
 

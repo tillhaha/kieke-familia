@@ -21,7 +21,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "weekStartDate required" }, { status: 400 })
   }
 
-  const start = new Date(weekStartDate + "T00:00:00")
+  const start = new Date(weekStartDate + "T00:00:00Z")
+  if (isNaN(start.getTime())) {
+    return NextResponse.json({ error: "Invalid weekStartDate" }, { status: 400 })
+  }
   const end = new Date(start)
   end.setDate(end.getDate() + 7)
 
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
 
   // 4. Filter against blacklist (substring match)
   const blacklist = await prisma.shoppingBlacklist.findMany({ where: { familyId } })
-  const blacklistTerms = blacklist.map((b) => b.term)
+  const blacklistTerms = blacklist.map((b) => b.term.toLowerCase())
   const filtered = normalized.filter(
     (ingredient) => !blacklistTerms.some((term) => ingredient.includes(term))
   )
@@ -77,13 +80,18 @@ export async function POST(request: Request) {
   const memoryMap = new Map(memories.map((m) => [m.itemName, m.categoryId]))
 
   // 7. Bulk insert
-  await prisma.shoppingItem.createMany({
-    data: newIngredients.map((name) => ({
-      familyId,
-      name,
-      categoryId: memoryMap.get(name) ?? null,
-    })),
-  })
+  try {
+    await prisma.shoppingItem.createMany({
+      data: newIngredients.map((name) => ({
+        familyId,
+        name,
+        categoryId: memoryMap.get(name) ?? null,
+      })),
+    })
+  } catch (error: unknown) {
+    console.error("Shopping generate error:", error)
+    return NextResponse.json({ error: "Failed to add items" }, { status: 500 })
+  }
 
   return NextResponse.json({ added: newIngredients.length })
 }

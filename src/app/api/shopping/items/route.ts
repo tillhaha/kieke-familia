@@ -35,6 +35,9 @@ export async function POST(request: Request) {
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "name required" }, { status: 400 })
   }
+  if (quantity !== undefined && typeof quantity !== "string") {
+    return NextResponse.json({ error: "quantity must be a string" }, { status: 400 })
+  }
 
   // Validate categoryId belongs to this family
   if (categoryId) {

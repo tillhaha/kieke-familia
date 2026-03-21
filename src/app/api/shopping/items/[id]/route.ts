@@ -22,24 +22,30 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   const { categoryId } = body
 
-  // Validate categoryId belongs to this family
-  if (categoryId) {
-    const cat = await prisma.shoppingCategory.findFirst({ where: { id: categoryId, familyId } })
+  // Build update data — only include categoryId if explicitly provided in body
+  const updateData: { categoryId?: string | null } = {}
+  if ("categoryId" in body) {
+    updateData.categoryId = categoryId ?? null
+  }
+
+  // Validate categoryId belongs to this family (only if provided)
+  if (updateData.categoryId !== undefined && updateData.categoryId !== null) {
+    const cat = await prisma.shoppingCategory.findFirst({ where: { id: updateData.categoryId, familyId } })
     if (!cat) return NextResponse.json({ error: "Invalid category" }, { status: 400 })
   }
 
   const updated = await prisma.shoppingItem.update({
     where: { id },
-    data: { categoryId: categoryId ?? null },
+    data: updateData,
     include: { category: true },
   })
 
-  // Update memory for this item name
-  if (categoryId) {
+  // Update memory for this item name (only if category explicitly set)
+  if (updateData.categoryId) {
     await prisma.shoppingItemMemory.upsert({
       where: { familyId_itemName: { familyId, itemName: item.name.toLowerCase() } },
-      update: { categoryId },
-      create: { familyId, itemName: item.name.toLowerCase(), categoryId },
+      update: { categoryId: updateData.categoryId },
+      create: { familyId, itemName: item.name.toLowerCase(), categoryId: updateData.categoryId },
     })
   }
 

@@ -33,9 +33,9 @@ Add two optional FK fields:
 
 ```prisma
 lunchMealId    String?
-lunchMeal      Meal?   @relation("LunchMeal",  fields: [lunchMealId],  references: [id])
+lunchMeal      Meal?   @relation("LunchMeal",  fields: [lunchMealId],  references: [id], onDelete: SetNull)
 dinnerMealId   String?
-dinnerMeal     Meal?   @relation("DinnerMeal", fields: [dinnerMealId], references: [id])
+dinnerMeal     Meal?   @relation("DinnerMeal", fields: [dinnerMealId], references: [id], onDelete: SetNull)
 ```
 
 The existing `lunch` and `dinner` text fields are kept. When a meal is selected via `/recipe`, both the meal name (text field) and its ID (FK) are stored. Free-text entries leave the FK null.
@@ -76,6 +76,7 @@ All routes are family-scoped (session `familyId`).
 ### `/meals/new` — Create Recipe
 
 - Form with fields: name, description, servings, ingredients (one per line in a textarea), steps (one per line in a textarea)
+- Description textarea supports markdown (previewed after save on the detail page)
 - "Save" button POSTs to `/api/meals` and redirects to `/meals/[id]`
 
 ### `/meals/[id]` — Recipe Detail
@@ -83,6 +84,7 @@ All routes are family-scoped (session `familyId`).
 - All fields shown inline and editable (auto-save on blur, same pattern as week planner)
 - Ingredients: list with add/remove per item
 - Steps: numbered list with add/remove per item
+- **Markdown support on `description`, `ingredients`, and `steps`**: same edit/preview toggle pattern as the week planner cells — click to edit (textarea), blur to save and render as markdown. Supports headers, bold, italic, bullet lists, numbered lists.
 - "Delete" button with confirmation
 - Back link to `/meals`
 

@@ -106,13 +106,26 @@ export default function ShoppingPage() {
   }
 
   const handleDelete = async (id: string) => {
-    const removed = items.find((i) => i.id === id)
+    const removedIndex = items.findIndex((i) => i.id === id)
+    const removed = items[removedIndex]
     setItems((prev) => prev.filter((i) => i.id !== id))
     try {
       const res = await fetch(`/api/shopping/items/${id}`, { method: "DELETE" })
-      if (!res.ok && removed) setItems((prev) => [...prev, removed])
+      if (!res.ok && removed) {
+        setItems((prev) => {
+          const next = [...prev]
+          next.splice(removedIndex, 0, removed)
+          return next
+        })
+      }
     } catch {
-      if (removed) setItems((prev) => [...prev, removed])
+      if (removed) {
+        setItems((prev) => {
+          const next = [...prev]
+          next.splice(removedIndex, 0, removed)
+          return next
+        })
+      }
     }
   }
 
@@ -167,9 +180,20 @@ export default function ShoppingPage() {
   }
 
   const handleDeleteCategory = async (id: string) => {
+    const prevCategories = categories
+    const prevItems = items
     setCategories((prev) => prev.filter((c) => c.id !== id))
     setItems((prev) => prev.map((i) => i.categoryId === id ? { ...i, categoryId: null, category: null } : i))
-    await fetch(`/api/shopping/categories/${id}`, { method: "DELETE" })
+    try {
+      const res = await fetch(`/api/shopping/categories/${id}`, { method: "DELETE" })
+      if (!res.ok) {
+        setCategories(prevCategories)
+        setItems(prevItems)
+      }
+    } catch {
+      setCategories(prevCategories)
+      setItems(prevItems)
+    }
   }
 
   const handleAddBlacklist = async () => {
@@ -334,13 +358,13 @@ export default function ShoppingPage() {
                         onKeyDown={(e) => { if (e.key === "Enter") handleRenameCategory(cat.id) }}
                       />
                       <button className={styles.manageSaveBtn} onClick={() => handleRenameCategory(cat.id)}>Save</button>
-                      <button className={styles.manageDeleteBtn} onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
+                      <button className={styles.manageDeleteBtn} aria-label="Cancel rename" onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
                     </>
                   ) : (
                     <>
                       <span className={styles.manageRowName}>{cat.name}</span>
                       <button className={styles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name) }}>Rename</button>
-                      <button className={styles.manageDeleteBtn} onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
+                      <button className={styles.manageDeleteBtn} aria-label="Delete category" onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
                     </>
                   )}
                 </div>
@@ -365,7 +389,7 @@ export default function ShoppingPage() {
               {blacklist.map((entry) => (
                 <div key={entry.id} className={styles.manageRow}>
                   <span className={styles.manageRowName}>{entry.term}</span>
-                  <button className={styles.manageDeleteBtn} onClick={() => handleDeleteBlacklist(entry.id)}><X size={13} /></button>
+                  <button className={styles.manageDeleteBtn} aria-label="Remove from blacklist" onClick={() => handleDeleteBlacklist(entry.id)}><X size={13} /></button>
                 </div>
               ))}
             </div>

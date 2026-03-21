@@ -239,10 +239,36 @@
   font-weight: 500;
   padding: 0.15rem 0.375rem;
   border-radius: 4px;
-  overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
   cursor: default;
+  position: relative;
+}
+
+.eventItem > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.eventItem[data-tooltip]::after {
+  content: attr(data-tooltip);
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 0.6875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.eventItem[data-tooltip]:hover::after {
+  display: block;
 }
 
 .googleEvent {
@@ -462,6 +488,110 @@
     background: #3d1010;
   }
   .modalError {
+    color: #f87171;
+  }
+}
+
+/* ── Custody ─────────────────────────────────────────────── */
+
+.custodyHomeEvent {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.custodyMonaEvent {
+  background: #fdf2f8;
+  color: #9d174d;
+}
+
+/* Popover (portal — fixed position, appended to document.body) */
+.custodyPopover {
+  position: fixed;
+  z-index: 200;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.custodyPopoverLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--secondary);
+  margin-bottom: 2px;
+}
+
+.custodyPopoverBtn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms;
+  font-family: inherit;
+}
+
+.custodyPopoverBtn:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.custodyPopoverBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custodyPopoverBtnActive {
+  border-width: 2px;
+  font-weight: 700;
+}
+
+.custodyPopoverBtnActive.custodyHomeEvent {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.custodyPopoverBtnActive.custodyMonaEvent {
+  border-color: #ec4899;
+  background: #fdf2f8;
+  color: #9d174d;
+}
+
+.custodyPopoverError {
+  font-size: 11px;
+  color: #dc2626;
+  margin-top: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custodyHomeEvent {
+    background: #1e3a5f;
+    color: #93c5fd;
+  }
+  .custodyMonaEvent {
+    background: #4a1030;
+    color: #f9a8d4;
+  }
+  .custodyPopoverBtnActive.custodyHomeEvent {
+    border-color: #3b82f6;
+    background: #1e3a5f;
+    color: #93c5fd;
+  }
+  .custodyPopoverBtnActive.custodyMonaEvent {
+    border-color: #ec4899;
+    background: #4a1030;
+    color: #f9a8d4;
+  }
+  .custodyPopoverError {
     color: #f87171;
   }
 }

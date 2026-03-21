@@ -1,13 +1,49 @@
 // src/app/calendar/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Cake, Plane, Plus } from "lucide-react"
+import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Home } from "lucide-react"
 import styles from "./calendar.module.css"
+import CustodyPopover from "./CustodyPopover"
 
-type ModalType = "NONE" | "BIRTHDAY" | "TRAVEL"
+type ModalType = "NONE" | "BIRTHDAY" | "TRAVEL" | "CUSTODY"
+
+function CustodyPill({
+  entry,
+  isOpen,
+  onToggle,
+  onClose,
+  onSave,
+}: {
+  entry: any
+  isOpen: boolean
+  onToggle: () => void
+  onClose: () => void
+  onSave: () => void
+}) {
+  const anchorRef = useRef<HTMLDivElement>(null)
+  return (
+    <div ref={anchorRef}>
+      <div
+        className={`${styles.eventItem} ${entry.location === "WITH_US" ? styles.custodyHomeEvent : styles.custodyMonaEvent}`}
+        style={{ cursor: "pointer" }}
+        onClick={(e) => { e.stopPropagation(); onToggle() }}
+      >
+        <span>{entry.location === "WITH_US" ? "🏠 Emilia home" : "👤 Emilia @ Mona"}</span>
+      </div>
+      {isOpen && (
+        <CustodyPopover
+          entry={entry}
+          anchorRef={anchorRef}
+          onClose={onClose}
+          onSave={onSave}
+        />
+      )}
+    </div>
+  )
+}
 
 export default function CalendarPage() {
   const { data: session, status } = useSession()
@@ -16,11 +52,13 @@ export default function CalendarPage() {
     googleEvents: any[]
     birthdays: any[]
     travels: any[]
+    custodyEntries: any[]
     calendarSyncCount: number
   }>({
     googleEvents: [],
     birthdays: [],
     travels: [],
+    custodyEntries: [],
     calendarSyncCount: 0,
   })
   const [loading, setLoading] = useState(false)
@@ -47,10 +85,18 @@ export default function CalendarPage() {
   const [deleteConfirming, setDeleteConfirming] = useState(false)
   const [modalError, setModalError] = useState<string | null>(null)
 
+  // Custody popover + modal form state
+  const [openCustodyId, setOpenCustodyId] = useState<string | null>(null)
+  const [cStart, setCStart] = useState("")
+  const [cStartsWith, setCStartsWith] = useState<"WITH_US" | "WITH_MONA">("WITH_US")
+  const [cRecurring, setCRecurring] = useState(true)
+  const [cUntil, setCUntil] = useState("")
+
   const closeModal = () => {
     setModal("NONE")
     setDeleteConfirming(false)
     setModalError(null)
+    setOpenCustodyId(null)
   }
 
   useEffect(() => {
@@ -75,6 +121,7 @@ export default function CalendarPage() {
         googleEvents: data.googleEvents ?? [],
         birthdays: data.birthdays ?? [],
         travels: data.travels ?? [],
+        custodyEntries: data.custodyEntries ?? [],
         calendarSyncCount: data.calendarSyncCount ?? 0,
       })
     } catch (err: any) {
@@ -171,8 +218,9 @@ export default function CalendarPage() {
 
   const daysInMonth = (year: number, month: number) =>
     new Date(year, month + 1, 0).getDate()
+  // Returns 0=Mon … 6=Sun offset so the grid starts on Monday
   const firstDayOfMonth = (year: number, month: number) =>
-    new Date(year, month, 1).getDay()
+    (new Date(year, month, 1).getDay() + 6) % 7
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -198,10 +246,10 @@ export default function CalendarPage() {
 
   const allDays = [...totalDays, ...nextMonthDays]
 
-  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1))
-  const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1))
+  const nextMonth = () => { setOpenCustodyId(null); setCurrentDate(new Date(year, month + 1, 1)) }
+  const prevMonth = () => { setOpenCustodyId(null); setCurrentDate(new Date(year, month - 1, 1)) }
 
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   const getEventsForDay = (date: Date) => {
     const dStr = date.toDateString()
@@ -225,7 +273,11 @@ export default function CalendarPage() {
       return checkDate >= s && checkDate <= e
     })
 
-    return { google, birthdays, travels }
+    // Custody: compare as YYYY-MM-DD strings to avoid timezone issues
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+    const custody = events.custodyEntries.filter((c) => c.date === dateStr)
+
+    return { google, birthdays, travels, custody }
   }
 
   if (status === "loading") return null
@@ -284,6 +336,24 @@ export default function CalendarPage() {
           <Plus size={14} />
           Add Travel
         </button>
+        <button
+          onClick={() => {
+            const today = new Date().toISOString().split("T")[0]
+            const sixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split("T")[0]
+            setCStart(today)
+            setCStartsWith("WITH_US")
+            setCRecurring(true)
+            setCUntil(sixMonths)
+            setDeleteConfirming(false)
+            setModalError(null)
+            setOpenCustodyId(null)
+            setModal("CUSTODY")
+          }}
+          className={styles.toolbarBtn}
+        >
+          <Home size={14} />
+          Add Custody
+        </button>
       </div>
 
       {/* No Calendars Prompt */}
@@ -336,13 +406,24 @@ export default function CalendarPage() {
                 )}
               </span>
 
+              {dayEvents.custody.map((c) => (
+                <CustodyPill
+                  key={c.id}
+                  entry={c}
+                  isOpen={openCustodyId === c.id}
+                  onToggle={() => setOpenCustodyId(openCustodyId === c.id ? null : c.id)}
+                  onClose={() => setOpenCustodyId(null)}
+                  onSave={fetchEvents}
+                />
+              ))}
+
               {dayEvents.google.map((e, idx) => (
                 <div
                   key={idx}
                   className={`${styles.eventItem} ${styles.googleEvent}`}
-                  title={e.summary}
+                  data-tooltip={e.summary}
                 >
-                  {e.summary}
+                  <span>{e.summary}</span>
                 </div>
               ))}
 
@@ -360,10 +441,10 @@ export default function CalendarPage() {
                     setModalError(null)
                     setModal("BIRTHDAY")
                   }}
-                  title={`${b.name} — click to edit`}
+                  data-tooltip={b.name}
                 >
                   <Cake size={10} strokeWidth={2} />
-                  {b.name}
+                  <span>{b.name}</span>
                 </div>
               ))}
 
@@ -393,10 +474,10 @@ export default function CalendarPage() {
                           }
                         : undefined
                     }
-                    title={isOwner ? `${t.destination} — click to edit` : t.destination}
+                    data-tooltip={t.destination}
                   >
                     <Plane size={10} strokeWidth={2} />
-                    {t.destination}
+                    <span>{t.destination}</span>
                   </div>
                 )
               })}
@@ -427,18 +508,6 @@ export default function CalendarPage() {
             </div>
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="bMonth">Month</label>
-                <input
-                  id="bMonth"
-                  type="number"
-                  min="1"
-                  max="12"
-                  value={bMonth}
-                  onChange={(e) => setBMonth(parseInt(e.target.value))}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
                 <label htmlFor="bDay">Day</label>
                 <input
                   id="bDay"
@@ -449,6 +518,19 @@ export default function CalendarPage() {
                   onChange={(e) => setBDay(parseInt(e.target.value))}
                   required
                 />
+              </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="bMonth">Month</label>
+                <select
+                  id="bMonth"
+                  value={bMonth}
+                  onChange={(e) => setBMonth(parseInt(e.target.value))}
+                  required
+                >
+                  {["January","February","March","April","May","June","July","August","September","October","November","December"].map((name, i) => (
+                    <option key={i + 1} value={i + 1}>{name}</option>
+                  ))}
+                </select>
               </div>
             </div>
             {modalError && <p className={styles.modalError}>{modalError}</p>}
@@ -533,6 +615,158 @@ export default function CalendarPage() {
               </button>
               <button type="submit" className={styles.saveBtn}>
                 Save
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Custody Modal */}
+      {modal === "CUSTODY" && (
+        <div className={styles.modalBackdrop} onClick={closeModal}>
+          <form
+            className={styles.modalContent}
+            onSubmit={async (e) => {
+              e.preventDefault()
+              setModalError(null)
+              try {
+                const res = await fetch("/api/calendar/custody", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    startDate: cStart,
+                    startsWith: cStartsWith,
+                    recurring: cRecurring,
+                    until: cRecurring ? cUntil : cStart,
+                  }),
+                })
+                const data = await res.json()
+                if (!res.ok) throw new Error(data.error ?? "Failed to save")
+                closeModal()
+                fetchEvents()
+              } catch (err: unknown) {
+                setModalError(err instanceof Error ? err.message : "Failed to save")
+              }
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Add Custody Schedule</h2>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="cStart">First night</label>
+              <input
+                id="cStart"
+                type="date"
+                value={cStart}
+                onChange={(e) => setCStart(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>Emilia sleeps at</label>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setCStartsWith("WITH_US")}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "6px",
+                    border: cStartsWith === "WITH_US" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                    background: cStartsWith === "WITH_US" ? "var(--accent-soft)" : "transparent",
+                    fontWeight: cStartsWith === "WITH_US" ? 700 : 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  🏠 With us
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCStartsWith("WITH_MONA")}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    borderRadius: "6px",
+                    border: cStartsWith === "WITH_MONA" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                    background: cStartsWith === "WITH_MONA" ? "var(--accent-soft)" : "transparent",
+                    fontWeight: cStartsWith === "WITH_MONA" ? 700 : 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  👤 With Mona
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={{ marginBottom: 0 }}>Recurring</label>
+                <button
+                  type="button"
+                  onClick={() => setCRecurring(!cRecurring)}
+                  style={{
+                    width: "36px",
+                    height: "20px",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: cRecurring ? "var(--primary)" : "var(--border)",
+                    cursor: "pointer",
+                    position: "relative",
+                    transition: "background 150ms",
+                  }}
+                  aria-label="Toggle recurring"
+                >
+                  <span style={{
+                    position: "absolute",
+                    top: "2px",
+                    left: cRecurring ? "calc(100% - 18px)" : "2px",
+                    width: "16px",
+                    height: "16px",
+                    borderRadius: "50%",
+                    background: "white",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                    transition: "left 150ms",
+                  }} />
+                </button>
+              </div>
+              {cRecurring && (
+                <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
+                  Alternating weeks · switches on Sunday
+                </p>
+              )}
+            </div>
+
+            {cRecurring && (
+              <div className={styles.formGroup}>
+                <label htmlFor="cUntil">Until</label>
+                <input
+                  id="cUntil"
+                  type="date"
+                  value={cUntil}
+                  onChange={(e) => setCUntil(e.target.value)}
+                  required
+                />
+                {cStart && cUntil && (
+                  <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
+                    Creates ~{Math.round((new Date(cUntil).getTime() - new Date(cStart).getTime()) / (7 * 24 * 60 * 60 * 1000))} weeks of schedule entries
+                  </p>
+                )}
+              </div>
+            )}
+
+            {modalError && <p className={styles.modalError}>{modalError}</p>}
+
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
+                Cancel
+              </button>
+              <button type="submit" className={styles.saveBtn}>
+                Save Schedule
               </button>
             </div>
           </form>

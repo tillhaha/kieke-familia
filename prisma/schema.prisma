@@ -64,11 +64,12 @@ enum Role {
 }
 
 model Family {
-  id        String   @id @default(cuid())
-  name      String
-  users     User[]
-  mealPlans MealPlan[]
-  birthdays Birthday[]
+  id               String            @id @default(cuid())
+  name             String
+  users            User[]
+  birthdays        Birthday[]
+  dayPlans         DayPlan[]
+  custodySchedule  CustodySchedule[]
 }
 
 model VerificationToken {
@@ -77,22 +78,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model MealPlan {
-  id          String   @id @default(cuid())
-  date        DateTime
-  type        MealType
-  description String
-  familyId    String
-  family      Family   @relation(fields: [familyId], references: [id])
-
-  @@unique([date, type, familyId])
-}
-
-enum MealType {
-  LUNCH
-  DINNER
 }
 
 model WorkLocation {
@@ -141,4 +126,33 @@ model CalendarSync {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, calendarId])
+}
+
+model DayPlan {
+  id             String   @id @default(cuid())
+  date           DateTime @db.Date
+  note           String?
+  lunch          String?
+  dinner         String?
+  dinnerActivity String?
+  familyId       String
+  family         Family   @relation(fields: [familyId], references: [id])
+
+  @@unique([date, familyId])
+}
+
+enum CustodyLocation {
+  WITH_US
+  WITH_MONA
+}
+
+model CustodySchedule {
+  id         String          @id @default(cuid())
+  date       DateTime        @db.Date
+  personName String
+  location   CustodyLocation
+  familyId   String
+  family     Family          @relation(fields: [familyId], references: [id])
+
+  @@unique([date, personName, familyId])
 }

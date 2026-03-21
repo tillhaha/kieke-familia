@@ -66,11 +66,17 @@ enum Role {
 model Family {
   id               String            @id @default(cuid())
   name             String
+  city             String?
   users            User[]
   birthdays        Birthday[]
   dayPlans         DayPlan[]
   custodySchedule  CustodySchedule[]
   meals            Meal[]
+
+  shoppingCategories ShoppingCategory[]
+  shoppingItems      ShoppingItem[]
+  shoppingMemory     ShoppingItemMemory[]
+  shoppingBlacklist  ShoppingBlacklist[]
 }
 
 model VerificationToken {
@@ -104,6 +110,7 @@ model Birthday {
   name     String
   month    Int
   day      Int
+  year     Int?
   familyId String
   family   Family @relation(fields: [familyId], references: [id])
 }
@@ -146,16 +153,35 @@ model DayPlan {
   @@unique([date, familyId])
 }
 
+enum MealType {
+  Meal
+  Snack
+  Drink
+  Baked
+}
+
+enum Diet {
+  Vegetarian
+  Meat
+  Fish
+}
+
 model Meal {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  servings    Int      @default(2)
-  ingredients String[]
-  steps       String[]
-  familyId    String
-  family      Family   @relation(fields: [familyId], references: [id])
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  name           String
+  mealType       MealType @default(Meal)
+  diet           Diet     @default(Meat)
+  notes          String?
+  servings       Int      @default(2)
+  officeFriendly Boolean  @default(false)
+  thirtyMinute   Boolean  @default(false)
+  ingredients    String[]
+  steps          String[]
+  imageUrl       String?
+  source         String?
+  familyId       String
+  family         Family   @relation(fields: [familyId], references: [id])
+  createdAt      DateTime @default(now())
 
   lunchDayPlans  DayPlan[] @relation("LunchMeal")
   dinnerDayPlans DayPlan[] @relation("DinnerMeal")
@@ -175,4 +201,48 @@ model CustodySchedule {
   family     Family          @relation(fields: [familyId], references: [id])
 
   @@unique([date, personName, familyId])
+}
+
+model ShoppingCategory {
+  id       String  @id @default(cuid())
+  familyId String
+  family   Family  @relation(fields: [familyId], references: [id])
+  name     String
+  order    Int     @default(0)
+
+  items    ShoppingItem[]
+  memories ShoppingItemMemory[]
+
+  @@unique([familyId, name])
+}
+
+model ShoppingItem {
+  id         String            @id @default(cuid())
+  familyId   String
+  family     Family            @relation(fields: [familyId], references: [id])
+  name       String
+  quantity   String?
+  categoryId String?
+  category   ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt  DateTime          @default(now())
+}
+
+model ShoppingItemMemory {
+  id         String           @id @default(cuid())
+  familyId   String
+  family     Family           @relation(fields: [familyId], references: [id])
+  itemName   String
+  categoryId String
+  category   ShoppingCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, itemName])
+}
+
+model ShoppingBlacklist {
+  id       String @id @default(cuid())
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id])
+  term     String
+
+  @@unique([familyId, term])
 }

@@ -45,6 +45,31 @@
   cursor: not-allowed;
 }
 
+.generateBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms;
+  margin-left: auto;
+}
+
+.generateBtn:hover {
+  border-color: var(--primary);
+}
+
+.generateBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .weeksList {
   display: flex;
   flex-direction: column;
@@ -67,10 +92,26 @@
 }
 
 .weekHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--secondary);
   letter-spacing: 0.01em;
+}
+
+.weekEditLink {
+  display: flex;
+  align-items: center;
+  color: var(--secondary);
+  opacity: 0.4;
+  transition: opacity 150ms;
+}
+
+.weekEditLink:hover {
+  opacity: 1;
+  color: var(--primary);
 }
 
 .tableWrapper {
@@ -96,15 +137,13 @@
 
 .cornerCell {
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
 }
 
 .dayHeader {
   background: var(--surface);
-  padding: 0.5rem 0.375rem;
+  padding: 0.75rem 0.5rem;
   text-align: center;
-  border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
   vertical-align: middle;
 }
@@ -133,7 +172,7 @@
 /* ── Body rows ────────────────────────────────────────── */
 
 .rowLabel {
-  padding: 0.5rem 0.625rem;
+  padding: 0.75rem 0.875rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--secondary);
@@ -144,6 +183,7 @@
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
   white-space: nowrap;
+  text-align: left;
 }
 
 tr:last-child .rowLabel,
@@ -180,8 +220,8 @@ tr:last-child .cell {
 .cellInput {
   display: block;
   width: 100%;
-  min-height: 52px;
-  padding: 0.4rem 0.5rem;
+  min-height: 60px;
+  padding: 0.6rem 0.75rem;
   border: none;
   background: transparent;
   color: var(--foreground);
@@ -202,13 +242,17 @@ tr:last-child .cell {
 /* ── Markdown preview ─────────────────────────────────── */
 
 .cellPreview {
-  min-height: 52px;
-  padding: 0.4rem 0.5rem;
+  min-height: 60px;
+  padding: 0.6rem 0.75rem;
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--foreground);
   cursor: text;
   word-break: break-word;
+}
+
+.cellPreviewReadOnly {
+  cursor: default;
 }
 
 
@@ -229,13 +273,52 @@ tr:last-child .cell {
   font-style: italic;
 }
 
-.cellPreview ul,
+.cellPreview ul {
+  list-style: none;
+  margin: 0.25rem 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.pillTooltip {
+  position: fixed;
+  transform: translate(-50%, calc(-100% - 6px));
+  background: #1e293b;
+  color: #f8fafc;
+  font-size: 0.6875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 9999;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.cellPreview ul li {
+  display: inline-block;
+  position: relative;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+
 .cellPreview ol {
   margin: 0.125rem 0;
   padding-left: 1.125rem;
 }
 
-.cellPreview li {
+.cellPreview ol li {
   margin: 0.1rem 0;
 }
 
@@ -337,4 +420,72 @@ tr:last-child .cell {
 .mealLink:hover {
   opacity: 1;
   color: var(--primary);
+}
+
+/* ── Emilia row ──────────────────────────────────────── */
+
+.emiliaCell {
+  padding: 0.5rem;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.emiliaIconHome { color: #1d4ed8; }
+.emiliaIconMona { color: #9d174d; }
+
+@media (prefers-color-scheme: dark) {
+  .emiliaIconHome { color: #93c5fd; }
+  .emiliaIconMona { color: #f9a8d4; }
+}
+
+/* ── Weather row ─────────────────────────────────────── */
+
+.sectionHeader {
+  padding: 0.4rem 0.875rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--secondary);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.subRowLabel {
+  padding-left: 1.125rem;
+}
+
+.weatherCell {
+  padding: 0.75rem 0.5rem;
+  vertical-align: middle;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.weatherTemp {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.375rem;
+  white-space: nowrap;
+}
+
+.weatherPhases {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.weatherPhase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  color: var(--secondary);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }

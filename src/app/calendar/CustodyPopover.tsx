@@ -21,9 +21,14 @@ type Props = {
 
 export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Props) {
   const popoverRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
   const [pos, setPos] = useState({ top: 0, left: 0 })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Position popover below the anchor pill
   useEffect(() => {
@@ -129,6 +134,6 @@ export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Pr
     </div>
   )
 
-  if (typeof document === "undefined") return null
+  if (!mounted) return null
   return ReactDOM.createPortal(popover, document.body)
 }

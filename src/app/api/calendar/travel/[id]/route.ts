@@ -14,7 +14,12 @@ export async function PATCH(request: Request, { params }: Params) {
   const { id } = await params
   const userId = (session.user as any).id
 
-  const travel = await prisma.travel.findUnique({ where: { id } })
+  let travel
+  try {
+    travel = await prisma.travel.findUnique({ where: { id } })
+  } catch {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
   if (!travel || travel.userId !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
@@ -30,6 +35,13 @@ export async function PATCH(request: Request, { params }: Params) {
 
   if (!destination || typeof destination !== "string" || destination.trim() === "") {
     return NextResponse.json({ error: "Destination is required" }, { status: 400 })
+  }
+
+  if (typeof startDate !== "string") {
+    return NextResponse.json({ error: "Invalid start date" }, { status: 400 })
+  }
+  if (typeof endDate !== "string") {
+    return NextResponse.json({ error: "Invalid end date" }, { status: 400 })
   }
 
   const start = new Date(startDate)
@@ -65,7 +77,12 @@ export async function DELETE(_request: Request, { params }: Params) {
   const { id } = await params
   const userId = (session.user as any).id
 
-  const travel = await prisma.travel.findUnique({ where: { id } })
+  let travel
+  try {
+    travel = await prisma.travel.findUnique({ where: { id } })
+  } catch {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
   if (!travel || travel.userId !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }

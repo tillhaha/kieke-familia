@@ -14,7 +14,12 @@ export async function PATCH(request: Request, { params }: Params) {
   const { id } = await params
   const userFamilyId = (session.user as any).familyId
 
-  const birthday = await prisma.birthday.findUnique({ where: { id } })
+  let birthday
+  try {
+    birthday = await prisma.birthday.findUnique({ where: { id } })
+  } catch {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
   if (!birthday || !userFamilyId || birthday.familyId !== userFamilyId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
@@ -58,7 +63,12 @@ export async function DELETE(_request: Request, { params }: Params) {
   const { id } = await params
   const userFamilyId = (session.user as any).familyId
 
-  const birthday = await prisma.birthday.findUnique({ where: { id } })
+  let birthday
+  try {
+    birthday = await prisma.birthday.findUnique({ where: { id } })
+  } catch {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
   if (!birthday || !userFamilyId || birthday.familyId !== userFamilyId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }

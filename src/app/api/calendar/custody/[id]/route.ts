@@ -11,7 +11,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const familyId = (session.user as any).familyId
+  const familyId = (session.user as { familyId?: string }).familyId
   const { id } = await params
 
   const entry = await prisma.custodySchedule.findUnique({ where: { id } })
@@ -29,7 +29,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { location } = body as any
+  const { location } = body as { location?: string }
   if (location !== "WITH_US" && location !== "WITH_MONA") {
     return NextResponse.json({ error: "location must be WITH_US or WITH_MONA" }, { status: 400 })
   }
@@ -43,7 +43,7 @@ export async function PATCH(request: Request, { params }: Params) {
       ...updated,
       date: updated.date.toISOString().split("T")[0],
     })
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -54,7 +54,7 @@ export async function DELETE(_request: Request, { params }: Params) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const familyId = (session.user as any).familyId
+  const familyId = (session.user as { familyId?: string }).familyId
   const { id } = await params
 
   const entry = await prisma.custodySchedule.findUnique({ where: { id } })
@@ -68,7 +68,7 @@ export async function DELETE(_request: Request, { params }: Params) {
   try {
     await prisma.custodySchedule.delete({ where: { id } })
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

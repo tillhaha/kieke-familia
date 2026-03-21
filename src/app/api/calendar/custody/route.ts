@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const familyId = (session.user as any).familyId
+  const familyId = (session.user as { familyId?: string }).familyId
   if (!familyId) {
     return NextResponse.json({ error: "No family" }, { status: 401 })
   }
@@ -22,7 +22,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { startDate, startsWith, recurring, until } = body as any
+  const { startDate, startsWith, recurring, until } = body as {
+    startDate?: string
+    startsWith?: string
+    recurring?: boolean
+    until?: string
+  }
 
   if (!startDate || typeof startDate !== "string") {
     return NextResponse.json({ error: "startDate is required" }, { status: 400 })
@@ -73,9 +78,10 @@ export async function POST(request: Request) {
     )
   } else {
     // Expand recurring: iterate day-by-day, flip location every Sunday (except startDate)
-    const [uy2, um2, ud2] = until.split("-").map(Number)
+    const untilStr = until as string
+    const [uy2, um2, ud2] = untilStr.split("-").map(Number)
     const end = new Date(Date.UTC(uy2, um2 - 1, ud2))
-    let currentLocation: "WITH_US" | "WITH_MONA" = startsWith
+    let currentLocation: "WITH_US" | "WITH_MONA" = startsWith as "WITH_US" | "WITH_MONA"
     const cursor = new Date(start)
 
     while (cursor <= end) {
@@ -101,7 +107,7 @@ export async function POST(request: Request) {
   try {
     await prisma.$transaction(ops)
     return NextResponse.json({ count: ops.length }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Custody create error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

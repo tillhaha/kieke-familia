@@ -10,6 +10,11 @@ import CustodyPopover from "./CustodyPopover"
 
 type ModalType = "NONE" | "BIRTHDAY" | "TRAVEL" | "CUSTODY"
 
+type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WITH_MONA"; personName: string }
+type GoogleEvent = { id: string; summary?: string; start?: { date?: string; dateTime?: string }; end?: { date?: string; dateTime?: string }; calendarId?: string }
+type BirthdayEntry = { id: string; name: string; month: number; day: number }
+type TravelEntry = { id: string; destination: string; startDate: string; endDate: string; userId: string }
+
 function CustodyPill({
   entry,
   isOpen,
@@ -17,11 +22,11 @@ function CustodyPill({
   onClose,
   onSave,
 }: {
-  entry: any
+  entry: CustodyEntry
   isOpen: boolean
   onToggle: () => void
   onClose: () => void
-  onSave: () => void
+  onSave: () => Promise<void>
 }) {
   const anchorRef = useRef<HTMLDivElement>(null)
   return (
@@ -49,10 +54,10 @@ export default function CalendarPage() {
   const { data: session, status } = useSession()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<{
-    googleEvents: any[]
-    birthdays: any[]
-    travels: any[]
-    custodyEntries: any[]
+    googleEvents: GoogleEvent[]
+    birthdays: BirthdayEntry[]
+    travels: TravelEntry[]
+    custodyEntries: CustodyEntry[]
     calendarSyncCount: number
   }>({
     googleEvents: [],
@@ -124,9 +129,9 @@ export default function CalendarPage() {
         custodyEntries: data.custodyEntries ?? [],
         calendarSyncCount: data.calendarSyncCount ?? 0,
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setCalendarError(err.message ?? "Failed to load calendar events.")
+      setCalendarError(err instanceof Error ? err.message : "Failed to load calendar events.")
     } finally {
       setLoading(false)
     }
@@ -255,8 +260,8 @@ export default function CalendarPage() {
     const dStr = date.toDateString()
 
     const google = events.googleEvents.filter((e) => {
-      const start = e.start.dateTime || e.start.date
-      return new Date(start).toDateString() === dStr
+      const start = e.start?.dateTime || e.start?.date
+      return start ? new Date(start).toDateString() === dStr : false
     })
 
     const birthdays = events.birthdays.filter(
@@ -449,7 +454,7 @@ export default function CalendarPage() {
               ))}
 
               {dayEvents.travels.map((t, idx) => {
-                const currentUserId = (session?.user as any)?.id
+                const currentUserId = (session?.user as { id?: string })?.id
                 const isOwner = t.userId === currentUserId
                 return (
                   <div

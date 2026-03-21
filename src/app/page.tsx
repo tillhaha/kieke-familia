@@ -3,7 +3,7 @@
 
 import { useSession, signIn } from "next-auth/react"
 import Link from "next/link"
-import { Calendar, CalendarDays, Briefcase, LogIn } from "lucide-react"
+import { Calendar, CalendarDays, Briefcase, LogIn, UtensilsCrossed } from "lucide-react"
 import styles from "./page.module.css"
 
 const features = [
@@ -19,6 +19,13 @@ const features = [
     title: "Week planning",
     description: "Plan the week ahead together.",
     href: "/week",
+    enabled: true,
+  },
+  {
+    icon: UtensilsCrossed,
+    title: "Meals",
+    description: "Recipe library with search in the week planner.",
+    href: "/meals",
     enabled: true,
   },
   {
@@ -39,7 +46,7 @@ export default function Home() {
         <div className={styles.signInCard}>
           <h1 className={styles.signInTitle}>Welcome to Familia</h1>
           <p className={styles.signInSubtitle}>Your shared family management hub.</p>
-          <button onClick={() => signIn("google")} className={styles.signInBtn}>
+          <button onClick={() => signIn("google", { callbackUrl: "/" })} className={styles.signInBtn}>
             <LogIn size={16} />
             Sign in with Google
           </button>

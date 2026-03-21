@@ -70,6 +70,7 @@ model Family {
   birthdays        Birthday[]
   dayPlans         DayPlan[]
   custodySchedule  CustodySchedule[]
+  meals            Meal[]
 }
 
 model VerificationToken {
@@ -135,10 +136,29 @@ model DayPlan {
   lunch          String?
   dinner         String?
   dinnerActivity String?
+  lunchMealId    String?
+  lunchMeal      Meal?   @relation("LunchMeal",  fields: [lunchMealId],  references: [id], onDelete: SetNull)
+  dinnerMealId   String?
+  dinnerMeal     Meal?   @relation("DinnerMeal", fields: [dinnerMealId], references: [id], onDelete: SetNull)
   familyId       String
   family         Family   @relation(fields: [familyId], references: [id])
 
   @@unique([date, familyId])
+}
+
+model Meal {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  servings    Int      @default(2)
+  ingredients Json     // String[]
+  steps       Json     // String[]
+  familyId    String
+  family      Family   @relation(fields: [familyId], references: [id])
+  createdAt   DateTime @default(now())
+
+  lunchDayPlans  DayPlan[] @relation("LunchMeal")
+  dinnerDayPlans DayPlan[] @relation("DinnerMeal")
 }
 
 enum CustodyLocation {

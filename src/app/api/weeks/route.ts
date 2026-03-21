@@ -61,6 +61,8 @@ export async function GET() {
           lunch: d.lunch,
           dinner: d.dinner,
           dinnerActivity: d.dinnerActivity,
+          lunchMealId: d.lunchMealId ?? null,
+          dinnerMealId: d.dinnerMealId ?? null,
         })),
       }
     })
@@ -116,7 +118,7 @@ export async function POST() {
     const existingCount = await prisma.dayPlan.count({
       where: {
         familyId,
-        date: { in: nextWeekDates.map((d) => d.toISOString().split("T")[0]) },
+        date: { in: nextWeekDates },
       },
     })
     if (existingCount === 7) {
@@ -134,7 +136,7 @@ export async function POST() {
 
     // Fetch and return the newly created week
     const created = await prisma.dayPlan.findMany({
-      where: { familyId, date: { in: nextWeekDates.map((d) => d.toISOString().split("T")[0]) } },
+      where: { familyId, date: { in: nextWeekDates } },
       orderBy: { date: "asc" },
     })
 
@@ -151,11 +153,14 @@ export async function POST() {
         lunch: d.lunch,
         dinner: d.dinner,
         dinnerActivity: d.dinnerActivity,
+        lunchMealId: d.lunchMealId ?? null,
+        dinnerMealId: d.dinnerMealId ?? null,
       })),
     }
 
     return NextResponse.json({ week }, { status: 201 })
-  } catch {
+  } catch (err) {
+    console.error("[POST /api/weeks]", err)
     return NextResponse.json({ error: "Failed to create week" }, { status: 500 })
   }
 }

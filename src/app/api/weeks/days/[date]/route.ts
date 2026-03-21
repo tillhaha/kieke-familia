@@ -29,7 +29,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { note, lunch, dinner, dinnerActivity } = body as Record<string, unknown>
+  const { note, lunch, dinner, dinnerActivity, lunchMealId, dinnerMealId } = body as Record<string, unknown>
 
   // Only include fields that were explicitly sent
   const updates: Record<string, string | null> = {}
@@ -37,8 +37,11 @@ export async function PATCH(request: Request, { params }: Params) {
   if (lunch !== undefined) updates.lunch = typeof lunch === "string" && lunch !== "" ? lunch : null
   if (dinner !== undefined) updates.dinner = typeof dinner === "string" && dinner !== "" ? dinner : null
   if (dinnerActivity !== undefined)
-    updates.dinnerActivity =
-      typeof dinnerActivity === "string" && dinnerActivity !== "" ? dinnerActivity : null
+    updates.dinnerActivity = typeof dinnerActivity === "string" && dinnerActivity !== "" ? dinnerActivity : null
+  if (lunchMealId !== undefined)
+    updates.lunchMealId = typeof lunchMealId === "string" && lunchMealId !== "" ? lunchMealId : null
+  if (dinnerMealId !== undefined)
+    updates.dinnerMealId = typeof dinnerMealId === "string" && dinnerMealId !== "" ? dinnerMealId : null
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 })
@@ -47,7 +50,7 @@ export async function PATCH(request: Request, { params }: Params) {
   let dayPlan
   try {
     dayPlan = await prisma.dayPlan.findUnique({
-      where: { date_familyId: { date: dateStr, familyId } },
+      where: { date_familyId: { date: parsedDate, familyId } },
     })
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -58,11 +61,12 @@ export async function PATCH(request: Request, { params }: Params) {
 
   try {
     const updated = await prisma.dayPlan.update({
-      where: { date_familyId: { date: dateStr, familyId } },
+      where: { date_familyId: { date: parsedDate, familyId } },
       data: updates,
     })
     return NextResponse.json(updated)
-  } catch {
+  } catch (err) {
+    console.error("[PATCH /api/weeks/days]", err)
     return NextResponse.json({ error: "Failed to update day" }, { status: 500 })
   }
 }

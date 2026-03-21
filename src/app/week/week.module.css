@@ -180,7 +180,7 @@ tr:last-child .cell {
 .cellInput {
   display: block;
   width: 100%;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0.4rem 0.5rem;
   border: none;
   background: transparent;
@@ -190,14 +190,151 @@ tr:last-child .cell {
   resize: none;
   outline: none;
   line-height: 1.45;
+  overflow: hidden;
 }
 
-.cellInput::placeholder {
-  color: var(--secondary);
-  opacity: 0.45;
-}
 
 .cellInput:disabled {
   cursor: default;
   opacity: 0.6;
+}
+
+/* ── Markdown preview ─────────────────────────────────── */
+
+.cellPreview {
+  min-height: 52px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--foreground);
+  cursor: text;
+  word-break: break-word;
+}
+
+
+/* Markdown content inside cells */
+.cellPreview p {
+  margin: 0 0 0.25rem;
+}
+
+.cellPreview p:last-child {
+  margin-bottom: 0;
+}
+
+.cellPreview strong {
+  font-weight: 600;
+}
+
+.cellPreview em {
+  font-style: italic;
+}
+
+.cellPreview ul,
+.cellPreview ol {
+  margin: 0.125rem 0;
+  padding-left: 1.125rem;
+}
+
+.cellPreview li {
+  margin: 0.1rem 0;
+}
+
+.cellPreview code {
+  font-family: monospace;
+  font-size: 0.75rem;
+  background: var(--surface);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+/* ── Recipe search ───────────────────────────────────── */
+
+.recipeSearchContainer {
+  position: relative;
+  padding: 0.25rem;
+}
+
+.recipeSearchInput {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--primary);
+  border-radius: 5px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.recipeDropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  list-style: none;
+  padding: 0.25rem;
+  z-index: 50;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.recipeDropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+
+.recipeDropdownItem:hover {
+  background: var(--surface);
+}
+
+.recipeDropdownName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipeDropdownMeta {
+  font-size: 0.6875rem;
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+/* ── Meal link in preview ────────────────────────────── */
+
+.cellPreviewInner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.cellPreviewInner > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.mealLink {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  color: var(--secondary);
+  opacity: 0.6;
+  transition: opacity 150ms;
+  margin-top: 0.15rem;
+}
+
+.mealLink:hover {
+  opacity: 1;
+  color: var(--primary);
 }

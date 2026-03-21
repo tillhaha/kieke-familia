@@ -34,19 +34,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "recurring must be a boolean" }, { status: 400 })
   }
 
-  const start = new Date(startDate)
-  if (isNaN(start.getTime())) {
+  const [sy, sm, sd] = startDate.split("-").map(Number)
+  if (!sy || !sm || !sd || sm < 1 || sm > 12 || sd < 1 || sd > 31) {
     return NextResponse.json({ error: "Invalid startDate" }, { status: 400 })
   }
+  const start = new Date(Date.UTC(sy, sm - 1, sd))
 
   if (recurring) {
     if (!until || typeof until !== "string") {
       return NextResponse.json({ error: "until is required when recurring is true" }, { status: 400 })
     }
-    const end = new Date(until)
-    if (isNaN(end.getTime())) {
+    const [uy, um, ud] = until.split("-").map(Number)
+    if (!uy || !um || !ud || um < 1 || um > 12 || ud < 1 || ud > 31) {
       return NextResponse.json({ error: "Invalid until date" }, { status: 400 })
     }
+    const end = new Date(Date.UTC(uy, um - 1, ud))
     if (end < start) {
       return NextResponse.json({ error: "until must be on or after startDate" }, { status: 400 })
     }
@@ -71,14 +73,15 @@ export async function POST(request: Request) {
     )
   } else {
     // Expand recurring: iterate day-by-day, flip location every Sunday (except startDate)
-    const end = new Date(until)
+    const [uy2, um2, ud2] = until.split("-").map(Number)
+    const end = new Date(Date.UTC(uy2, um2 - 1, ud2))
     let currentLocation: "WITH_US" | "WITH_MONA" = startsWith
     const cursor = new Date(start)
 
     while (cursor <= end) {
       // Flip on every Sunday except the very first day
       const isStartDate = cursor.getTime() === start.getTime()
-      if (!isStartDate && cursor.getDay() === 0) {
+      if (!isStartDate && cursor.getUTCDay() === 0) {
         currentLocation = currentLocation === "WITH_US" ? "WITH_MONA" : "WITH_US"
       }
 
@@ -91,7 +94,7 @@ export async function POST(request: Request) {
         })
       )
 
-      cursor.setDate(cursor.getDate() + 1)
+      cursor.setUTCDate(cursor.getUTCDate() + 1)
     }
   }
 
@@ -100,6 +103,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ count: ops.length }, { status: 201 })
   } catch (error: any) {
     console.error("Custody create error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

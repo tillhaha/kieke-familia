@@ -135,6 +135,7 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
 
     // If overwriting a meal-linked cell with free text, clear the FK
     const body: Record<string, string | null> = { [field]: current || null }
+    const previousMealId = MEAL_FIELDS.has(field) ? mealIds[key] : null
     if (MEAL_FIELDS.has(field) && mealIds[key]) {
       const mealIdField = field === "lunch" ? "lunchMealId" : "dinnerMealId"
       body[mealIdField] = null
@@ -151,6 +152,9 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
       onDayUpdate(date, field, current || null)
     } catch {
       setDrafts((prev) => ({ ...prev, [key]: saved }))
+      if (previousMealId !== null) {
+        setMealIds((prev) => ({ ...prev, [key]: previousMealId }))
+      }
       setCellErrors((prev) => {
         const next = new Set(prev).add(key)
         setTimeout(() => setCellErrors((p) => { const n = new Set(p); n.delete(key); return n }), 2000)
@@ -164,6 +168,7 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
   const selectMeal = async (date: string, field: "lunch" | "dinner", meal: MealResult) => {
     const key = `${date}:${field}`
     const mealIdField = field === "lunch" ? "lunchMealId" : "dinnerMealId"
+    const previousMealId = mealIds[key]  // snapshot before optimistic update
 
     setDrafts((prev) => ({ ...prev, [key]: meal.name }))
     setMealIds((prev) => ({ ...prev, [key]: meal.id }))
@@ -181,7 +186,7 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
       onDayUpdate(date, mealIdField, meal.id)
     } catch {
       setDrafts((prev) => ({ ...prev, [key]: getSaved(date, field) }))
-      setMealIds((prev) => ({ ...prev, [key]: null }))
+      setMealIds((prev) => ({ ...prev, [key]: previousMealId }))  // restore previous, not null
     } finally {
       setSaving((prev) => { const next = new Set(prev); next.delete(key); return next })
     }
@@ -237,8 +242,12 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
                             }
                             onKeyDown={(e) => {
                               if (e.key === "Escape") {
-                                setDrafts((prev) => ({ ...prev, [key]: recipeSearch!.savedText }))
-                                setRecipeSearch(null)
+                                setRecipeSearch((prev) => {
+                                  if (prev?.key === key) {
+                                    setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                                  }
+                                  return null
+                                })
                               }
                             }}
                             onBlur={() => {
@@ -280,9 +289,10 @@ export function WeekBlock({ week, onDayUpdate }: Props) {
                           onChange={(e) => {
                             const v = e.target.value
                             // Enter recipe search mode when /recipe is typed in meal fields
-                            if (isMealField && v === "/recipe") {
+                            if (isMealField && v.trimEnd().endsWith("/recipe")) {
+                              const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
                               setFocusedKey(null)
-                              setRecipeSearch({ key, query: "", results: [], savedText: drafts[key] ?? "" })
+                              setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
                               return
                             }
                             setDrafts((prev) => ({ ...prev, [key]: v }))

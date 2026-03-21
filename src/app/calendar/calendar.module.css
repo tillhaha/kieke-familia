@@ -145,7 +145,7 @@
 
 .calendarGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
@@ -172,6 +172,7 @@
 .dayCell {
   background: var(--background);
   min-height: 110px;
+  min-width: 0;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;

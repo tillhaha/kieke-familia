@@ -151,8 +151,8 @@ model Meal {
   name        String
   description String?
   servings    Int      @default(2)
-  ingredients Json     // String[]
-  steps       Json     // String[]
+  ingredients String[]
+  steps       String[]
   familyId    String
   family      Family   @relation(fields: [familyId], references: [id])
   createdAt   DateTime @default(now())

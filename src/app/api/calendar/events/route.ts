@@ -49,7 +49,22 @@ export async function GET(request: Request) {
       ? await prisma.travel.findMany({ where: { user: { familyId } } })
       : await prisma.travel.findMany({ where: { userId } })
 
-    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels })
+    const custodyEntries = familyId
+      ? await prisma.custodySchedule.findMany({
+          where: {
+            familyId,
+            date: { gte: timeMin, lte: timeMax },
+          },
+          orderBy: { date: "asc" },
+        })
+      : []
+
+    const serializedCustody = custodyEntries.map((c) => ({
+      ...c,
+      date: c.date.toISOString().split("T")[0],
+    }))
+
+    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody })
   } catch (error: unknown) {
     console.error("Calendar fetch error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

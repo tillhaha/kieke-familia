@@ -12,7 +12,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   const { id } = await params
-  const { name } = await request.json()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let body: any
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
+  }
+  const { name } = body
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "name required" }, { status: 400 })
   }

@@ -214,6 +214,7 @@ model ShoppingCategory {
   memories ShoppingItemMemory[]
 
   @@unique([familyId, name])
+  @@index([familyId])
 }
 
 model ShoppingItem {

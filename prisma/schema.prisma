@@ -225,6 +225,8 @@ model ShoppingItem {
   categoryId String?
   category   ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   createdAt  DateTime          @default(now())
+
+  @@index([familyId])
 }
 
 model ShoppingItemMemory {
@@ -245,4 +247,5 @@ model ShoppingBlacklist {
   term     String
 
   @@unique([familyId, term])
+  @@index([familyId])
 }

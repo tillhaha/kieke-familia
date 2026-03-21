@@ -35,8 +35,8 @@ export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Pr
     if (anchorRef.current) {
       const rect = anchorRef.current.getBoundingClientRect()
       setPos({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
+        top: rect.bottom + 4,
+        left: rect.left,
       })
     }
   }, [anchorRef])
@@ -44,13 +44,18 @@ export default function CustodyPopover({ entry, anchorRef, onClose, onSave }: Pr
   // Click-outside dismissal
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node) &&
+        anchorRef.current &&
+        !anchorRef.current.contains(e.target as Node)
+      ) {
         onClose()
       }
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
-  }, [onClose])
+  }, [onClose, anchorRef])
 
   const handlePatch = async (location: "WITH_US" | "WITH_MONA") => {
     if (location === entry.location) {

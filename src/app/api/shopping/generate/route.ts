@@ -83,7 +83,7 @@ export async function POST(request: Request) {
   try {
     await prisma.shoppingItem.createMany({
       data: newIngredients.map((name) => ({
-        familyId,
+        familyId: familyId as string,
         name,
         categoryId: memoryMap.get(name) ?? null,
       })),

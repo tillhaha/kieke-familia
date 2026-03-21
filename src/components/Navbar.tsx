@@ -4,20 +4,31 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Calendar, CalendarDays, Briefcase, Settings, LogOut, UtensilsCrossed } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Home, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart } from "lucide-react"
 import styles from "./navbar.module.css"
 
 const navLinks = [
-  { href: "/calendar", label: "Calendar", icon: Calendar, enabled: true },
-  { href: "/week", label: "Week planning", icon: CalendarDays, enabled: true },
-  { href: "/meals", label: "Meals", icon: UtensilsCrossed, enabled: true },
-  { href: "/work", label: "Work", icon: Briefcase, enabled: false },
-  { href: "/settings", label: "Settings", icon: Settings, enabled: true },
+  { href: "/calendar", label: "Calendar", icon: Calendar },
+  { href: "/week", label: "Week Planner", icon: CalendarDays },
+  { href: "/meals", label: "Recipes", icon: UtensilsCrossed },
+  { href: "/shopping", label: "Shopping", icon: ShoppingCart },
 ]
 
 export function Navbar() {
   const { data: session } = useSession()
   const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [open])
 
   return (
     <header className={styles.navbar}>
@@ -29,37 +40,52 @@ export function Navbar() {
 
         {session && (
           <div className={styles.navLinks}>
-            {navLinks.map(({ href, label, icon: Icon, enabled }) =>
-              enabled ? (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`${styles.navLink} ${pathname === href ? styles.active : ""}`}
-                >
-                  <Icon size={14} />
-                  {label}
-                </Link>
-              ) : (
-                <span key={href} className={styles.navLinkDisabled}>
-                  <Icon size={14} />
-                  {label}
-                </span>
-              )
-            )}
+            {navLinks.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`${styles.navLink} ${pathname === href ? styles.active : ""}`}
+              >
+                <Icon size={14} />
+                {label}
+              </Link>
+            ))}
           </div>
         )}
 
         {session && (
-          <div className={styles.userSection}>
-            <span className={styles.userEmail}>{session.user?.email}</span>
+          <div className={styles.userSection} ref={ref}>
             <button
-              onClick={() => signOut()}
-              className={styles.signOutBtn}
-              aria-label="Sign out"
-              title="Sign out"
+              className={styles.userBtn}
+              onClick={() => setOpen((v) => !v)}
+              aria-haspopup="true"
+              aria-expanded={open}
             >
-              <LogOut size={15} />
+              <span className={styles.userName}>
+                {session.user?.name || session.user?.email}
+              </span>
+              <ChevronDown size={13} strokeWidth={2} className={open ? styles.chevronOpen : ""} />
             </button>
+
+            {open && (
+              <div className={styles.dropdown}>
+                <Link
+                  href="/settings"
+                  className={styles.dropdownItem}
+                  onClick={() => setOpen(false)}
+                >
+                  <Settings size={13} strokeWidth={2} />
+                  Settings
+                </Link>
+                <button
+                  className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
+                  onClick={() => signOut()}
+                >
+                  <LogOut size={13} strokeWidth={2} />
+                  Sign out
+                </button>
+              </div>
+            )}
           </div>
         )}
       </nav>

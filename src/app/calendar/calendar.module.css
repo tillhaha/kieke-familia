@@ -403,3 +403,64 @@
 .noCalendarsLink:hover {
   text-decoration: underline;
 }
+
+/* ── Edit / Delete Modal Additions ───────────────────────── */
+
+.deleteBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+}
+
+.deleteBtn:hover {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.deleteBtnConfirm {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.deleteBtnConfirm:hover {
+  background: #fee2e2;
+}
+
+.modalError {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin: 0.75rem 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .deleteBtn:hover {
+    background: #2d0a0a;
+    color: #fca5a5;
+    border-color: #7f1d1d;
+  }
+  .deleteBtnConfirm {
+    background: #2d0a0a;
+    border-color: #7f1d1d;
+    color: #fca5a5;
+  }
+  .deleteBtnConfirm:hover {
+    background: #3d1010;
+  }
+  .modalError {
+    color: #f87171;
+  }
+}

@@ -7,7 +7,6 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const familyId = (session.user as any).familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
@@ -22,11 +21,9 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const familyId = (session.user as any).familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let body: any
   try {
     body = await request.json()
@@ -44,7 +41,6 @@ export async function POST(request: Request) {
       data: { familyId, term: normalized },
     })
     return NextResponse.json(entry, { status: 201 })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.code === "P2002") {
       return NextResponse.json({ error: "Term already exists" }, { status: 409 })

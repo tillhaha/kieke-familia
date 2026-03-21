@@ -7,7 +7,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const familyId = (session.user as any).familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 

@@ -3,7 +3,7 @@
 
 import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import ReactMarkdown from "react-markdown"
-import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning } from "lucide-react"
+import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart } from "lucide-react"
 import styles from "./week.module.css"
 
 export type DayWeather = {
@@ -268,7 +268,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             onClick={handleGenerateShopping}
             disabled={generating}
           >
-            🛒 {generating ? "Adding…" : "Add to shopping list"}
+            <ShoppingCart size={13} strokeWidth={2} />
+            {generating ? "Adding…" : "Add to shopping list"}
           </button>
         )}
       </h2>

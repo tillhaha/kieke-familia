@@ -4,12 +4,12 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Calendar, UtensilsCrossed, Briefcase, Settings, LogOut } from "lucide-react"
+import { Home, Calendar, CalendarDays, Briefcase, Settings, LogOut } from "lucide-react"
 import styles from "./navbar.module.css"
 
 const navLinks = [
   { href: "/calendar", label: "Calendar", icon: Calendar, enabled: true },
-  { href: "/meals", label: "Meals", icon: UtensilsCrossed, enabled: false },
+  { href: "/week", label: "Week planning", icon: CalendarDays, enabled: true },
   { href: "/work", label: "Work", icon: Briefcase, enabled: false },
   { href: "/settings", label: "Settings", icon: Settings, enabled: true },
 ]

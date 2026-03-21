@@ -37,6 +37,22 @@ export default function CalendarPage() {
   const [tStart, setTStart] = useState(new Date().toISOString().split("T")[0])
   const [tEnd, setTEnd] = useState(new Date().toISOString().split("T")[0])
 
+  // Edit mode state
+  const [editingBirthday, setEditingBirthday] = useState<{
+    id: string; name: string; month: number; day: number
+  } | null>(null)
+  const [editingTravel, setEditingTravel] = useState<{
+    id: string; destination: string; startDate: string; endDate: string
+  } | null>(null)
+  const [deleteConfirming, setDeleteConfirming] = useState(false)
+  const [modalError, setModalError] = useState<string | null>(null)
+
+  const closeModal = () => {
+    setModal("NONE")
+    setDeleteConfirming(false)
+    setModalError(null)
+  }
+
   useEffect(() => {
     if (status === "authenticated") {
       fetchEvents()
@@ -69,37 +85,87 @@ export default function CalendarPage() {
     }
   }
 
-  const handleAddBirthday = async (e: React.FormEvent) => {
+  const handleSaveBirthday = async (e: React.FormEvent) => {
     e.preventDefault()
+    setModalError(null)
     try {
-      const res = await fetch("/api/calendar/birthdays", {
-        method: "POST",
+      const url = editingBirthday
+        ? `/api/calendar/birthdays/${editingBirthday.id}`
+        : "/api/calendar/birthdays"
+      const res = await fetch(url, {
+        method: editingBirthday ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: bName, month: bMonth, day: bDay }),
       })
-      if (res.ok) {
-        setModal("NONE")
-        fetchEvents()
-      }
-    } catch (err) {
-      console.error(err)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Failed to save")
+      closeModal()
+      fetchEvents()
+    } catch (err: unknown) {
+      setModalError(err instanceof Error ? err.message : "Failed to save")
     }
   }
 
-  const handleAddTravel = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleDeleteBirthday = async () => {
+    if (!editingBirthday) return
+    if (!deleteConfirming) {
+      setDeleteConfirming(true)
+      return
+    }
+    setModalError(null)
     try {
-      const res = await fetch("/api/calendar/travel", {
-        method: "POST",
+      const res = await fetch(`/api/calendar/birthdays/${editingBirthday.id}`, {
+        method: "DELETE",
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete")
+      closeModal()
+      fetchEvents()
+    } catch (err: unknown) {
+      setModalError(err instanceof Error ? err.message : "Failed to delete")
+      setDeleteConfirming(false)
+    }
+  }
+
+  const handleSaveTravel = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setModalError(null)
+    try {
+      const url = editingTravel
+        ? `/api/calendar/travel/${editingTravel.id}`
+        : "/api/calendar/travel"
+      const res = await fetch(url, {
+        method: editingTravel ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ destination: tDest, startDate: tStart, endDate: tEnd }),
       })
-      if (res.ok) {
-        setModal("NONE")
-        fetchEvents()
-      }
-    } catch (err) {
-      console.error(err)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Failed to save")
+      closeModal()
+      fetchEvents()
+    } catch (err: unknown) {
+      setModalError(err instanceof Error ? err.message : "Failed to save")
+    }
+  }
+
+  const handleDeleteTravel = async () => {
+    if (!editingTravel) return
+    if (!deleteConfirming) {
+      setDeleteConfirming(true)
+      return
+    }
+    setModalError(null)
+    try {
+      const res = await fetch(`/api/calendar/travel/${editingTravel.id}`, {
+        method: "DELETE",
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Failed to delete")
+      closeModal()
+      fetchEvents()
+    } catch (err: unknown) {
+      setModalError(err instanceof Error ? err.message : "Failed to delete")
+      setDeleteConfirming(false)
     }
   }
 
@@ -188,11 +254,33 @@ export default function CalendarPage() {
 
       {/* Toolbar */}
       <div className={styles.toolbar}>
-        <button onClick={() => setModal("BIRTHDAY")} className={styles.toolbarBtn}>
+        <button
+          onClick={() => {
+            setEditingBirthday(null)
+            setBName("")
+            setBMonth(new Date().getMonth() + 1)
+            setBDay(new Date().getDate())
+            setDeleteConfirming(false)
+            setModalError(null)
+            setModal("BIRTHDAY")
+          }}
+          className={styles.toolbarBtn}
+        >
           <Plus size={14} />
           Add Birthday
         </button>
-        <button onClick={() => setModal("TRAVEL")} className={styles.toolbarBtn}>
+        <button
+          onClick={() => {
+            setEditingTravel(null)
+            setTDest("")
+            setTStart(new Date().toISOString().split("T")[0])
+            setTEnd(new Date().toISOString().split("T")[0])
+            setDeleteConfirming(false)
+            setModalError(null)
+            setModal("TRAVEL")
+          }}
+          className={styles.toolbarBtn}
+        >
           <Plus size={14} />
           Add Travel
         </button>
@@ -259,18 +347,59 @@ export default function CalendarPage() {
               ))}
 
               {dayEvents.birthdays.map((b, idx) => (
-                <div key={idx} className={`${styles.eventItem} ${styles.birthdayEvent}`}>
+                <div
+                  key={idx}
+                  className={`${styles.eventItem} ${styles.birthdayEvent}`}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    setEditingBirthday({ id: b.id, name: b.name, month: b.month, day: b.day })
+                    setBName(b.name)
+                    setBMonth(b.month)
+                    setBDay(b.day)
+                    setDeleteConfirming(false)
+                    setModalError(null)
+                    setModal("BIRTHDAY")
+                  }}
+                  title={`${b.name} — click to edit`}
+                >
                   <Cake size={10} strokeWidth={2} />
                   {b.name}
                 </div>
               ))}
 
-              {dayEvents.travels.map((t, idx) => (
-                <div key={idx} className={`${styles.eventItem} ${styles.travelEvent}`}>
-                  <Plane size={10} strokeWidth={2} />
-                  {t.destination}
-                </div>
-              ))}
+              {dayEvents.travels.map((t, idx) => {
+                const currentUserId = (session?.user as any)?.id
+                const isOwner = t.userId === currentUserId
+                return (
+                  <div
+                    key={idx}
+                    className={`${styles.eventItem} ${styles.travelEvent}`}
+                    style={isOwner ? { cursor: "pointer" } : undefined}
+                    onClick={
+                      isOwner
+                        ? () => {
+                            setEditingTravel({
+                              id: t.id,
+                              destination: t.destination,
+                              startDate: new Date(t.startDate).toISOString().split("T")[0],
+                              endDate: new Date(t.endDate).toISOString().split("T")[0],
+                            })
+                            setTDest(t.destination)
+                            setTStart(new Date(t.startDate).toISOString().split("T")[0])
+                            setTEnd(new Date(t.endDate).toISOString().split("T")[0])
+                            setDeleteConfirming(false)
+                            setModalError(null)
+                            setModal("TRAVEL")
+                          }
+                        : undefined
+                    }
+                    title={isOwner ? `${t.destination} — click to edit` : t.destination}
+                  >
+                    <Plane size={10} strokeWidth={2} />
+                    {t.destination}
+                  </div>
+                )
+              })}
             </div>
           )
         })}
@@ -278,13 +407,13 @@ export default function CalendarPage() {
 
       {/* Birthday Modal */}
       {modal === "BIRTHDAY" && (
-        <div className={styles.modalBackdrop} onClick={() => setModal("NONE")}>
+        <div className={styles.modalBackdrop} onClick={closeModal}>
           <form
             className={styles.modalContent}
-            onSubmit={handleAddBirthday}
+            onSubmit={handleSaveBirthday}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Add Birthday</h2>
+            <h2>{editingBirthday ? "Edit Birthday" : "Add Birthday"}</h2>
             <div className={styles.formGroup}>
               <label htmlFor="bName">Name</label>
               <input
@@ -322,8 +451,19 @@ export default function CalendarPage() {
                 />
               </div>
             </div>
+            {modalError && <p className={styles.modalError}>{modalError}</p>}
             <div className={styles.modalActions}>
-              <button type="button" className={styles.cancelBtn} onClick={() => setModal("NONE")}>
+              {editingBirthday && (
+                <button
+                  type="button"
+                  className={deleteConfirming ? styles.deleteBtnConfirm : styles.deleteBtn}
+                  onClick={handleDeleteBirthday}
+                >
+                  {deleteConfirming ? "Confirm delete" : "Delete"}
+                </button>
+              )}
+              <div style={{ flex: 1 }} />
+              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
                 Cancel
               </button>
               <button type="submit" className={styles.saveBtn}>
@@ -336,13 +476,13 @@ export default function CalendarPage() {
 
       {/* Travel Modal */}
       {modal === "TRAVEL" && (
-        <div className={styles.modalBackdrop} onClick={() => setModal("NONE")}>
+        <div className={styles.modalBackdrop} onClick={closeModal}>
           <form
             className={styles.modalContent}
-            onSubmit={handleAddTravel}
+            onSubmit={handleSaveTravel}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Add Travel</h2>
+            <h2>{editingTravel ? "Edit Travel" : "Add Travel"}</h2>
             <div className={styles.formGroup}>
               <label htmlFor="tDest">Destination</label>
               <input
@@ -376,8 +516,19 @@ export default function CalendarPage() {
                 />
               </div>
             </div>
+            {modalError && <p className={styles.modalError}>{modalError}</p>}
             <div className={styles.modalActions}>
-              <button type="button" className={styles.cancelBtn} onClick={() => setModal("NONE")}>
+              {editingTravel && (
+                <button
+                  type="button"
+                  className={deleteConfirming ? styles.deleteBtnConfirm : styles.deleteBtn}
+                  onClick={handleDeleteTravel}
+                >
+                  {deleteConfirming ? "Confirm delete" : "Delete"}
+                </button>
+              )}
+              <div style={{ flex: 1 }} />
+              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
                 Cancel
               </button>
               <button type="submit" className={styles.saveBtn}>

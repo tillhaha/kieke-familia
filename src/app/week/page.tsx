@@ -17,7 +17,10 @@ export default function WeekPage() {
   useEffect(() => {
     if (status !== "authenticated") return
     fetch("/api/weeks")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error()
+        return r.json()
+      })
       .then((data) => setWeeks(data.weeks ?? []))
       .catch(() => setError("Failed to load weeks."))
       .finally(() => setLoading(false))

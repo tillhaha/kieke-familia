@@ -2,6 +2,20 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import Anthropic from "@anthropic-ai/sdk"
+import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
+import { z } from "zod"
+
+const client = new Anthropic()
+
+const UnifiedSchema = z.object({
+  items: z.array(
+    z.object({
+      name: z.string(),
+      quantity: z.string().nullable(),
+    })
+  ),
+})
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
@@ -48,48 +62,97 @@ export async function POST(request: Request) {
     if (plan.dinnerMeal) rawIngredients.push(...plan.dinnerMeal.ingredients)
   }
 
-  // 3. Normalize: lowercase + trim, deduplicate within this batch
-  const normalized = [...new Set(rawIngredients.map((i) => i.trim().toLowerCase()).filter(Boolean))]
+  if (rawIngredients.length === 0) {
+    return NextResponse.json({ added: 0 })
+  }
 
-  // 4. Filter against blacklist (substring match)
+  // Fetch blacklist
   const blacklist = await prisma.shoppingBlacklist.findMany({ where: { familyId } })
-  const blacklistTerms = blacklist.map((b) => b.term.toLowerCase())
-  const filtered = normalized.filter(
-    (ingredient) => !blacklistTerms.some((term) => ingredient.includes(term))
-  )
+  const blacklistTerms = blacklist.map((b) => b.term)
 
-  // 5. Deduplicate against existing items
+  // Call Claude to normalise, merge, filter, and order ingredients
+  let unified: Array<{ name: string; quantity: string | null }>
+  try {
+    const response = await client.messages.parse({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1024,
+      output_config: {
+        format: zodOutputFormat(UnifiedSchema),
+      },
+      system: `You are a shopping list assistant. Given a list of raw meal ingredients, return a clean, unified shopping list.
+
+Rules:
+- Remove any ingredient that contains one of the blacklist terms as a substring (case-insensitive).
+- Merge clearly identical ingredients (e.g. "2 chicken breasts" and "3 chicken pieces" → one "chicken breast" entry).
+- For similar-but-potentially-different ingredients (e.g. "potatoes" and "small potatoes"), keep both but place them adjacent in the list.
+- Strip quantities and units from the name field — put them in the quantity field (null if none).
+- Normalise names to lowercase, singular where natural (e.g. "tomatoes" → "tomato").
+- Return items in a logical shopping order (produce together, proteins together, etc.).`,
+      messages: [
+        {
+          role: "user",
+          content: `Blacklist terms: ${blacklistTerms.length > 0 ? blacklistTerms.join(", ") : "(none)"}
+
+Ingredients:
+${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
+        },
+      ],
+    })
+
+    if (!response.parsed_output) {
+      return NextResponse.json({ error: "AI unification failed" }, { status: 500 })
+    }
+    unified = response.parsed_output.items
+  } catch (err) {
+    console.error("[generate] Claude unification error:", err)
+    return NextResponse.json({ error: "AI unification failed" }, { status: 500 })
+  }
+
+  if (unified.length === 0) {
+    return NextResponse.json({ added: 0 })
+  }
+
+  // Deduplicate against existing items on the list
   const existingItems = await prisma.shoppingItem.findMany({
     where: { familyId },
     select: { name: true },
   })
   const existingNames = new Set(existingItems.map((i) => i.name.toLowerCase()))
-  const newIngredients = filtered.filter((i) => !existingNames.has(i))
+  const newIngredients = unified.filter((i) => !existingNames.has(i.name.toLowerCase()))
 
   if (newIngredients.length === 0) {
     return NextResponse.json({ added: 0 })
   }
 
-  // 6. Look up memory for category pre-assignment
+  // Look up memory for category pre-assignment
   const memories = await prisma.shoppingItemMemory.findMany({
     where: {
       familyId,
-      itemName: { in: newIngredients },
+      itemName: { in: newIngredients.map((i) => i.name) },
     },
   })
   const memoryMap = new Map(memories.map((m) => [m.itemName, m.categoryId]))
 
-  // 7. Bulk insert
+  // Determine starting sortOrder (append after existing items)
+  const maxSortOrder = await prisma.shoppingItem.aggregate({
+    where: { familyId },
+    _max: { sortOrder: true },
+  })
+  const baseOrder = (maxSortOrder._max.sortOrder ?? -1) + 1
+
+  // Insert items in Claude's order, assigning sortOrder
   try {
     await prisma.shoppingItem.createMany({
-      data: newIngredients.map((name) => ({
+      data: newIngredients.map((item, index) => ({
         familyId: familyId as string,
-        name,
-        categoryId: memoryMap.get(name) ?? null,
+        name: item.name,
+        quantity: item.quantity ?? null,
+        categoryId: memoryMap.get(item.name) ?? null,
+        sortOrder: baseOrder + index,
       })),
     })
   } catch (error: unknown) {
-    console.error("Shopping generate error:", error)
+    console.error("Shopping generate insert error:", error)
     return NextResponse.json({ error: "Failed to add items" }, { status: 500 })
   }
 

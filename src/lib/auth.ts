@@ -54,8 +54,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
-        token.familyId = (user as Record<string, unknown>).familyId
-        token.role = (user as Record<string, unknown>).role
+        token.familyId = (user as unknown as Record<string, unknown>).familyId
+        token.role = (user as unknown as Record<string, unknown>).role
         token.name = user.name
       }
       if (trigger === "update" && session?.name !== undefined) {

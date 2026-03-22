@@ -14,8 +14,8 @@ export async function GET() {
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   const members = await prisma.user.findMany({
-    where: { familyId, username: { not: null } },
-    select: { id: true, name: true, username: true },
+    where: { familyId },
+    select: { id: true, name: true, email: true, username: true, role: true, active: true },
     orderBy: { name: "asc" },
   })
 

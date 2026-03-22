@@ -6,10 +6,10 @@ import { useState } from "react"
 import { GoogleSection } from "./GoogleSection"
 import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
-import { ChildrenSection } from "./ChildrenSection"
+import { UsersSection } from "./UsersSection"
 import styles from "./settings.module.css"
 
-type Section = "profile" | "google" | "location" | "children"
+type Section = "profile" | "google" | "location" | "users"
 
 export default function SettingsPage() {
   const { status } = useSession()
@@ -40,10 +40,10 @@ export default function SettingsPage() {
           Location
         </button>
         <button
-          className={`${styles.sectionBtn} ${activeSection === "children" ? styles.active : ""}`}
-          onClick={() => setActiveSection("children")}
+          className={`${styles.sectionBtn} ${activeSection === "users" ? styles.active : ""}`}
+          onClick={() => setActiveSection("users")}
         >
-          Children
+          Users
         </button>
       </aside>
 
@@ -51,7 +51,7 @@ export default function SettingsPage() {
         {activeSection === "profile" && <ProfileSection />}
         {activeSection === "google" && <GoogleSection />}
         {activeSection === "location" && <LocationSection />}
-        {activeSection === "children" && <ChildrenSection />}
+        {activeSection === "users" && <UsersSection />}
       </div>
     </div>
   )

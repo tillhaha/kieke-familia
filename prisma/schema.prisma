@@ -45,6 +45,7 @@ model User {
   image         String?
   username      String?   @unique
   passwordHash  String?
+  active        Boolean   @default(true)
   accounts      Account[]
   sessions      Session[]
   

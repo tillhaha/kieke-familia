@@ -225,6 +225,7 @@ model ShoppingItem {
   quantity   String?
   categoryId String?
   category   ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  sortOrder  Int               @default(0)
   createdAt  DateTime          @default(now())
 
   @@index([familyId])

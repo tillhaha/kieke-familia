@@ -128,28 +128,29 @@ ${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
   const memories = await prisma.shoppingItemMemory.findMany({
     where: {
       familyId,
-      itemName: { in: newIngredients.map((i) => i.name) },
+      itemName: { in: newIngredients.map((i) => i.name.toLowerCase()) },
     },
   })
   const memoryMap = new Map(memories.map((m) => [m.itemName, m.categoryId]))
 
-  // Determine starting sortOrder (append after existing items)
-  const maxSortOrder = await prisma.shoppingItem.aggregate({
-    where: { familyId },
-    _max: { sortOrder: true },
-  })
-  const baseOrder = (maxSortOrder._max.sortOrder ?? -1) + 1
-
-  // Insert items in Claude's order, assigning sortOrder
+  // Insert items in Claude's order, assigning sortOrder (atomic to avoid race conditions)
   try {
-    await prisma.shoppingItem.createMany({
-      data: newIngredients.map((item, index) => ({
-        familyId: familyId as string,
-        name: item.name,
-        quantity: item.quantity ?? null,
-        categoryId: memoryMap.get(item.name) ?? null,
-        sortOrder: baseOrder + index,
-      })),
+    await prisma.$transaction(async (tx) => {
+      const maxSortOrder = await tx.shoppingItem.aggregate({
+        where: { familyId },
+        _max: { sortOrder: true },
+      })
+      const baseOrder = (maxSortOrder._max.sortOrder ?? -1) + 1
+
+      await tx.shoppingItem.createMany({
+        data: newIngredients.map((item, index) => ({
+          familyId: familyId as string,
+          name: item.name,
+          quantity: item.quantity ?? null,
+          categoryId: memoryMap.get(item.name) ?? null,
+          sortOrder: baseOrder + index,
+        })),
+      })
     })
   } catch (error: unknown) {
     console.error("Shopping generate insert error:", error)

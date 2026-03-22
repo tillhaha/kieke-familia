@@ -3,6 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
+import { User, CalendarDays, MapPin, Users } from "lucide-react"
 import { GoogleSection } from "./GoogleSection"
 import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
@@ -25,24 +26,28 @@ export default function SettingsPage() {
           className={`${styles.sectionBtn} ${activeSection === "profile" ? styles.active : ""}`}
           onClick={() => setActiveSection("profile")}
         >
+          <User size={15} />
           Profile
         </button>
         <button
           className={`${styles.sectionBtn} ${activeSection === "google" ? styles.active : ""}`}
           onClick={() => setActiveSection("google")}
         >
-          Google
+          <CalendarDays size={15} />
+          Google Calendar
         </button>
         <button
           className={`${styles.sectionBtn} ${activeSection === "location" ? styles.active : ""}`}
           onClick={() => setActiveSection("location")}
         >
+          <MapPin size={15} />
           Location
         </button>
         <button
           className={`${styles.sectionBtn} ${activeSection === "users" ? styles.active : ""}`}
           onClick={() => setActiveSection("users")}
         >
+          <Users size={15} />
           Users
         </button>
       </aside>

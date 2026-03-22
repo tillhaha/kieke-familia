@@ -125,6 +125,36 @@
   accent-color: var(--primary);
 }
 
+/* ── Form fields ─────────────────────────────────────────── */
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.fieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--secondary);
+}
+
+.fieldInput {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 150ms;
+  max-width: 320px;
+}
+
+.fieldInput:focus { border-color: var(--primary); }
+
 /* ── Save Button ─────────────────────────────────────────── */
 
 .saveBtn {
@@ -209,4 +239,75 @@
 
 .retryBtn:hover {
   opacity: 1;
+}
+
+/* ── Children Section ────────────────────────────────────── */
+
+.subTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.memberList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.memberRow:last-child {
+  border-bottom: none;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.memberName {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.memberUsername {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.memberActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cancelBtn {
+  padding: 0.4rem 0.875rem;
+  background: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+  white-space: nowrap;
+}
+
+.cancelBtn:hover {
+  border-color: var(--foreground);
+  color: var(--foreground);
 }

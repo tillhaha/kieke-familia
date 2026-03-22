@@ -29,6 +29,7 @@ export default function ShoppingPage() {
   const [editingCategoryFor, setEditingCategoryFor] = useState<string | null>(null)
 
   // Manage panel
+  const [clearing, setClearing] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
   const [newCatName, setNewCatName] = useState("")
   const [newBlacklistTerm, setNewBlacklistTerm] = useState("")
@@ -217,6 +218,20 @@ export default function ShoppingPage() {
     await fetch(`/api/shopping/blacklist/${id}`, { method: "DELETE" })
   }
 
+  async function handleClearList() {
+    const prev = items
+    setItems([])
+    setClearing(true)
+    try {
+      const res = await fetch("/api/shopping/items", { method: "DELETE" })
+      if (!res.ok) throw new Error("Failed")
+    } catch {
+      setItems(prev)
+    } finally {
+      setClearing(false)
+    }
+  }
+
   // Group items by category
   const grouped = (() => {
     const catMap = new Map<string | null, ShoppingItem[]>()
@@ -333,6 +348,13 @@ export default function ShoppingPage() {
 
       {/* Footer */}
       <div className={styles.footer}>
+        <button
+          className={styles.clearBtn}
+          onClick={handleClearList}
+          disabled={clearing || items.length === 0}
+        >
+          Clear list
+        </button>
         <button className={styles.manageBtn} onClick={() => setManageOpen((v) => !v)}>
           <Settings size={13} strokeWidth={2} />
           {manageOpen ? "Close" : "Manage"}

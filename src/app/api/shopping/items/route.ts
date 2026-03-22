@@ -66,3 +66,14 @@ export async function POST(request: Request) {
 
   return NextResponse.json(item, { status: 201 })
 }
+
+export async function DELETE() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const familyId = (session.user as any).familyId
+  if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
+
+  await prisma.shoppingItem.deleteMany({ where: { familyId } })
+  return NextResponse.json({ ok: true })
+}

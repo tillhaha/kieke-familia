@@ -1,0 +1,4 @@
+{"type":"server-started","port":64906,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:64906","screen_dir":"/Users/till/Development/familia/.superpowers/brainstorm/78958-1774297634"}
+{"type":"screen-added","file":"/Users/till/Development/familia/.superpowers/brainstorm/78958-1774297634/navbar-approach.html"}
+{"source":"user-event","type":"click","text":"🏠 Familia\n        ☰\n      \n      \n        📅 Week\n        🗓 Calendar\n        🍽 Meals\n        ⚙️ Settings\n      \n      page content\n    \n    \n      A — Hamburger Menu\n      Tap ☰ to reveal a dropdown/drawer with all nav links. Nav stays at the top. Clean and familiar pattern.\n      \n        ProsMinimal changes to existing layoutUniversal pattern users know\n        ConsExtra tap to navigate","choice":"hamburger","id":null,"timestamp":1774297752875}
+{"type":"screen-added","file":"/Users/till/Development/familia/.superpowers/brainstorm/78958-1774297634/waiting.html"}

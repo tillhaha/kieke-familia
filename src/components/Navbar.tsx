@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Home, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart } from "lucide-react"
+import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart } from "lucide-react"
 import styles from "./navbar.module.css"
 
 const navLinks = [
@@ -34,7 +34,7 @@ export function Navbar() {
     <header className={styles.navbar}>
       <nav className={styles.inner}>
         <Link href="/" className={styles.logo}>
-          <Home size={17} strokeWidth={2.5} />
+          <Bot size={17} strokeWidth={2.5} />
           <span>YourKieke</span>
         </Link>
 

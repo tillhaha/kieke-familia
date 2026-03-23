@@ -1,0 +1,71 @@
+<h2>Design — Data Model</h2>
+<p class="subtitle">4 new Prisma models, all scoped to <code>familyId</code></p>
+
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+
+    <div class="mockup">
+      <div class="mockup-header">ShoppingCategory</div>
+      <div class="mockup-body" style="font-family:monospace;font-size:0.82rem;line-height:1.8">
+        id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String (cuid)<br>
+        familyId &nbsp;String (FK → Family)<br>
+        name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String<br>
+        order &nbsp;&nbsp;&nbsp;&nbsp;Int<br>
+        <br>
+        <span style="opacity:0.5">@@unique([familyId, name])</span>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">ShoppingItem</div>
+      <div class="mockup-body" style="font-family:monospace;font-size:0.82rem;line-height:1.8">
+        id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String (cuid)<br>
+        familyId &nbsp;&nbsp;String (FK → Family)<br>
+        name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String<br>
+        quantity &nbsp;&nbsp;String? (optional)<br>
+        categoryId String? (FK → Category)<br>
+        checked &nbsp;&nbsp;&nbsp;Boolean (default false)<br>
+        createdAt &nbsp;DateTime<br>
+        <br>
+        <span style="opacity:0.5">// checked items deleted on GET, not stored long-term</span>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">ShoppingItemMemory</div>
+      <div class="mockup-body" style="font-family:monospace;font-size:0.82rem;line-height:1.8">
+        id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String (cuid)<br>
+        familyId &nbsp;String (FK → Family)<br>
+        itemName &nbsp;String (lowercased)<br>
+        categoryId String (FK → Category)<br>
+        <br>
+        <span style="opacity:0.5">@@unique([familyId, itemName])</span>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-header">ShoppingBlacklist</div>
+      <div class="mockup-body" style="font-family:monospace;font-size:0.82rem;line-height:1.8">
+        id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String (cuid)<br>
+        familyId &nbsp;String (FK → Family)<br>
+        term &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String (lowercased)<br>
+        <br>
+        <span style="opacity:0.5">@@unique([familyId, term])</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>Default categories (seeded on first visit)</h3>
+  <p style="font-size:0.9rem;opacity:0.8">Fruit/Vegetables · Meat · Fish · Milk Products · Bread · Condiments · Sauces · Drinks · Frozen · Nuts/Snacks</p>
+  <p style="font-size:0.85rem;opacity:0.6">Created for the family the first time the shopping page loads. Fully editable/deletable.</p>
+</div>
+
+<div class="section">
+  <h3>Checked items strategy</h3>
+  <p style="font-size:0.9rem;opacity:0.8">When an item is checked off, it is <strong>deleted</strong> from the DB immediately (optimistic UI hides it first). This keeps the list clean and avoids accumulating stale data. No "done" section.</p>
+</div>
+
+<p style="margin-top:1.5rem;opacity:0.6;font-size:0.85rem">Does this data model look right? Any changes before we move to pages & API?</p>

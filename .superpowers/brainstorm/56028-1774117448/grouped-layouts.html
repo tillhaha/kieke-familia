@@ -1,0 +1,295 @@
+<h2>Two grouped layouts</h2>
+<p class="subtitle">Your grouping idea on the left, my hybrid on the right. Click to select a preference.</p>
+
+<div class="split" style="gap: 28px; margin-top: 20px; align-items: flex-start;">
+
+  <!-- LEFT: User's idea -->
+  <div class="mockup" data-choice="yours" onclick="toggleSelect(this)" style="cursor:pointer; flex:1;">
+    <div class="mockup-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Your grouping</span>
+      <span style="font-size:11px; opacity:0.6;">Weather · Meals · Notes</span>
+    </div>
+    <div class="mockup-body" style="padding: 0; overflow: hidden;">
+
+      <table style="width:100%; border-collapse:collapse; font-size:11px; table-layout:fixed;">
+        <!-- Day headers -->
+        <thead>
+          <tr style="background: var(--surface);">
+            <th style="width:68px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 8px;"></th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Mon</span>
+              <span style="font-size:14px;">16</span>
+            </th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Tue</span>
+              <span style="font-size:14px;">17</span>
+            </th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Wed</span>
+              <span style="font-size:14px;">18</span>
+            </th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700; background:#eef6ff; color:#1d4ed8;">
+              <span style="display:block; font-size:9px; font-weight:600; text-transform:uppercase;">Thu</span>
+              <span style="font-size:14px; background:var(--primary); color:white; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%;">19</span>
+            </th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Fri</span>
+              <span style="font-size:14px;">20</span>
+            </th>
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Sat</span>
+              <span style="font-size:14px;">21</span>
+            </th>
+            <th style="border-bottom:1px solid var(--border); padding:6px 4px; text-align:center; font-weight:700;">
+              <span style="display:block; font-size:9px; color:var(--secondary); font-weight:600; text-transform:uppercase;">Sun</span>
+              <span style="font-size:14px;">22</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Weather — standalone -->
+          <tr style="background:var(--surface);">
+            <td style="padding:5px 8px; font-size:9px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:0.05em; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">Weather</td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">☀️<br><span style="color:var(--secondary); font-size:9px;">8–14°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">🌤️<br><span style="color:var(--secondary); font-size:9px;">9–16°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">🌧️<br><span style="color:var(--secondary); font-size:9px;">6–11°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">☀️<br><span style="color:var(--secondary); font-size:9px;">10–17°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">☀️<br><span style="color:var(--secondary); font-size:9px;">11–18°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">🌤️<br><span style="color:var(--secondary); font-size:9px;">9–15°</span></td>
+            <td style="padding:5px 4px; text-align:center; border-bottom:1px solid var(--border); font-size:10px; line-height:1.4;">☀️<br><span style="color:var(--secondary); font-size:9px;">12–19°</span></td>
+          </tr>
+
+          <!-- MEALS section header -->
+          <tr style="background:#f8fafc;">
+            <td colspan="8" style="padding:3px 8px; font-size:9px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">
+              🍽 &nbsp;Meals
+            </td>
+          </tr>
+          <!-- Lunch -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border); white-space:nowrap;">Lunch</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Salad</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Pasta</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Soup</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-bottom:1px solid var(--border);"></td>
+          </tr>
+          <!-- Dinner -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border); white-space:nowrap;">Dinner</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Risotto</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Pizza</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Steak</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">BBQ</td>
+            <td style="padding:6px 5px; font-size:10px; border-bottom:1px solid var(--border);"></td>
+          </tr>
+
+          <!-- NOTES section header -->
+          <tr style="background:#f8fafc;">
+            <td colspan="8" style="padding:3px 8px; font-size:9px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">
+              📋 &nbsp;Notes
+            </td>
+          </tr>
+          <!-- Emilia sub-row -->
+          <tr>
+            <td style="padding:5px 8px 5px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border); white-space:nowrap;">Emilia</td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border);">
+              <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+            <td style="padding:5px 4px; text-align:center; border-bottom:1px solid var(--border);">
+              <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:2px 5px; font-size:10px;">🧒</span>
+            </td>
+          </tr>
+          <!-- Activity sub-row -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border); white-space:nowrap;">Activity</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Gym</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Cinema</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-bottom:1px solid var(--border);"></td>
+          </tr>
+          <!-- Note sub-row -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border);">Note</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">WFH</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">Office</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:#7c3aed; font-weight:600;">Hike!</td>
+            <td style="padding:6px 5px; font-size:10px;"></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: My hybrid — rich day headers -->
+  <div class="mockup" data-choice="mine" onclick="toggleSelect(this)" style="cursor:pointer; flex:1;">
+    <div class="mockup-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>My hybrid</span>
+      <span style="font-size:11px; opacity:0.6;">Context in header · Meals · Plan</span>
+    </div>
+    <div class="mockup-body" style="padding:0; overflow:hidden;">
+
+      <table style="width:100%; border-collapse:collapse; font-size:11px; table-layout:fixed;">
+        <thead>
+          <!-- Rich day headers carrying Emilia + weather -->
+          <tr style="background:var(--surface);">
+            <th style="width:68px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px 8px;"></th>
+            <!-- Mon — Emilia @ us -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Mon</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">16</div>
+              <div style="display:flex; justify-content:center; gap:3px; margin-top:3px; align-items:center;">
+                <span style="font-size:9px;">☀️ 8–14°</span>
+              </div>
+              <div style="margin-top:2px;">
+                <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Us</span>
+              </div>
+            </th>
+            <!-- Tue — Emilia @ us -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Tue</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">17</div>
+              <div style="display:flex; justify-content:center; gap:3px; margin-top:3px; align-items:center;">
+                <span style="font-size:9px;">🌤️ 9–16°</span>
+              </div>
+              <div style="margin-top:2px;">
+                <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Us</span>
+              </div>
+            </th>
+            <!-- Wed — Emilia @ Mona -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Wed</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">18</div>
+              <div style="display:flex; justify-content:center; gap:3px; margin-top:3px; align-items:center;">
+                <span style="font-size:9px;">🌧️ 6–11°</span>
+              </div>
+              <div style="margin-top:2px;">
+                <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Mona</span>
+              </div>
+            </th>
+            <!-- Thu — TODAY -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal; background:#eff6ff;">
+              <div style="font-size:9px; color:#1d4ed8; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Thu</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1; color:#1d4ed8;">
+                <span style="background:var(--primary); color:white; display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; font-size:13px;">19</span>
+              </div>
+              <div style="margin-top:3px; font-size:9px; color:#1d4ed8;">☀️ 10–17°</div>
+              <div style="margin-top:2px;">
+                <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Mona</span>
+              </div>
+            </th>
+            <!-- Fri -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Fri</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">20</div>
+              <div style="margin-top:3px; font-size:9px; color:var(--secondary);">☀️ 11–18°</div>
+              <div style="margin-top:2px;">
+                <span style="background:#fdf2f8; color:#9d174d; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Mona</span>
+              </div>
+            </th>
+            <!-- Sat -->
+            <th style="border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Sat</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">21</div>
+              <div style="margin-top:3px; font-size:9px; color:var(--secondary);">🌤️ 9–15°</div>
+              <div style="margin-top:2px;">
+                <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Us</span>
+              </div>
+            </th>
+            <!-- Sun -->
+            <th style="border-bottom:1px solid var(--border); padding:5px 4px; text-align:center; font-weight:normal;">
+              <div style="font-size:9px; color:var(--secondary); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Sun</div>
+              <div style="font-size:15px; font-weight:700; line-height:1.1;">22</div>
+              <div style="margin-top:3px; font-size:9px; color:var(--secondary);">☀️ 12–19°</div>
+              <div style="margin-top:2px;">
+                <span style="background:#eff6ff; color:#1d4ed8; border-radius:3px; padding:1px 4px; font-size:9px; font-weight:600;">🧒 Us</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- MEALS section header -->
+          <tr style="background:#f8fafc;">
+            <td colspan="8" style="padding:3px 8px; font-size:9px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">
+              🍽 &nbsp;Meals
+            </td>
+          </tr>
+          <!-- Lunch -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border);">Lunch</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Salad</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Pasta</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary); background:#fafbff;">Soup</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-bottom:1px solid var(--border);"></td>
+          </tr>
+          <!-- Dinner -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border); border-bottom:1px solid var(--border);">Dinner</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Risotto</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">Pizza</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary); background:#fafbff;">Steak</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border);"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); color:var(--secondary);">BBQ</td>
+            <td style="padding:6px 5px; font-size:10px; border-bottom:1px solid var(--border);"></td>
+          </tr>
+
+          <!-- PLAN section header -->
+          <tr style="background:#f8fafc;">
+            <td colspan="8" style="padding:3px 8px; font-size:9px; font-weight:700; color:var(--secondary); text-transform:uppercase; letter-spacing:0.06em; border-bottom:1px solid var(--border);">
+              📋 &nbsp;Plan
+            </td>
+          </tr>
+          <!-- Note + Activity merged into one "Plan" row per day -->
+          <tr>
+            <td style="padding:6px 8px 6px 16px; font-size:10px; color:var(--secondary); border-right:1px solid var(--border);">Activity<br><span style="opacity:0.6;">+ Note</span></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">WFH</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">Gym<br><span style="opacity:0.7; font-size:9px;"></span></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">Office</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); background:#fafbff;"></td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:var(--secondary);">Cinema</td>
+            <td style="padding:6px 5px; font-size:10px; border-right:1px solid var(--border); color:#7c3aed; font-weight:600;">Hike!</td>
+            <td style="padding:6px 5px; font-size:10px;"></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px; padding:12px 16px; background:var(--surface); border-radius:8px; border:1px solid var(--border);">
+  <p style="margin:0; font-size:12px; color:var(--secondary);"><strong style="color:var(--foreground);">Key difference:</strong> Your grouping keeps weather as its own standalone row and adds Notes as a proper section. My hybrid lifts Emilia + weather into the day header itself — the table body then only needs Meals and a Plan row, making it more compact overall but the header taller.</p>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click a mockup to select it. Tell me what works, what doesn't, or if you want to mix elements from both.</p>

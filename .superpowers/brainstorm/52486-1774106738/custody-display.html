@@ -1,0 +1,61 @@
+<h2>How should custody appear on each day?</h2>
+<p class="subtitle">Three ways Emilia's location could show up in the calendar grid</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Colored pill (like birthdays & travel)</h3>
+      <p>A small pill in the day cell, consistent with existing event items.</p>
+      <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; pointer-events:none">
+        <div style="background:#e0f2fe; color:#0369a1; display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; width:fit-content">
+          🏠 <span>Emilia home</span>
+        </div>
+        <div style="background:#fce7f3; color:#9d174d; display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; width:fit-content">
+          👤 <span>Emilia @ Mona</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Subtle day cell background tint</h3>
+      <p>The whole day cell gets a light background color — blue when she's with you, pink when she's with Mona. Low visual noise, always visible at a glance.</p>
+      <div style="margin-top:10px; display:flex; gap:8px; pointer-events:none">
+        <div style="width:70px; height:70px; border-radius:8px; background:#eff6ff; border:1px solid #bfdbfe; display:flex; flex-direction:column; padding:6px; font-size:10px; color:#1e40af">
+          <span style="font-weight:700; margin-bottom:4px;">Mon 23</span>
+          <span style="font-size:9px; opacity:0.7">🏠 home</span>
+        </div>
+        <div style="width:70px; height:70px; border-radius:8px; background:#fdf2f8; border:1px solid #fbcfe8; display:flex; flex-direction:column; padding:6px; font-size:10px; color:#9d174d">
+          <span style="font-weight:700; margin-bottom:4px;">Mon 30</span>
+          <span style="font-size:9px; opacity:0.7">👤 Mona</span>
+        </div>
+        <div style="width:70px; height:70px; border-radius:8px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; flex-direction:column; padding:6px; font-size:10px; color:#94a3b8">
+          <span style="font-weight:700; margin-bottom:4px;">Mon 6</span>
+          <span style="font-size:9px; opacity:0.7">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Both: tint + pill</h3>
+      <p>Background tint for at-a-glance month overview, plus a clickable pill for editing. Most information-dense but busier.</p>
+      <div style="margin-top:10px; display:flex; gap:8px; pointer-events:none">
+        <div style="width:80px; height:80px; border-radius:8px; background:#eff6ff; border:1px solid #bfdbfe; display:flex; flex-direction:column; padding:6px; gap:4px; font-size:10px;">
+          <span style="font-weight:700; color:#1e3a5f;">Mon 23</span>
+          <div style="background:#bfdbfe; color:#1e40af; padding:2px 5px; border-radius:3px; font-size:9px; font-weight:600; width:fit-content;">🏠 home</div>
+          <div style="background:#dbeafe; color:#1d4ed8; padding:2px 5px; border-radius:3px; font-size:9px; width:fit-content; opacity:0.8">Meeting 10am</div>
+        </div>
+        <div style="width:80px; height:80px; border-radius:8px; background:#fdf2f8; border:1px solid #fbcfe8; display:flex; flex-direction:column; padding:6px; gap:4px; font-size:10px;">
+          <span style="font-weight:700; color:#831843;">Mon 30</span>
+          <div style="background:#fbcfe8; color:#9d174d; padding:2px 5px; border-radius:3px; font-size:9px; font-weight:600; width:fit-content;">👤 Mona</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

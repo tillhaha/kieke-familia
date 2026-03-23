@@ -1,0 +1,94 @@
+<h2>Design — Pages & API</h2>
+<p class="subtitle">New routes and how they connect</p>
+
+<div class="section">
+  <h3>New page: <code>/shopping</code></h3>
+  <div class="mockup" style="max-width:520px">
+    <div class="mockup-header">Shopping List</div>
+    <div class="mockup-body" style="padding:1rem;font-size:0.88rem">
+
+      <!-- Add form — qty first, then item, then category, then Add -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem">
+        <input class="mock-input" placeholder="Qty" style="width:70px">
+        <input class="mock-input" placeholder="Add item..." style="flex:1">
+        <select class="mock-input" style="width:140px">
+          <option>Fruit/Veg</option>
+          <option>Meat</option>
+        </select>
+        <button class="mock-button">Add</button>
+      </div>
+      <p style="font-size:0.78rem;opacity:0.5;margin:-0.75rem 0 1rem">↩ Enter submits the form</p>
+
+      <!-- Group: Fruit/Vegetables -->
+      <div style="margin-bottom:1rem">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.5;margin-bottom:0.4rem">Fruit / Vegetables</div>
+        <div style="display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox"> <span style="opacity:0.5;font-size:0.82rem">500g</span> <span>Carrots</span>
+          <span style="opacity:0.3;cursor:pointer;font-size:0.8rem;margin-left:auto">✕</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox"> <span>Spinach</span>
+          <span style="opacity:0.3;cursor:pointer;font-size:0.8rem;margin-left:auto">✕</span>
+        </div>
+      </div>
+
+      <!-- Group: Meat -->
+      <div style="margin-bottom:1rem">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.5;margin-bottom:0.4rem">Meat</div>
+        <div style="display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid var(--border)">
+          <input type="checkbox"> <span style="opacity:0.5;font-size:0.82rem">600g</span> <span>Chicken breast</span>
+          <span style="opacity:0.3;cursor:pointer;font-size:0.8rem;margin-left:auto">✕</span>
+        </div>
+      </div>
+
+      <!-- Generate + Manage buttons -->
+      <div style="display:flex;gap:0.5rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)">
+        <button class="mock-button" style="flex:1">⚡ Generate from this week</button>
+        <button class="mock-button" style="background:var(--surface);color:inherit;border:1px solid var(--border)">⚙ Manage</button>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:0.85rem;opacity:0.65;margin-top:0.75rem">
+    Qty → Item → Category. Enter key submits. Category dropdown pre-selects from memory.
+  </p>
+</div>
+
+<div class="section">
+  <h3>Week planner addition</h3>
+  <p style="font-size:0.9rem;opacity:0.8">A <strong>"Generate Shopping List"</strong> button added to the <code>/week</code> page header. Clicking it POSTs to <code>/api/shopping/generate</code> for the current week, then navigates to <code>/shopping</code>.</p>
+</div>
+
+<div class="section">
+  <h3>API routes (<code>/api/shopping/</code>)</h3>
+  <div style="font-size:0.85rem;line-height:2;font-family:monospace">
+    <div><strong>GET</strong> &nbsp;/items &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ all unchecked items, grouped by category</div>
+    <div><strong>POST</strong> /items &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ add item; upsert memory</div>
+    <div><strong>PATCH</strong> /items/[id] &nbsp;&nbsp;&nbsp;&nbsp;→ update category (inline reassign)</div>
+    <div><strong>DELETE</strong> /items/[id] &nbsp;&nbsp;&nbsp;→ delete (also used for check-off)</div>
+    <div style="margin-top:0.5rem">
+    <strong>POST</strong> /generate &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ aggregate week ingredients, filter blacklist &amp; dupes, append</div>
+    <div style="margin-top:0.5rem">
+    <strong>GET</strong> &nbsp;/categories &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ list (with seed on first call)</div>
+    <div><strong>POST</strong> /categories &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ create</div>
+    <div><strong>PATCH</strong> /categories/[id] → rename / reorder</div>
+    <div><strong>DELETE</strong> /categories/[id] → delete (items move to uncategorized)</div>
+    <div style="margin-top:0.5rem">
+    <strong>GET</strong> &nbsp;/blacklist &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ list terms</div>
+    <div><strong>POST</strong> /blacklist &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ add term</div>
+    <div><strong>DELETE</strong> /blacklist/[id] &nbsp;&nbsp;→ remove term</div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Generate logic</h3>
+  <p style="font-size:0.85rem;opacity:0.8;line-height:1.7">
+    1. Fetch all <code>DayPlan</code> rows for the current week where <code>lunchMealId</code> or <code>dinnerMealId</code> is set<br>
+    2. Load the linked <code>Meal</code> records and collect all <code>ingredients[]</code><br>
+    3. Lowercase + trim each ingredient; check against <code>ShoppingBlacklist</code> (substring match)<br>
+    4. Check against existing <code>ShoppingItem</code> names (exact match after normalize) — skip dupes<br>
+    5. Look up <code>ShoppingItemMemory</code> for each surviving ingredient to pre-assign category<br>
+    6. Bulk-insert new items
+  </p>
+</div>
+
+<p style="margin-top:1rem;opacity:0.6;font-size:0.85rem">Does this look right?</p>

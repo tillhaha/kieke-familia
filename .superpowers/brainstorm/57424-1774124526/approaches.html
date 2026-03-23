@@ -1,0 +1,40 @@
+<h2>Shopping List — Approach Options</h2>
+<p class="subtitle">Three ways to architect the feature. Pick the one that fits best.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Lightweight — localStorage memory</h3>
+      <p>Items and categories live in the DB (family-scoped). The learned item→category mapping is stored in <strong>localStorage</strong> — fast, zero DB overhead, but memory is per-browser and not shared across family members.</p>
+      <div class="pros-cons" style="margin-top:0.75rem">
+        <div class="pros"><h4>Pros</h4><ul><li>Simpler schema</li><li>Faster to build</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Memory lost on new device</li><li>Not shared between family members</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B ★ Recommended</div>
+    <div class="content">
+      <h3>Fully DB-backed with family sharing</h3>
+      <p>All state in PostgreSQL: items, configurable categories, the learned item→category memory, and the blacklist. Optimistic UI updates for instant feedback. Memory shared across every family member.</p>
+      <div class="pros-cons" style="margin-top:0.75rem">
+        <div class="pros"><h4>Pros</h4><ul><li>Real multi-user: wife/husband share the same learned memory</li><li>Categories configurable per family</li><li>Blacklist managed in one place</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More DB tables (4 new models)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>B + ingredient normalization on Generate</h3>
+      <p>Everything from B, plus the "Generate" logic strips quantities and units from raw ingredient strings (e.g. <em>"2 tbsp olive oil"</em> → <em>"olive oil"</em>) before deduplication and blacklist matching.</p>
+      <div class="pros-cons" style="margin-top:0.75rem">
+        <div class="pros"><h4>Pros</h4><ul><li>Cleaner ingredient names on the list</li><li>Better deduplication across meals</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Normalization logic is heuristic — may mangle unusual ingredient strings</li><li>Extra complexity</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

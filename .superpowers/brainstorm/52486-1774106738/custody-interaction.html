@@ -1,0 +1,51 @@
+<h2>How should custody be set on the calendar?</h2>
+<p class="subtitle">Each day can be "with us", "with Mona", or unset. Which interaction feels most natural?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Click day → toggle instantly</h3>
+      <p>Clicking a day cell cycles through: unset → with us → with Mona → unset. Fast but less discoverable. Ideal for bulk entry.</p>
+      <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap; pointer-events:none">
+        <div style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">🏠 With us</div>
+        <div style="background:#fce7f3; color:#9d174d; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">👤 With Mona</div>
+        <div style="background:#f1f5f9; color:#64748b; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600;">— unset</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Click day → small popover</h3>
+      <p>Clicking a day (or custody indicator) opens a small inline popover with two buttons. Explicit and clear but requires an extra click.</p>
+      <div style="margin-top:10px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; display:inline-flex; gap:6px; pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,0.12)">
+        <button style="background:#e0f2fe; color:#0369a1; border:none; border-radius:5px; padding:4px 10px; font-size:12px; font-weight:600; cursor:pointer">🏠 With us</button>
+        <button style="background:#fce7f3; color:#9d174d; border:none; border-radius:5px; padding:4px 10px; font-size:12px; font-weight:600; cursor:pointer">👤 With Mona</button>
+        <button style="background:#f1f5f9; color:#64748b; border:none; border-radius:5px; padding:4px 10px; font-size:12px; font-weight:600; cursor:pointer">✕ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Toolbar button → date range modal</h3>
+      <p>An "Add Custody" button in the toolbar opens a modal where you pick a date range + location. Consistent with Birthday/Travel pattern. Best for entering multi-week schedules at once.</p>
+      <div style="margin-top:10px; display:inline-flex; align-items:center; gap:6px; pointer-events:none">
+        <div style="border:1px solid #e2e8f0; border-radius:6px; padding:4px 10px; font-size:12px; font-weight:500; background:#f8fafc; color:#374151; display:flex; align-items:center; gap:4px">
+          <span>+</span> Add Custody
+        </div>
+      </div>
+      <div style="margin-top:8px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px; pointer-events:none; font-size:12px; color:#374151; box-shadow:0 2px 8px rgba(0,0,0,0.08); max-width:260px">
+        <div style="margin-bottom:8px"><b>Person:</b> Emilia</div>
+        <div style="margin-bottom:8px"><b>From:</b> <span style="background:#f1f5f9; padding:2px 6px; border-radius:4px">2026-03-21</span></div>
+        <div style="margin-bottom:8px"><b>To:</b> <span style="background:#f1f5f9; padding:2px 6px; border-radius:4px">2026-03-24</span></div>
+        <div><b>Sleeping at:</b>
+          <span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; margin-left:4px; font-weight:600">🏠 With us</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

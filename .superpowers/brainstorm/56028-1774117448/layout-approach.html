@@ -1,0 +1,188 @@
+<h2>Week view — layout approach</h2>
+<p class="subtitle">The current design is a table with category rows. Here are three directions to consider.</p>
+
+<div class="cards" style="grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 24px;">
+
+  <!-- Option A: Current table, improved -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: var(--surface);">
+      <div style="display: grid; grid-template-columns: 64px repeat(7, 1fr); gap: 1px; background: var(--border); border-radius: 6px; overflow: hidden; font-size: 10px;">
+        <div style="background: var(--surface); padding: 4px 6px; color: var(--secondary); font-weight: 600;"></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Mon<br><span style="color: var(--foreground); font-size: 12px;">16</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Tue<br><span style="color: var(--foreground); font-size: 12px;">17</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Wed<br><span style="color: var(--foreground); font-size: 12px;">18</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Thu<br><span style="color: var(--foreground); font-size: 12px;">19</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Fri<br><span style="color: var(--foreground); font-size: 12px;">20</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Sat<br><span style="color: var(--foreground); font-size: 12px;">21</span></div>
+        <div style="background: var(--surface); padding: 4px 3px; text-align: center; font-weight: 700; color: var(--secondary);">Sun<br><span style="color: var(--foreground); font-size: 12px;">22</span></div>
+
+        <!-- Emilia row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Emilia</div>
+        <div style="background: #eff6ff; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #eff6ff; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #fdf2f8; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #fdf2f8; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #fdf2f8; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #fdf2f8; padding: 4px 3px; text-align: center;">🧒</div>
+        <div style="background: #eff6ff; padding: 4px 3px; text-align: center;">🧒</div>
+
+        <!-- Weather row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Wthr</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">☀️<br>8–14°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">🌤️<br>9–16°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">🌧️<br>6–11°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">☀️<br>10–17°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">☀️<br>11–18°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">🌤️<br>9–15°</div>
+        <div style="background: var(--background); padding: 4px 3px; text-align: center; font-size: 9px;">☀️<br>12–19°</div>
+
+        <!-- Note row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Note</div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">WFH</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Office</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Hike!</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+
+        <!-- Lunch row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Lunch</div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Salad</div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Pasta</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Soup</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+
+        <!-- Dinner row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Dinner</div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Risotto</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Pizza</div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Steak</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">BBQ</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+
+        <!-- Activity row -->
+        <div style="background: var(--background); padding: 4px 6px; color: var(--secondary); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center;">Act.</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Gym</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px; font-size: 9px; color: var(--secondary);">Cinema</div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+        <div style="background: var(--background); padding: 4px 3px;"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Refined table</h3>
+      <p>Keep the row-per-category layout but improve visual grouping and hierarchy. Emilia row anchored at top, then weather, then daily content below. Familiar, easy to scan across days.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Day cards -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: var(--surface);">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 10px;">
+        <!-- Day card 1 -->
+        <div style="background: var(--background); border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+          <div style="background: var(--surface); padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; font-size: 11px;">Mon 16</span>
+            <span style="background: #eff6ff; color: #1d4ed8; border-radius: 3px; padding: 1px 4px; font-size: 9px;">🧒 us</span>
+          </div>
+          <div style="padding: 5px 7px; display: flex; flex-direction: column; gap: 3px;">
+            <div style="font-size: 9px; color: var(--secondary);">☀️ 8–14° · WFH</div>
+            <div style="font-size: 9px; border-top: 1px solid var(--border); padding-top: 3px;">🥗 Salad</div>
+            <div style="font-size: 9px;">🍽️ Risotto</div>
+          </div>
+        </div>
+        <!-- Day card 2 -->
+        <div style="background: var(--background); border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+          <div style="background: var(--surface); padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; font-size: 11px;">Tue 17</span>
+            <span style="background: #eff6ff; color: #1d4ed8; border-radius: 3px; padding: 1px 4px; font-size: 9px;">🧒 us</span>
+          </div>
+          <div style="padding: 5px 7px; display: flex; flex-direction: column; gap: 3px;">
+            <div style="font-size: 9px; color: var(--secondary);">🌤️ 9–16°</div>
+            <div style="font-size: 9px; border-top: 1px solid var(--border); padding-top: 3px;">🥗 Pasta</div>
+            <div style="font-size: 9px; color: var(--secondary); font-style: italic;">Gym eve.</div>
+          </div>
+        </div>
+        <!-- Day card 3 -->
+        <div style="background: var(--background); border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+          <div style="background: var(--surface); padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; font-size: 11px;">Wed 18</span>
+            <span style="background: #fdf2f8; color: #9d174d; border-radius: 3px; padding: 1px 4px; font-size: 9px;">🧒 Mona</span>
+          </div>
+          <div style="padding: 5px 7px; display: flex; flex-direction: column; gap: 3px;">
+            <div style="font-size: 9px; color: var(--secondary);">🌧️ 6–11° · Office</div>
+            <div style="font-size: 9px; border-top: 1px solid var(--border); padding-top: 3px;">🍽️ Pizza</div>
+          </div>
+        </div>
+        <!-- Day card 4 -->
+        <div style="background: #f0fdf4; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; border-color: #86efac;">
+          <div style="background: #dcfce7; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; font-size: 11px; color: #166534;">Today</span>
+            <span style="background: #fdf2f8; color: #9d174d; border-radius: 3px; padding: 1px 4px; font-size: 9px;">🧒 Mona</span>
+          </div>
+          <div style="padding: 5px 7px; display: flex; flex-direction: column; gap: 3px;">
+            <div style="font-size: 9px; color: #166534;">☀️ 10–17°</div>
+            <div style="font-size: 9px; border-top: 1px solid #86efac; padding-top: 3px;">🍽️ Steak</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center; font-size: 9px; color: var(--secondary); margin-top: 8px;">+ 3 more days →</div>
+    </div>
+    <div class="card-body">
+      <h3>B — Day cards</h3>
+      <p>Each day is a self-contained card. All info about Monday lives in one card. Good for glancing at one day but harder to compare across days (e.g. "what are we having for dinner all week?").</p>
+    </div>
+  </div>
+
+  <!-- Option C: Grouped sections -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: var(--surface);">
+      <div style="display: flex; flex-direction: column; gap: 8px; font-size: 10px;">
+
+        <!-- Context strip -->
+        <div style="background: var(--background); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px;">
+          <div style="font-size: 9px; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Context</div>
+          <div style="display: grid; grid-template-columns: 64px repeat(7, 1fr); gap: 1px; text-align: center; font-size: 9px;">
+            <div></div>
+            <div style="font-weight: 700;">M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+            <div style="color: var(--secondary); font-size: 8px; text-align: right; padding-right: 4px;">Emilia</div>
+            <div style="color: #1d4ed8;">🧒</div><div style="color: #1d4ed8;">🧒</div><div style="color: #9d174d;">🧒</div><div style="color: #9d174d;">🧒</div><div style="color: #9d174d;">🧒</div><div style="color: #9d174d;">🧒</div><div style="color: #1d4ed8;">🧒</div>
+            <div style="color: var(--secondary); font-size: 8px; text-align: right; padding-right: 4px;">Wthr</div>
+            <div>☀️</div><div>🌤️</div><div>🌧️</div><div>☀️</div><div>☀️</div><div>🌤️</div><div>☀️</div>
+            <div style="color: var(--secondary); font-size: 8px; text-align: right; padding-right: 4px;">Note</div>
+            <div style="color: var(--secondary);">WFH</div><div></div><div style="color: var(--secondary);">Off.</div><div></div><div></div><div style="color: #7c3aed; font-weight: 700;">Hike</div><div></div>
+          </div>
+        </div>
+
+        <!-- Meals section -->
+        <div style="background: var(--background); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px;">
+          <div style="font-size: 9px; font-weight: 700; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Meals</div>
+          <div style="display: grid; grid-template-columns: 64px repeat(7, 1fr); gap: 1px; text-align: left; font-size: 9px;">
+            <div style="color: var(--secondary);">Lunch</div>
+            <div style="color: var(--secondary);">Salad</div><div style="color: var(--secondary);">Pasta</div><div></div><div style="color: var(--secondary);">Soup</div><div></div><div></div><div></div>
+            <div style="color: var(--secondary);">Dinner</div>
+            <div style="color: var(--secondary);">Riso…</div><div></div><div style="color: var(--secondary);">Pizza</div><div style="color: var(--secondary);">Steak</div><div></div><div style="color: var(--secondary);">BBQ</div><div></div>
+            <div style="color: var(--secondary);">Activity</div>
+            <div></div><div style="color: var(--secondary);">Gym</div><div></div><div></div><div style="color: var(--secondary);">Cinema</div><div></div><div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Grouped sections</h3>
+      <p>Split into two horizontal bands: a compact "Context" strip (Emilia, weather, notes) and a "Meals" section (lunch, dinner, activity). Visual separation makes the different concerns clearer.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 16px;">This applies to both the home page read-only view and the week planner. Click to select one or more that interest you.</p>

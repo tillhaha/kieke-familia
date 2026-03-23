@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { listEventsFromCalendars } from "@/lib/google/calendar"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import type { CustodySchedule } from "@prisma/client"
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
@@ -61,7 +62,7 @@ export async function GET(request: Request) {
           },
           orderBy: { date: "asc" },
         })
-      : []
+      : [] as CustodySchedule[]
 
     const serializedCustody = custodyEntries.map((c) => ({
       ...c,

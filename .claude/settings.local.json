@@ -5,7 +5,22 @@
       "Bash(npm show:*)",
       "Bash(uipro init:*)",
       "WebFetch(domain:github.com)",
-      "Bash(git clone:*)"
+      "Bash(git clone:*)",
+      "Bash(ssh:*)",
+      "Bash(npx prisma:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git stash:*)",
+      "Bash(git diff:*)",
+      "Bash(npm run:*)",
+      "Bash(grep -l CloudRain node_modules/lucide-react/dist/*.js)",
+      "Bash(printf 'yes\\\\n')",
+      "Bash(grep -A 20 \"export async function PATCH\" /Users/till/Development/familia/src/app/api/meals/[id]/route.ts)",
+      "Bash(grep -A 15 \"export async function DELETE\" /Users/till/Development/familia/src/app/api/meals/[id]/route.ts)",
+      "Bash(grep:*)",
+      "Bash(npm install:*)",
+      "Bash(git push:*)"
     ]
   }
 }

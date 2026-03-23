@@ -34,11 +34,12 @@ This is the single most critical fix — without it, mobile browsers render a zo
 Add a global rule ensuring all interactive elements meet the 44px minimum tap target (Apple/Google HIG):
 ```css
 @media (max-width: 768px) {
-  button, a, [role="button"] {
+  button, [role="button"] {
     min-height: 44px;
   }
 }
 ```
+Note: `<a>` tags are intentionally excluded from this global rule. Inline `<a>` elements (e.g. links inside text) are `display: inline` and `min-height` has no effect on them — but including them globally could cause unintended layout shifts on block-level links styled as buttons. Per-component overrides (e.g. nav links, sidebar buttons) apply `min-height: 44px` explicitly where needed.
 
 ### Breakpoint Convention
 All mobile overrides use `@media (max-width: 768px)`. No CSS custom properties or breakpoint variables — just a consistent convention across all CSS modules.
@@ -54,37 +55,37 @@ The existing `Navbar.tsx` already uses `useState` (for `open`, the user dropdown
 
 - Add a **second** `useState<boolean>` named `menuOpen` (distinct from the existing `open` for the user dropdown).
 - Add a `☰` / `✕` button inside `<nav>` that toggles `menuOpen`. The button is hidden on desktop via CSS (`display: none`).
-- Apply the open state to the `.navLinks` wrapper via a template literal: `className={`${styles.navLinks} ${menuOpen ? styles.open : ''}`}`.
+- Apply the open state to the `.navLinks` wrapper via a template literal: `` className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ''}`} ``.
 - Add a `useEffect` that watches `pathname` and calls `setMenuOpen(false)` — this closes the hamburger menu on route change. (Pattern mirrors the existing `open` dropdown's close-on-outside-click effect.)
 
 ### CSS changes (`navbar.module.css`)
-Two new classes (`.hamburger` and `.open`) plus mobile overrides for `.navLinks`:
+Two new classes (`.hamburger` and `.navLinksOpen`) plus mobile overrides for `.navLinks`:
 
 ```css
 /* Desktop: hide hamburger button */
 .hamburger { display: none; }
 
 @media (max-width: 768px) {
-  .hamburger { display: flex; }          /* show toggle button */
-  .navLinks { display: none; }           /* hide links by default */
-  .navLinks.open {                       /* show when toggled */
+  .hamburger { display: flex; }              /* show toggle button */
+  .navLinks { display: none; }              /* hide links by default */
+  .navLinks.navLinksOpen {                  /* show when toggled */
     display: flex;
     flex-direction: column;
     position: absolute;
     top: 100%;
     left: 0; right: 0;
-    background: var(--background);       /* matches existing navbar bg variable */
+    background: var(--background);
     padding: 0.5rem 0;
     z-index: 100;
   }
-  .navLinks.open .navLink {
+  .navLinks.navLinksOpen .navLink {
     padding: 0.75rem 1.5rem;
     min-height: 44px;
     border-bottom: 1px solid var(--border);
   }
 }
 ```
-Note: `.navLinks.open` works in CSS Modules because both classes are scoped together — applied from JSX as two separate module classes on the same element (see component changes above). No third-party libraries. No new files.
+Note: Use `.navLinksOpen` (not a generic `.open`) to avoid accidental reuse elsewhere in the module. Both classes get their own CSS Modules hash and the compound selector `.navLinks.navLinksOpen` matches only when both are on the same element. No third-party libraries. No new files.
 
 ---
 
@@ -98,6 +99,8 @@ The settings layout is `flex-row` with a fixed `180px` sidebar. On mobile it sta
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
   .sidebar {
     width: 100%;
@@ -107,10 +110,16 @@ The settings layout is `flex-row` with a fixed `180px` sidebar. On mobile it sta
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
+  .sidebarTitle {
+    display: none;              /* hides the "Settings" label above the tab strip */
+  }
   .sectionBtn {
     white-space: nowrap;
     padding: 0.75rem 1rem;
     min-height: 44px;
+  }
+  .fieldInput {
+    max-width: 100%;            /* overrides desktop max-width: 320px */
   }
 }
 ```
@@ -133,7 +142,7 @@ Since `.container` and similar class names are CSS Module-scoped, the padding ov
 ### Week Planner (`week.module.css`)
 - Reduce corner/row label cell width: `80px → 56px` (target the `.cornerCell` and row label classes)
 - Reduce day column header font size to `0.65rem` to help labels fit narrow columns
-- **Day name abbreviation requires a JSX change** in `WeekBlock.tsx`: render abbreviated day names (e.g. "Mon" instead of "Monday") on mobile. The cleanest approach is to render two `<span>` elements — one full name hidden on mobile, one abbreviation hidden on desktop — using CSS `display: none` at the breakpoint. Table already has `overflow-x: auto` — no structural change needed.
+- **No JSX change needed:** `WeekBlock.tsx` already renders day names using `{ weekday: "short" }` (e.g. "Mon"), so labels are already abbreviated. The fix is purely CSS font size + cell width. Table already has `overflow-x: auto` — no structural change needed.
 
 ### Calendar (`calendar.module.css`)
 - Reduce day cell `min-height`: `110px → 70px`
@@ -196,9 +205,8 @@ These rules apply to all future pages, components, and features added to Familia
 | `src/app/globals.css` | Touch target baseline, padding reduction |
 | `src/components/Navbar.tsx` | Hamburger toggle state, close-on-navigate |
 | `src/components/navbar.module.css` | Hamburger button, mobile nav dropdown |
-| `src/app/settings/settings.module.css` | Sidebar stacking → tab strip |
+| `src/app/settings/settings.module.css` | Sidebar stacking → tab strip, padding reduction, fieldInput full-width |
 | `src/app/week/week.module.css` | Cell width + font size reduction |
-| `src/app/week/WeekBlock.tsx` | Render abbreviated day name spans for mobile |
 | `src/app/calendar/calendar.module.css` | Cell height + font size reduction |
 | `src/app/meals/meals.module.css` | Detail header stacking |
 | `src/app/shopping/shopping.module.css` | Padding reduction |

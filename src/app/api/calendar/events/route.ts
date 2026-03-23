@@ -32,8 +32,8 @@ export async function GET(request: Request) {
       where: { userId },
       select: { calendarId: true, name: true },
     })
-    const calendarIds = calendarSyncs.map((s) => s.calendarId)
-    const calendarNameMap = Object.fromEntries(calendarSyncs.map((s) => [s.calendarId, s.name]))
+    const calendarIds = calendarSyncs.map((s: { calendarId: string; name: string }) => s.calendarId)
+    const calendarNameMap = Object.fromEntries(calendarSyncs.map((s: { calendarId: string; name: string }) => [s.calendarId, s.name]))
     const calendarSyncCount = calendarIds.length
 
     // Only call Google if the user has selected calendars

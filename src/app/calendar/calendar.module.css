@@ -735,3 +735,42 @@
     color: #f87171;
   }
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .calendarContainer {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    gap: 0.75rem;
+    overflow-x: auto;
+  }
+
+  .calendarHeader {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .monthTitle {
+    font-size: 1.125rem;
+  }
+
+  .calendarGrid {
+    overflow-x: auto;
+    min-width: 560px;
+  }
+
+  .dayCell {
+    min-height: 70px;
+    padding: 0.25rem;
+  }
+
+  .dayNumber {
+    font-size: 0.6875rem;
+  }
+
+  .eventItem {
+    font-size: 0.625rem;
+    padding: 1px 4px;
+  }
+}

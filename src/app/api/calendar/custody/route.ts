@@ -22,11 +22,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { startDate, startsWith, recurring, until } = body as {
+  const { startDate, startsWith, recurring, until, force } = body as {
     startDate?: string
     startsWith?: string
     recurring?: boolean
     until?: string
+    force?: boolean
   }
 
   if (!startDate || typeof startDate !== "string") {
@@ -60,6 +61,23 @@ export async function POST(request: Request) {
     const diffDays = Math.round((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
     if (diffDays > 730) {
       return NextResponse.json({ error: "Date range cannot exceed 730 days" }, { status: 400 })
+    }
+  }
+
+  // Check for existing entries in the date range (unless force overwrite)
+  if (!force) {
+    const rangeEnd = recurring
+      ? (() => { const [uy, um, ud] = (until as string).split("-").map(Number); return new Date(Date.UTC(uy, um - 1, ud)) })()
+      : start
+    const existingCount = await prisma.custodySchedule.count({
+      where: {
+        familyId,
+        personName: "Emilia",
+        date: { gte: start, lte: rangeEnd },
+      },
+    })
+    if (existingCount > 0) {
+      return NextResponse.json({ conflict: true, existingCount }, { status: 409 })
     }
   }
 

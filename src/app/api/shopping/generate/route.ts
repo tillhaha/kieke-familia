@@ -86,6 +86,7 @@ Rules:
 - Merge clearly identical ingredients (e.g. "2 chicken breasts" and "3 chicken pieces" → one "chicken breast" entry).
 - For similar-but-potentially-different ingredients (e.g. "potatoes" and "small potatoes"), keep both but place them adjacent in the list.
 - Strip quantities and units from the name field — put them in the quantity field (null if none).
+- Strip all preparation descriptors from the name field — only keep the core ingredient (e.g. "garlic cloves, crushed" → "garlic", "olives, pitted and quartered lengthways" → "olive", "finely chopped onion" → "onion", "bone-in chicken thighs" → "chicken thigh").
 - Normalise names to lowercase, singular where natural (e.g. "tomatoes" → "tomato").
 - Return items in a logical shopping order (produce together, proteins together, etc.).`,
       messages: [

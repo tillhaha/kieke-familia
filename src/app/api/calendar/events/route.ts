@@ -27,18 +27,22 @@ export async function GET(request: Request) {
     const userId = (session.user as any).id
     const familyId = (session.user as any).familyId
 
-    // Fetch selected calendar IDs for this user
+    // Fetch selected calendar IDs + names for this user
     const calendarSyncs = await prisma.calendarSync.findMany({
       where: { userId },
-      select: { calendarId: true },
+      select: { calendarId: true, name: true },
     })
     const calendarIds = calendarSyncs.map((s) => s.calendarId)
+    const calendarNameMap = Object.fromEntries(calendarSyncs.map((s) => [s.calendarId, s.name]))
     const calendarSyncCount = calendarIds.length
 
     // Only call Google if the user has selected calendars
     const googleEvents =
       calendarSyncCount > 0
-        ? await listEventsFromCalendars(userId, calendarIds, timeMin, timeMax)
+        ? (await listEventsFromCalendars(userId, calendarIds, timeMin, timeMax)).map((e) => ({
+            ...e,
+            calendarName: calendarNameMap[e.calendarId] ?? null,
+          }))
         : []
 
     const birthdays = familyId

@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
+const MEAL_TYPES = ["Meal", "Snack", "Drink", "Baked"] as const
+const DIETS = ["Vegetarian", "Meat", "Fish"] as const
+
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -12,15 +15,26 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const q = searchParams.get("q")?.trim() ?? ""
+  const mealType = searchParams.get("mealType") ?? ""
+  const diet = searchParams.get("diet") ?? ""
+  const officeFriendly = searchParams.get("officeFriendly")
+  const thirtyMinute = searchParams.get("thirtyMinute")
 
   try {
     const meals = await prisma.meal.findMany({
       where: {
         familyId,
-        ...(q ? { name: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? { OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { notes: { contains: q, mode: "insensitive" } },
+        ]} : {}),
+        ...(MEAL_TYPES.includes(mealType as any) ? { mealType: mealType as any } : {}),
+        ...(DIETS.includes(diet as any) ? { diet: diet as any } : {}),
+        ...(officeFriendly === "true" ? { officeFriendly: true } : {}),
+        ...(thirtyMinute === "true" ? { thirtyMinute: true } : {}),
       },
       orderBy: { name: "asc" },
-      select: { id: true, name: true, description: true, servings: true, createdAt: true },
+      select: { id: true, name: true, mealType: true, diet: true, officeFriendly: true, thirtyMinute: true },
     })
 
     return NextResponse.json({ meals })
@@ -41,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
   }
 
-  const { name, description, servings, ingredients, steps } = body as Record<string, unknown>
+  const { name, mealType, diet, notes, servings, officeFriendly, thirtyMinute, ingredients, steps, imageUrl, source } = body as Record<string, unknown>
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "name is required" }, { status: 400 })
   }
@@ -50,10 +64,16 @@ export async function POST(request: Request) {
     const meal = await prisma.meal.create({
       data: {
         name: name.trim(),
-        description: typeof description === "string" && description.trim() ? description.trim() : null,
+        mealType: MEAL_TYPES.includes(mealType as any) ? mealType as any : "Meal",
+        diet: DIETS.includes(diet as any) ? diet as any : "Meat",
+        notes: typeof notes === "string" && notes.trim() ? notes.trim() : null,
         servings: typeof servings === "number" && servings > 0 ? servings : 2,
+        officeFriendly: officeFriendly === true,
+        thirtyMinute: thirtyMinute === true,
         ingredients: Array.isArray(ingredients) ? ingredients.filter((i): i is string => typeof i === "string") : [],
         steps: Array.isArray(steps) ? steps.filter((s): s is string => typeof s === "string") : [],
+        imageUrl: typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null,
+        source: typeof source === "string" && source.trim() ? source.trim() : null,
         familyId,
       },
     })

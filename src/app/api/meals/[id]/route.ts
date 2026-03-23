@@ -52,7 +52,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
   }
 
-  const { name, description, servings, ingredients, steps } = body as Record<string, unknown>
+  const { name, mealType, diet, notes, servings, officeFriendly, thirtyMinute, ingredients, steps, imageUrl, source } = body as Record<string, unknown>
   const updates: Prisma.MealUpdateInput = {}
 
   if (name !== undefined) {
@@ -61,15 +61,21 @@ export async function PATCH(request: Request, { params }: Params) {
     }
     updates.name = name.trim()
   }
-  if (description !== undefined) updates.description = typeof description === "string" && description.trim() ? description.trim() : null
+  if (mealType !== undefined && (["Meal","Snack","Drink","Baked"] as const).includes(mealType as any)) updates.mealType = mealType as any
+  if (diet !== undefined && (["Vegetarian","Meat","Fish"] as const).includes(diet as any)) updates.diet = diet as any
+  if (notes !== undefined) updates.notes = typeof notes === "string" && notes.trim() ? notes.trim() : null
   if (servings !== undefined) {
     if (typeof servings !== "number" || servings <= 0) {
       return NextResponse.json({ error: "servings must be a positive number" }, { status: 400 })
     }
     updates.servings = servings
   }
+  if (officeFriendly !== undefined) updates.officeFriendly = officeFriendly === true
+  if (thirtyMinute !== undefined) updates.thirtyMinute = thirtyMinute === true
   if (ingredients !== undefined) updates.ingredients = Array.isArray(ingredients) ? ingredients.filter((i): i is string => typeof i === "string") : meal.ingredients
   if (steps !== undefined) updates.steps = Array.isArray(steps) ? steps.filter((s): s is string => typeof s === "string") : meal.steps
+  if (imageUrl !== undefined) updates.imageUrl = typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null
+  if (source !== undefined) updates.source = typeof source === "string" && source.trim() ? source.trim() : null
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 })

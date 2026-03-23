@@ -48,12 +48,14 @@ export async function getGoogleCalendarClient(userId: string) {
   return google.calendar({ version: 'v3', auth: oauth2Client })
 }
 
+export type TaggedGoogleEvent = calendar_v3.Schema$Event & { calendarId: string }
+
 export async function listEventsFromCalendars(
   userId: string,
   calendarIds: string[],
   timeMin: Date,
   timeMax: Date
-): Promise<calendar_v3.Schema$Event[]> {
+): Promise<TaggedGoogleEvent[]> {
   if (calendarIds.length === 0) return []
 
   const calendar = await getGoogleCalendarClient(userId)
@@ -75,7 +77,10 @@ export async function listEventsFromCalendars(
       console.error(`Failed to fetch calendar ${calendarIds[i]}:`, result.reason)
       return []
     }
-    return result.value.data.items ?? []
+    return (result.value.data.items ?? []).map((event) => ({
+      ...event,
+      calendarId: calendarIds[i],
+    }))
   })
 
   // Deduplicate by event id (best-effort)

@@ -31,7 +31,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { name, month, day } = body as any
+  const { name, month, day, year } = body as any
 
   if (!name || typeof name !== "string" || name.trim() === "") {
     return NextResponse.json({ error: "Name is required" }, { status: 400 })
@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: Params) {
   try {
     const updated = await prisma.birthday.update({
       where: { id },
-      data: { name: name.trim(), month, day },
+      data: { name: name.trim(), month, day, year: year ?? null },
     })
     return NextResponse.json(updated)
   } catch {

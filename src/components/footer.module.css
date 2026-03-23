@@ -1,0 +1,37 @@
+/* src/components/footer.module.css */
+
+.footer {
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+  padding: 1.25rem 1.5rem;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.copy {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.links {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.link {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.link:hover {
+  color: var(--foreground);
+}

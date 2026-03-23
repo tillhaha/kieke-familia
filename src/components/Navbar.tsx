@@ -19,6 +19,7 @@ export function Navbar() {
   const { data: session } = useSession()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -30,6 +31,11 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [open])
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMenuOpen(false)
+  }, [pathname])
+
   return (
     <header className={styles.navbar}>
       <nav className={styles.inner}>
@@ -39,7 +45,18 @@ export function Navbar() {
         </Link>
 
         {session && (
-          <div className={styles.navLinks}>
+          <button
+            className={styles.hamburger}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        )}
+
+        {session && (
+          <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ""}`}>
             {navLinks.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}

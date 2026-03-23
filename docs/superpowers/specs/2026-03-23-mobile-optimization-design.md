@@ -132,10 +132,23 @@ Note: the sidebar uses `.sectionBtn` (`<button>` elements), not `<a>` links. No 
 All changes are `@media (max-width: 768px)` additions to the relevant CSS module.
 
 ### Global padding reduction (per CSS module)
-Since `.container` and similar class names are CSS Module-scoped, the padding override must be added to each relevant module's `@media (max-width: 768px)` block — it cannot be set from `globals.css`. The affected modules are: `page.module.css`, `week.module.css`, `calendar.module.css`, `meals.module.css`, `shopping.module.css`, `settings.module.css`.
+Since top-level class names are CSS Module-scoped, the padding override must be added to each relevant module's `@media (max-width: 768px)` block — it cannot be set from `globals.css`. Each module uses a different class name for its outermost container:
+
+| Module | Container class |
+|--------|----------------|
+| `page.module.css` | `.main` |
+| `week.module.css` | `.container` |
+| `calendar.module.css` | `.calendarContainer` |
+| `meals.module.css` | `.container` |
+| `shopping.module.css` | `.container` |
+| `settings.module.css` | `.container` (included in Section 3 block) |
+| `imprint.module.css` | `.page` |
+| `privacy.module.css` | `.page` |
+
+Apply in each module:
 ```css
 @media (max-width: 768px) {
-  .container { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .<container-class> { padding-left: 0.75rem; padding-right: 0.75rem; }
 }
 ```
 
@@ -147,14 +160,15 @@ Since `.container` and similar class names are CSS Module-scoped, the padding ov
 ### Calendar (`calendar.module.css`)
 - Reduce day cell `min-height`: `110px → 70px`
 - Reduce font size on day numbers and event pills
-- **Important:** At 375px viewport, a 7-column grid yields ~53px per column — this is very tight. Wrap the calendar grid in `overflow-x: auto` on mobile so users can scroll horizontally rather than seeing a crushed layout. The alternative (switching to a list view on mobile) is out of scope for this iteration.
+- **Important:** At 375px viewport, a 7-column grid yields ~53px per column — this is very tight. On mobile, change `.calendarGrid`'s `overflow: hidden` to `overflow-x: auto` and set a `min-width` (e.g. `560px`) so the grid scrolls horizontally at full legibility rather than crushing to 53px columns. Apply on `.calendarContainer` wrapper too if needed. The alternative (switching to a list view on mobile) is out of scope for this iteration.
 
 ### Meals Detail (`meals.module.css`)
 - The detail page styles (`.detailContainer`, `.detailHeader`) are in the same `meals.module.css` file as the list page.
 - `.detailHeader` uses `justify-content: space-between` in a row — change to `flex-direction: column` on mobile so title and action buttons stack cleanly.
 
-### Shopping, Home (`shopping.module.css`, `page.module.css`)
-- Already single-column — only padding reduction needed
+### Shopping, Home, Imprint, Privacy
+- Already single-column — only padding reduction needed (see container class names in the padding table above)
+- `imprint.module.css` and `privacy.module.css` use `.page` with `max-width: 680px` — narrow enough to work on mobile; only padding reduction is needed
 
 ---
 
@@ -209,8 +223,10 @@ These rules apply to all future pages, components, and features added to Familia
 | `src/app/week/week.module.css` | Cell width + font size reduction |
 | `src/app/calendar/calendar.module.css` | Cell height + font size reduction |
 | `src/app/meals/meals.module.css` | Detail header stacking |
-| `src/app/shopping/shopping.module.css` | Padding reduction |
-| `src/app/page.module.css` | Padding reduction |
+| `src/app/shopping/shopping.module.css` | Padding reduction (`.container`) |
+| `src/app/page.module.css` | Padding reduction (`.main`) |
+| `src/app/imprint/imprint.module.css` | Padding reduction (`.page`) |
+| `src/app/privacy/privacy.module.css` | Padding reduction (`.page`) |
 
 ---
 

@@ -50,13 +50,20 @@ All mobile overrides use `@media (max-width: 768px)`. No CSS custom properties o
 **Files:** `src/components/Navbar.tsx`, `src/components/navbar.module.css`
 
 ### Component changes (`Navbar.tsx`)
-- Add `useState<boolean>` for `menuOpen` toggle.
-- Add a `☰` / `✕` button rendered only on mobile (CSS `display: none` on desktop).
-- Wrap nav links in a container that conditionally applies an `open` class.
-- Use `usePathname()` from `next/navigation` to close the menu on route change (via `useEffect`).
+The existing `Navbar.tsx` already uses `useState` (for `open`, the user dropdown), `usePathname`, `useEffect`, and `useRef`. The hamburger adds one new piece of state alongside these:
+
+- Add a **second** `useState<boolean>` named `menuOpen` (distinct from the existing `open` for the user dropdown).
+- Add a `☰` / `✕` button inside `<nav>` that toggles `menuOpen`. The button is hidden on desktop via CSS (`display: none`).
+- Apply the open state to the `.navLinks` wrapper via a template literal: `className={`${styles.navLinks} ${menuOpen ? styles.open : ''}`}`.
+- Add a `useEffect` that watches `pathname` and calls `setMenuOpen(false)` — this closes the hamburger menu on route change. (Pattern mirrors the existing `open` dropdown's close-on-outside-click effect.)
 
 ### CSS changes (`navbar.module.css`)
+Two new classes (`.hamburger` and `.open`) plus mobile overrides for `.navLinks`:
+
 ```css
+/* Desktop: hide hamburger button */
+.hamburger { display: none; }
+
 @media (max-width: 768px) {
   .hamburger { display: flex; }          /* show toggle button */
   .navLinks { display: none; }           /* hide links by default */
@@ -66,18 +73,18 @@ All mobile overrides use `@media (max-width: 768px)`. No CSS custom properties o
     position: absolute;
     top: 100%;
     left: 0; right: 0;
-    background: var(--navbar-bg);
+    background: var(--background);       /* matches existing navbar bg variable */
     padding: 0.5rem 0;
     z-index: 100;
   }
-  .navLinks.open a {
+  .navLinks.open .navLink {
     padding: 0.75rem 1.5rem;
     min-height: 44px;
     border-bottom: 1px solid var(--border);
   }
 }
 ```
-No third-party libraries. No new files.
+Note: `.navLinks.open` works in CSS Modules because both classes are scoped together — applied from JSX as two separate module classes on the same element (see component changes above). No third-party libraries. No new files.
 
 ---
 
@@ -94,20 +101,20 @@ The settings layout is `flex-row` with a fixed `180px` sidebar. On mobile it sta
   }
   .sidebar {
     width: 100%;
+    display: flex;
     flex-direction: row;
     overflow-x: auto;
     border-right: none;
     border-bottom: 1px solid var(--border);
   }
-  .sidebar a {
+  .sectionBtn {
     white-space: nowrap;
     padding: 0.75rem 1rem;
     min-height: 44px;
   }
 }
 ```
-
-No component changes needed.
+Note: the sidebar uses `.sectionBtn` (`<button>` elements), not `<a>` links. No component changes needed.
 
 ---
 
@@ -115,23 +122,27 @@ No component changes needed.
 
 All changes are `@media (max-width: 768px)` additions to the relevant CSS module.
 
-### Global padding reduction (`globals.css` or per-module)
+### Global padding reduction (per CSS module)
+Since `.container` and similar class names are CSS Module-scoped, the padding override must be added to each relevant module's `@media (max-width: 768px)` block — it cannot be set from `globals.css`. The affected modules are: `page.module.css`, `week.module.css`, `calendar.module.css`, `meals.module.css`, `shopping.module.css`, `settings.module.css`.
 ```css
-.container, .pageContainer { padding-left: 0.75rem; padding-right: 0.75rem; }
+@media (max-width: 768px) {
+  .container { padding-left: 0.75rem; padding-right: 0.75rem; }
+}
 ```
 
 ### Week Planner (`week.module.css`)
-- Reduce corner/row label cell width: `80px → 56px`
-- Reduce day column header font size to fit abbreviations
-- Table already has `overflow-x: auto` — no structural change needed
+- Reduce corner/row label cell width: `80px → 56px` (target the `.cornerCell` and row label classes)
+- Reduce day column header font size to `0.65rem` to help labels fit narrow columns
+- **Day name abbreviation requires a JSX change** in `WeekBlock.tsx`: render abbreviated day names (e.g. "Mon" instead of "Monday") on mobile. The cleanest approach is to render two `<span>` elements — one full name hidden on mobile, one abbreviation hidden on desktop — using CSS `display: none` at the breakpoint. Table already has `overflow-x: auto` — no structural change needed.
 
 ### Calendar (`calendar.module.css`)
 - Reduce day cell `min-height`: `110px → 70px`
 - Reduce font size on day numbers and event pills
-- No grid structure change (7-col still works at smaller sizes)
+- **Important:** At 375px viewport, a 7-column grid yields ~53px per column — this is very tight. Wrap the calendar grid in `overflow-x: auto` on mobile so users can scroll horizontally rather than seeing a crushed layout. The alternative (switching to a list view on mobile) is out of scope for this iteration.
 
 ### Meals Detail (`meals.module.css`)
-- Detail page header uses `justify-content: space-between` in a row — change to `flex-direction: column` on mobile so title and action buttons stack cleanly
+- The detail page styles (`.detailContainer`, `.detailHeader`) are in the same `meals.module.css` file as the list page.
+- `.detailHeader` uses `justify-content: space-between` in a row — change to `flex-direction: column` on mobile so title and action buttons stack cleanly.
 
 ### Shopping, Home (`shopping.module.css`, `page.module.css`)
 - Already single-column — only padding reduction needed
@@ -186,7 +197,8 @@ These rules apply to all future pages, components, and features added to Familia
 | `src/components/Navbar.tsx` | Hamburger toggle state, close-on-navigate |
 | `src/components/navbar.module.css` | Hamburger button, mobile nav dropdown |
 | `src/app/settings/settings.module.css` | Sidebar stacking → tab strip |
-| `src/app/week/week.module.css` | Cell width reduction |
+| `src/app/week/week.module.css` | Cell width + font size reduction |
+| `src/app/week/WeekBlock.tsx` | Render abbreviated day name spans for mobile |
 | `src/app/calendar/calendar.module.css` | Cell height + font size reduction |
 | `src/app/meals/meals.module.css` | Detail header stacking |
 | `src/app/shopping/shopping.module.css` | Padding reduction |

@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   description: "A comprehensive platform for family coordination, calendar, and planning.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,9 +36,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <Navbar />
-          {children}
-          <Footer />
+          <div className="appShell">
+            <Navbar />
+            {children}
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

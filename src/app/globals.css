@@ -52,7 +52,7 @@ body {
   min-height: 100vh;
 }
 
-body > div {
+.appShell {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -65,4 +65,13 @@ a {
 
 button {
   font-family: inherit;
+}
+
+/* ── Mobile baseline ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  button,
+  [role="button"] {
+    min-height: 44px;
+  }
 }

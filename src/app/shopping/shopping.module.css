@@ -350,3 +350,12 @@
     color: #fb7185;
   }
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}

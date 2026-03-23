@@ -80,7 +80,7 @@ export default function Home() {
     return (
       <div className={styles.signInPage}>
         <div className={styles.signInCard}>
-          <h1 className={styles.signInTitle}>Welcome to Familia</h1>
+          <h1 className={styles.signInTitle}>Welcome to YourKieke</h1>
           <p className={styles.signInSubtitle}>Your shared family management hub.</p>
 
           <button onClick={() => signIn("google", { callbackUrl: "/" })} className={styles.signInBtn}>

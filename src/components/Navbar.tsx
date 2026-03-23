@@ -35,7 +35,7 @@ export function Navbar() {
       <nav className={styles.inner}>
         <Link href="/" className={styles.logo}>
           <Home size={17} strokeWidth={2.5} />
-          <span>Familia</span>
+          <span>YourKieke</span>
         </Link>
 
         {session && (

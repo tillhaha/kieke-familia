@@ -115,7 +115,7 @@ export function GoogleSection() {
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>Google Calendar</h2>
       <p className={styles.sectionDesc}>
-        Choose which of your Google Calendars to sync with Familia.
+        Choose which of your Google Calendars to sync with YourKieke.
       </p>
 
       {availableError && (

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Familia - Shared Family Management",
+  title: "YourKieke - Shared Family Management",
   description: "A comprehensive platform for family coordination, calendar, and planning.",
 };
 

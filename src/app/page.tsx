@@ -7,6 +7,12 @@ import { LogIn } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry } from "./week/WeekBlock"
 import styles from "./page.module.css"
 
+type FamilyTask = {
+  id: string
+  name: string
+  dueDate: string // YYYY-MM-DD
+  assignees: { userId: string; user: { id: string; name: string | null } }[]
+}
 
 function todayUTCString(): string {
   const d = new Date()
@@ -33,6 +39,7 @@ export default function Home() {
   const [weather, setWeather] = useState<Record<string, DayWeather> | null>(null)
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [tasks, setTasks] = useState<FamilyTask[]>([])
 
   useEffect(() => {
     if (status !== "authenticated") return
@@ -40,8 +47,9 @@ export default function Home() {
     Promise.all([
       fetch("/api/weeks").then((r) => r.json()),
       fetch("/api/weather").then((r) => r.json()),
+      fetch("/api/tasks").then((r) => r.json()),
     ])
-      .then(([weeksData, weatherData]) => {
+      .then(([weeksData, weatherData, taskData]) => {
         const weeks: WeekData[] = weeksData.weeks ?? []
         const currentWeek = findCurrentWeek(weeks)
         setWeek(currentWeek)
@@ -55,6 +63,13 @@ export default function Home() {
             .then((d) => setCustodyEntries(d.custodyEntries ?? []))
             .catch(() => {})
         }
+
+        setTasks(
+          (taskData.tasks ?? []).map((t: any) => ({
+            ...t,
+            dueDate: (t.dueDate as string).slice(0, 10),
+          }))
+        )
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -114,6 +129,8 @@ export default function Home() {
         <p className={styles.subtitle}>Here&apos;s what&apos;s going on this week.</p>
       </div>
 
+      <TasksWidget tasks={tasks} />
+
       {week ? (
         <WeekBlock
           week={week}
@@ -130,6 +147,44 @@ export default function Home() {
         </p>
       )}
     </main>
+  )
+}
+
+function TasksWidget({ tasks }: { tasks: FamilyTask[] }) {
+  const today = new Date().toISOString().slice(0, 10)
+  const d = new Date()
+  d.setUTCHours(0, 0, 0, 0)
+  const daysUntilSunday = (7 - d.getUTCDay()) % 7
+  d.setUTCDate(d.getUTCDate() + daysUntilSunday)
+  const endOfWeek = d.toISOString().slice(0, 10)
+
+  const visible = tasks.filter(
+    (t) => t.dueDate < today || (t.dueDate >= today && t.dueDate <= endOfWeek)
+  )
+  if (visible.length === 0) return null
+
+  function formatDate(dateStr: string) {
+    const [year, month, day] = dateStr.split("-").map(Number)
+    return new Date(year, month - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  }
+
+  return (
+    <div className={styles.tasksWidget}>
+      <div className={styles.tasksWidgetTitle}>Tasks this week</div>
+      {visible.map((t) => {
+        const isOverdue = t.dueDate < today
+        const names = t.assignees.map((a) => a.user.name ?? "?").join(", ")
+        return (
+          <div key={t.id} className={styles.tasksWidgetRow}>
+            <span className={styles.tasksWidgetName}>{t.name}</span>
+            <span className={`${styles.tasksWidgetMeta}${isOverdue ? ` ${styles.overdue}` : ""}`}>
+              {formatDate(t.dueDate)}{names ? ` · ${names}` : ""}
+            </span>
+          </div>
+        )
+      })}
+      <a href="/tasks" className={styles.tasksWidgetLink}>→ All tasks</a>
+    </div>
   )
 }
 

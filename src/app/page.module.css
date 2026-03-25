@@ -222,3 +222,66 @@
     padding-right: 0.75rem;
   }
 }
+
+/* Tasks widget */
+.tasksWidget {
+  margin-bottom: 2rem;
+}
+
+.tasksWidgetTitle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+
+.tasksWidgetRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  font-size: 0.9rem;
+}
+
+.tasksWidgetRow:last-of-type {
+  border-bottom: none;
+}
+
+.tasksWidgetName {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 65%;
+}
+
+.tasksWidgetMeta {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  white-space: nowrap;
+}
+
+.tasksWidgetMeta.overdue {
+  color: #e05252;
+}
+
+.tasksWidgetLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  text-decoration: none;
+}
+
+.tasksWidgetLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .tasksWidget {
+    margin-bottom: 1.5rem;
+  }
+}

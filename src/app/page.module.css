@@ -281,6 +281,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.tasksWidgetName:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .tasksWidgetMeta {

@@ -194,7 +194,7 @@ function TasksWidget({ tasks, onToggleDone }: { tasks: FamilyTask[]; onToggleDon
                 onChange={() => onToggleDone(t.id)}
               />
               <div className={styles.tasksWidgetContent}>
-                <span className={styles.tasksWidgetName}>{t.name}</span>
+                <a href="/tasks" className={styles.tasksWidgetName}>{t.name}</a>
                 <span className={`${styles.tasksWidgetMeta}${isOverdue ? ` ${styles.overdue}` : ""}`}>
                   {formatDate(t.dueDate)}{names ? ` · ${names}` : ""}
                 </span>

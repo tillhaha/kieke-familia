@@ -268,6 +268,8 @@ model Task {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   assignees   TaskAssignee[]
+
+  @@index([familyId])
 }
 
 model TaskAssignee {
@@ -277,4 +279,5 @@ model TaskAssignee {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([taskId, userId])
+  @@index([userId])
 }

@@ -32,6 +32,11 @@ function findCurrentWeek(weeks: WeekData[]): WeekData | null {
   return upcoming[0] ?? null
 }
 
+function formatDate(dateStr: string) {
+  const [year, month, day] = dateStr.split("-").map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+}
+
 export default function Home() {
   const { data: session, status } = useSession()
 
@@ -47,7 +52,7 @@ export default function Home() {
     Promise.all([
       fetch("/api/weeks").then((r) => r.json()),
       fetch("/api/weather").then((r) => r.json()),
-      fetch("/api/tasks").then((r) => r.json()),
+      fetch("/api/tasks").then((r) => r.ok ? r.json() : { tasks: [] }).catch(() => ({ tasks: [] })),
     ])
       .then(([weeksData, weatherData, taskData]) => {
         const weeks: WeekData[] = weeksData.weeks ?? []
@@ -162,11 +167,6 @@ function TasksWidget({ tasks }: { tasks: FamilyTask[] }) {
     (t) => t.dueDate < today || (t.dueDate >= today && t.dueDate <= endOfWeek)
   )
   if (visible.length === 0) return null
-
-  function formatDate(dateStr: string) {
-    const [year, month, day] = dateStr.split("-").map(Number)
-    return new Date(year, month - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-  }
 
   return (
     <div className={styles.tasksWidget}>

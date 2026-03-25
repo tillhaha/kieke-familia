@@ -57,17 +57,17 @@ type RecipeSearch = {
 
 const SECTION_ROWS: { section: string; rows: { field: Field; label: string; placeholder: string }[] }[] = [
   {
+    section: "Notes",
+    rows: [
+      { field: "note", label: "Location", placeholder: "Add a note…" },
+      { field: "dinnerActivity", label: "Activity", placeholder: "Activity…" },
+    ],
+  },
+  {
     section: "Meals",
     rows: [
       { field: "lunch", label: "Lunch", placeholder: "Lunch… (type /recipe to search)" },
       { field: "dinner", label: "Dinner", placeholder: "Dinner… (type /recipe to search)" },
-    ],
-  },
-  {
-    section: "Notes",
-    rows: [
-      { field: "dinnerActivity", label: "Activity", placeholder: "Activity…" },
-      { field: "note", label: "Note", placeholder: "Add a note…" },
     ],
   },
 ]
@@ -321,29 +321,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             {SECTION_ROWS.map(({ section, rows }) => (
               <Fragment key={section}>
                 <tr>
-                  <td colSpan={week.days.length + 1} className={styles.sectionHeader}>
-                    {section}
-                  </td>
+                  <td colSpan={week.days.length + 1} className={styles.sectionHeader} />
                 </tr>
-                {section === "Notes" && custodyEntries && (
-                  <tr>
-                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Emilia</td>
-                    {week.days.map((day) => {
-                      const entry = custodyEntries.find((c) => c.date === day.date)
-                      return (
-                        <td key={day.date} className={`${styles.cell} ${styles.emiliaCell}`}>
-                          {entry && (
-                            <Baby
-                              size={13}
-                              strokeWidth={2}
-                              className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
-                            />
-                          )}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )}
                 {rows.map(({ field, label, placeholder }) => (
                   <tr key={field}>
                     <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{label}</td>
@@ -467,6 +446,25 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
                 })}
                   </tr>
                 ))}
+                {section === "Notes" && custodyEntries && (
+                  <tr>
+                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Emilia</td>
+                    {week.days.map((day) => {
+                      const entry = custodyEntries.find((c) => c.date === day.date)
+                      return (
+                        <td key={day.date} className={`${styles.cell} ${styles.emiliaCell}`}>
+                          {entry && (
+                            <Baby
+                              size={13}
+                              strokeWidth={2}
+                              className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                            />
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )}
               </Fragment>
             ))}
           </tbody>

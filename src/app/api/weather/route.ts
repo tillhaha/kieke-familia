@@ -47,7 +47,7 @@ export async function GET() {
 
     // Fetch 7-day hourly forecast
     const forecastRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability&timezone=${encodeURIComponent(timezone)}&forecast_days=7`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability&timezone=${encodeURIComponent(timezone)}&past_days=6&forecast_days=7`,
       { next: { revalidate: 1800 } }
     )
     if (!forecastRes.ok) return NextResponse.json({ weather: null })

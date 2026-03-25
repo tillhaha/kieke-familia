@@ -129,8 +129,8 @@
 /* Label column width; 7 day columns share the rest equally */
 .cornerCell,
 .rowLabel {
-  width: 80px;
-  min-width: 80px;
+  width: 120px;
+  min-width: 120px;
 }
 
 /* ── Header row ───────────────────────────────────────── */
@@ -172,7 +172,7 @@
 /* ── Body rows ────────────────────────────────────────── */
 
 .rowLabel {
-  padding: 0.75rem 0.875rem;
+  padding: 0.75rem 1.25rem 0.75rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--secondary);
@@ -453,7 +453,7 @@ tr:last-child .cell {
 }
 
 .subRowLabel {
-  padding-left: 1.125rem;
+  padding-left: 1.5rem;
 }
 
 .weatherCell {

@@ -1,0 +1,123 @@
+<h2>Tasks page — proposed layout</h2>
+<p class="subtitle">Tasks grouped by urgency, sorted by due date. Click to select if this looks right.</p>
+
+<div class="cards">
+  <div class="card" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: var(--surface-2);">
+
+      <div style="background: var(--surface-1); border-radius: 6px; overflow: hidden; font-size: 12px;">
+
+        <!-- Page header -->
+        <div style="padding: 14px 16px 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; font-size: 14px;">Tasks</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span style="font-size: 10px; color: var(--text-muted); cursor: pointer;">Show done</span>
+            <button style="background: var(--accent); color: white; border: none; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;">+ New task</button>
+          </div>
+        </div>
+
+        <!-- Overdue section -->
+        <div style="padding: 10px 16px 4px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #e05252; margin-bottom: 6px; letter-spacing: 0.05em;">Overdue</div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1;">
+              <div style="font-weight: 500;">Call insurance</div>
+              <div style="font-size: 10px; color: #e05252;">Mar 22 · Till</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- This week section -->
+        <div style="padding: 10px 16px 4px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.05em;">This week</div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1;">
+              <div style="font-weight: 500;">Buy school supplies</div>
+              <div style="font-size: 10px; color: var(--text-muted);">Mar 26 · Anna, Till</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1;">
+              <div style="font-weight: 500;">Fix bike</div>
+              <div style="font-size: 10px; color: var(--text-muted);">Mar 27 · Till</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Later section -->
+        <div style="padding: 10px 16px 14px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.05em;">Later</div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0;">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1;">
+              <div style="font-weight: 500;">Book summer camp</div>
+              <div style="font-size: 10px; color: var(--text-muted);">Apr 10 · Anna</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>Grouped by urgency</h3>
+      <p>Overdue · This week · Later — sorted by date within each group. Checkbox marks done. "Show done" toggle reveals completed tasks struck-through at the bottom.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="flat" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; background: var(--surface-2);">
+
+      <div style="background: var(--surface-1); border-radius: 6px; overflow: hidden; font-size: 12px;">
+
+        <div style="padding: 14px 16px 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; font-size: 14px;">Tasks</span>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span style="font-size: 10px; color: var(--text-muted); cursor: pointer;">Show done</span>
+            <button style="background: var(--accent); color: white; border: none; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;">+ New task</button>
+          </div>
+        </div>
+
+        <div style="padding: 8px 16px;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 500;">Call insurance</div>
+              <div style="font-size: 10px; color: #e05252; white-space: nowrap;">Mar 22 · Till</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 500;">Buy school supplies</div>
+              <div style="font-size: 10px; color: var(--text-muted); white-space: nowrap;">Mar 26 · Anna, Till</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border);">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 500;">Fix bike</div>
+              <div style="font-size: 10px; color: var(--text-muted); white-space: nowrap;">Mar 27 · Till</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 0;">
+            <input type="checkbox" style="accent-color: var(--accent); width: 14px; height: 14px; flex-shrink: 0;">
+            <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-weight: 500;">Book summer camp</div>
+              <div style="font-size: 10px; color: var(--text-muted); white-space: nowrap;">Apr 10 · Anna</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>Flat list</h3>
+      <p>Single sorted list, overdue dates highlighted in red. Simpler — no grouping overhead.</p>
+    </div>
+  </div>
+</div>

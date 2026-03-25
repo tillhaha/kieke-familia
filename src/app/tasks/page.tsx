@@ -77,9 +77,11 @@ function Section({ label, tasks, isOverdue, today, setModalTask, toggleDone }: S
   return (
     <div className={styles.section}>
       <div className={`${styles.sectionLabel} ${isOverdue ? styles.overdue : ""}`}>{label}</div>
-      {tasks.map((t) => (
-        <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
-      ))}
+      <div className={styles.taskList}>
+        {tasks.map((t) => (
+          <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -90,6 +92,7 @@ export default function TasksPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [showDone, setShowDone] = useState(false)
+  const [filterAssigneeId, setFilterAssigneeId] = useState("")
   const [modalTask, setModalTask] = useState<TaskData | null | undefined>(undefined) // undefined = closed, null = new
 
   const fetchTasks = useCallback(async (includeDone: boolean) => {
@@ -195,8 +198,12 @@ export default function TasksPage() {
   const today = todayStr()
   const endOfWeek = endOfWeekStr()
 
-  const openTasks = tasks.filter((t) => !t.done)
-  const doneTasks = tasks.filter((t) => t.done)
+  const filtered = filterAssigneeId
+    ? tasks.filter((t) => t.assignees.some((a) => a.userId === filterAssigneeId))
+    : tasks
+
+  const openTasks = filtered.filter((t) => !t.done)
+  const doneTasks = filtered.filter((t) => t.done)
 
   const overdue = openTasks.filter((t) => t.dueDate < today)
   const thisWeek = openTasks.filter((t) => t.dueDate >= today && t.dueDate <= endOfWeek)
@@ -208,15 +215,29 @@ export default function TasksPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Tasks</h1>
-        <div className={styles.headerActions}>
-          <button className={styles.showDoneToggle} onClick={handleShowDoneToggle}>
-            {showDone ? "Hide done" : "Show done"}
-          </button>
-          <button className={styles.newBtn} onClick={() => setModalTask(null)}>
-            <Plus size={14} strokeWidth={2.5} />
-            New task
-          </button>
-        </div>
+        <button className={styles.newBtn} onClick={() => setModalTask(null)}>
+          <Plus size={14} strokeWidth={2.5} />
+          New task
+        </button>
+      </div>
+
+      <div className={styles.filterBar}>
+        <select
+          className={styles.filterSelect}
+          value={filterAssigneeId}
+          onChange={(e) => setFilterAssigneeId(e.target.value)}
+        >
+          <option value="">All members</option>
+          {members.map((m) => (
+            <option key={m.id} value={m.id}>{m.name ?? m.id}</option>
+          ))}
+        </select>
+        <button
+          className={`${styles.filterToggle} ${showDone ? styles.filterToggleActive : ""}`}
+          onClick={handleShowDoneToggle}
+        >
+          Show completed
+        </button>
       </div>
 
       {!hasAnyOpen && !showDone && (
@@ -233,9 +254,11 @@ export default function TasksPage() {
       {showDone && doneTasks.length > 0 && (
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Done</div>
-          {doneTasks.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
-          ))}
+          <div className={styles.taskList}>
+            {doneTasks.map((t) => (
+              <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+            ))}
+          </div>
         </div>
       )}
 

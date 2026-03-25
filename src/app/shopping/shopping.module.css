@@ -1,7 +1,8 @@
 /* src/app/shopping/shopping.module.css */
 
 .container {
-  max-width: 700px;
+  min-width: 720px;
+  max-width: 720px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   display: flex;
@@ -355,6 +356,7 @@
 
 @media (max-width: 768px) {
   .container {
+    min-width: 0;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }

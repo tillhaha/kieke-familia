@@ -1,0 +1,58 @@
+<h2>How should the Tasks page be laid out?</h2>
+<p class="subtitle">The three stages are: Todo → Next → Done</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="kanban" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: var(--surface-2);">
+      <div style="display: flex; gap: 8px; height: 140px;">
+        <div style="flex:1; background: var(--surface-1); border-radius: 6px; padding: 8px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Todo</div>
+          <div style="background: var(--surface-2); border-radius: 4px; padding: 6px; margin-bottom: 4px; font-size: 11px;">Buy groceries<br><span style="color:var(--text-muted); font-size:10px;">Mar 26 · Till</span></div>
+          <div style="background: var(--surface-2); border-radius: 4px; padding: 6px; font-size: 11px;">Book dentist<br><span style="color:var(--text-muted); font-size:10px;">Mar 27 · Anna</span></div>
+        </div>
+        <div style="flex:1; background: var(--surface-1); border-radius: 6px; padding: 8px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Next</div>
+          <div style="background: var(--surface-2); border-radius: 4px; padding: 6px; font-size: 11px;">Fix bike<br><span style="color:var(--text-muted); font-size:10px;">Mar 28 · Till</span></div>
+        </div>
+        <div style="flex:1; background: var(--surface-1); border-radius: 6px; padding: 8px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Done</div>
+          <div style="background: var(--surface-2); border-radius: 4px; padding: 6px; font-size: 11px; opacity: 0.5; text-decoration: line-through;">Call school<br><span style="color:var(--text-muted); font-size:10px;">Mar 24 · Anna</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Kanban Board</h3>
+      <p>Three columns side by side. Drag or click to move between stages. Great for seeing everything at a glance.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="list" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 16px; background: var(--surface-2);">
+      <div style="background: var(--surface-1); border-radius: 6px; padding: 8px; height: 140px; overflow: hidden;">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <div style="background: var(--accent); color: white; border-radius: 12px; padding: 2px 10px; font-size: 10px; font-weight: 600;">Todo</div>
+          <div style="background: var(--surface-2); border-radius: 12px; padding: 2px 10px; font-size: 10px; font-weight: 600; color: var(--text-muted);">Next</div>
+          <div style="background: var(--surface-2); border-radius: 12px; padding: 2px 10px; font-size: 10px; font-weight: 600; color: var(--text-muted);">Done</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 8px; background: var(--surface-2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;">
+          <span>Buy groceries</span>
+          <span style="color:var(--text-muted); font-size:10px;">Mar 26 · Till</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 8px; background: var(--surface-2); border-radius: 4px; margin-bottom: 4px; font-size: 11px;">
+          <span>Book dentist</span>
+          <span style="color:var(--text-muted); font-size:10px;">Mar 27 · Anna</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 7px 8px; background: var(--surface-2); border-radius: 4px; font-size: 11px;">
+          <span>Fix bike</span>
+          <span style="color:var(--text-muted); font-size:10px;">Mar 28 · Till</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Filtered List</h3>
+      <p>Single list with stage filter tabs at the top. Compact, familiar. Works naturally on mobile.</p>
+    </div>
+  </div>
+
+</div>

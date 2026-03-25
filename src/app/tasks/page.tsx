@@ -30,8 +30,58 @@ function formatDate(dateStr: string) {
   return new Date(year, month - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric" })
 }
 
-function assigneeNames(task: TaskData) {
-  return task.assignees.map((a) => a.user.name ?? "?").join(", ")
+type TaskRowProps = {
+  task: TaskData
+  today: string
+  setModalTask: (task: TaskData) => void
+  toggleDone: (task: TaskData) => void
+}
+
+function TaskRow({ task, today, setModalTask, toggleDone }: TaskRowProps) {
+  const dateStr = task.dueDate.slice(0, 10)
+  const isOverdue = dateStr < today
+  const names = task.assignees.map((a) => a.user.name ?? "?").join(", ")
+  return (
+    <div
+      className={`${styles.taskRow} ${task.done ? styles.taskDone : ""}`}
+      onClick={() => setModalTask(task)}
+    >
+      <input
+        type="checkbox"
+        className={styles.checkbox}
+        checked={task.done}
+        onChange={(e) => { e.stopPropagation(); toggleDone(task) }}
+        onClick={(e) => e.stopPropagation()}
+      />
+      <div className={styles.taskInfo}>
+        <span className={styles.taskName}>{task.name}</span>
+        <span className={`${styles.taskMeta} ${isOverdue && !task.done ? styles.overdue : ""}`}>
+          {formatDate(dateStr)}{names ? ` · ${names}` : ""}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+type SectionProps = {
+  label: string
+  tasks: TaskData[]
+  isOverdue?: boolean
+  today: string
+  setModalTask: (task: TaskData) => void
+  toggleDone: (task: TaskData) => void
+}
+
+function Section({ label, tasks, isOverdue, today, setModalTask, toggleDone }: SectionProps) {
+  if (tasks.length === 0) return null
+  return (
+    <div className={styles.section}>
+      <div className={`${styles.sectionLabel} ${isOverdue ? styles.overdue : ""}`}>{label}</div>
+      {tasks.map((t) => (
+        <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      ))}
+    </div>
+  )
 }
 
 export default function TasksPage() {
@@ -43,14 +93,19 @@ export default function TasksPage() {
   const [modalTask, setModalTask] = useState<TaskData | null | undefined>(undefined) // undefined = closed, null = new
 
   const fetchTasks = useCallback(async (includeDone: boolean) => {
-    const r = await fetch(`/api/tasks${includeDone ? "?includeDone=true" : ""}`)
-    const data = await r.json()
-    setTasks(
-      (data.tasks ?? []).map((t: any) => ({
-        ...t,
-        dueDate: toDateStr(t.dueDate),
-      }))
-    )
+    try {
+      const r = await fetch(`/api/tasks${includeDone ? "?includeDone=true" : ""}`)
+      if (!r.ok) return
+      const data = await r.json()
+      setTasks(
+        (data.tasks ?? []).map((t: any) => ({
+          ...t,
+          dueDate: toDateStr(t.dueDate),
+        }))
+      )
+    } catch {
+      // silently ignore — UI keeps previous state
+    }
   }, [])
 
   useEffect(() => {
@@ -70,14 +125,21 @@ export default function TasksPage() {
   }, [status])
 
   async function toggleDone(task: TaskData) {
-    const updated = { ...task, done: !task.done }
-    setTasks((prev) => prev.map((t) => (t.id === task.id ? updated : t)))
-    await fetch(`/api/tasks/${task.id}`, {
+    const newDone = !task.done
+    // Optimistic update
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: newDone } : t)))
+    const r = await fetch(`/api/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ done: !task.done }),
+      body: JSON.stringify({ done: newDone }),
     })
-    if (!showDone && !task.done) {
+    if (!r.ok) {
+      // Roll back
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? { ...t, done: task.done } : t)))
+      return
+    }
+    // Remove from list if hiding done tasks and we just marked as done
+    if (!showDone && newDone) {
       setTasks((prev) => prev.filter((t) => t.id !== task.id))
     }
   }
@@ -140,42 +202,6 @@ export default function TasksPage() {
   const thisWeek = openTasks.filter((t) => t.dueDate >= today && t.dueDate <= endOfWeek)
   const later = openTasks.filter((t) => t.dueDate > endOfWeek)
 
-  function TaskRow({ task }: { task: TaskData }) {
-    const dateStr = toDateStr(task.dueDate)
-    const isOverdue = dateStr < today
-    const names = assigneeNames(task)
-    return (
-      <div
-        className={`${styles.taskRow} ${task.done ? styles.taskDone : ""}`}
-        onClick={() => setModalTask(task)}
-      >
-        <input
-          type="checkbox"
-          className={styles.checkbox}
-          checked={task.done}
-          onChange={(e) => { e.stopPropagation(); toggleDone(task) }}
-          onClick={(e) => e.stopPropagation()}
-        />
-        <div className={styles.taskInfo}>
-          <span className={styles.taskName}>{task.name}</span>
-          <span className={`${styles.taskMeta} ${isOverdue && !task.done ? styles.overdue : ""}`}>
-            {formatDate(dateStr)}{names ? ` · ${names}` : ""}
-          </span>
-        </div>
-      </div>
-    )
-  }
-
-  function Section({ label, tasks, isOverdue }: { label: string; tasks: TaskData[]; isOverdue?: boolean }) {
-    if (tasks.length === 0) return null
-    return (
-      <div className={styles.section}>
-        <div className={`${styles.sectionLabel} ${isOverdue ? styles.overdue : ""}`}>{label}</div>
-        {tasks.map((t) => <TaskRow key={t.id} task={t} />)}
-      </div>
-    )
-  }
-
   const hasAnyOpen = overdue.length > 0 || thisWeek.length > 0 || later.length > 0
 
   return (
@@ -200,14 +226,16 @@ export default function TasksPage() {
         <p className={styles.empty}>No tasks yet. Create one to get started.</p>
       )}
 
-      <Section label="Overdue" tasks={overdue} isOverdue />
-      <Section label="This week" tasks={thisWeek} />
-      <Section label="Later" tasks={later} />
+      <Section label="Overdue" tasks={overdue} isOverdue today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      <Section label="This week" tasks={thisWeek} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      <Section label="Later" tasks={later} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
 
       {showDone && doneTasks.length > 0 && (
         <div className={styles.section}>
           <div className={styles.sectionLabel}>Done</div>
-          {doneTasks.map((t) => <TaskRow key={t.id} task={t} />)}
+          {doneTasks.map((t) => (
+            <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+          ))}
         </div>
       )}
 

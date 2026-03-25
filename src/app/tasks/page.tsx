@@ -193,7 +193,10 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {!hasAnyOpen && doneTasks.length === 0 && (
+      {!hasAnyOpen && !showDone && (
+        <p className={styles.empty}>No open tasks.</p>
+      )}
+      {!hasAnyOpen && showDone && doneTasks.length === 0 && (
         <p className={styles.empty}>No tasks yet. Create one to get started.</p>
       )}
 

@@ -55,6 +55,10 @@ export async function PATCH(request: Request, { params }: Params) {
     data.done = Boolean(done)
   }
 
+  if (Object.keys(data).length === 0 && assigneeIds === undefined) {
+    return NextResponse.json({ error: "No fields to update" }, { status: 400 })
+  }
+
   // Handle assignee replacement in a transaction
   if (assigneeIds !== undefined) {
     const ids: string[] = Array.isArray(assigneeIds)

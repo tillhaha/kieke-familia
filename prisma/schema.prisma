@@ -58,6 +58,7 @@ model User {
   activities    Activity[]
   travels       Travel[]
   calendarSyncs CalendarSync[]
+  taskAssignments    TaskAssignee[]
 }
 
 enum Role {
@@ -80,6 +81,7 @@ model Family {
   shoppingItems      ShoppingItem[]
   shoppingMemory     ShoppingItemMemory[]
   shoppingBlacklist  ShoppingBlacklist[]
+  tasks              Task[]
 }
 
 model VerificationToken {
@@ -253,4 +255,26 @@ model ShoppingBlacklist {
 
   @@unique([familyId, term])
   @@index([familyId])
+}
+
+model Task {
+  id          String         @id @default(cuid())
+  familyId    String
+  family      Family         @relation(fields: [familyId], references: [id])
+  name        String
+  description String?
+  dueDate     DateTime       @db.Date
+  done        Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  assignees   TaskAssignee[]
+}
+
+model TaskAssignee {
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId])
 }

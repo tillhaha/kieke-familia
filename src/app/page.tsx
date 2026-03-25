@@ -5,15 +5,10 @@ import { useSession, signIn } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import { LogIn } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry } from "./week/WeekBlock"
+import { TaskModal, TaskData } from "./tasks/TaskModal"
 import styles from "./page.module.css"
 
-type FamilyTask = {
-  id: string
-  name: string
-  dueDate: string // YYYY-MM-DD
-  assignees: { userId: string; user: { id: string; name: string | null } }[]
-  done: boolean
-}
+type FamilyTask = TaskData
 
 function todayUTCString(): string {
   const d = new Date()
@@ -46,6 +41,8 @@ export default function Home() {
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [tasks, setTasks] = useState<FamilyTask[]>([])
+  const [members, setMembers] = useState<{ id: string; name: string | null }[]>([])
+  const [openTask, setOpenTask] = useState<FamilyTask | null>(null)
 
   useEffect(() => {
     if (status !== "authenticated") return
@@ -54,8 +51,9 @@ export default function Home() {
       fetch("/api/weeks").then((r) => r.json()),
       fetch("/api/weather").then((r) => r.json()),
       fetch("/api/tasks").then((r) => r.ok ? r.json() : { tasks: [] }).catch(() => ({ tasks: [] })),
+      fetch("/api/family/members").then((r) => r.ok ? r.json() : { members: [] }).catch(() => ({ members: [] })),
     ])
-      .then(([weeksData, weatherData, taskData]) => {
+      .then(([weeksData, weatherData, taskData, memberData]) => {
         const weeks: WeekData[] = weeksData.weeks ?? []
         const currentWeek = findCurrentWeek(weeks)
         setWeek(currentWeek)
@@ -76,6 +74,7 @@ export default function Home() {
             dueDate: (t.dueDate as string).slice(0, 10),
           }))
         )
+        setMembers(memberData.members ?? [])
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -89,6 +88,30 @@ export default function Home() {
       body: JSON.stringify({ done: true }),
     }).catch(() => {})
   }, [])
+
+  const handleTaskSave = useCallback(async (data: { name: string; description: string; dueDate: string; assigneeIds: string[] }) => {
+    if (!openTask) return
+    const r = await fetch(`/api/tasks/${openTask.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+    if (!r.ok) {
+      const err = await r.json()
+      throw new Error(err.error ?? "Failed to update")
+    }
+    const { task } = await r.json()
+    setTasks((prev) => prev.map((t) => t.id === task.id ? { ...task, dueDate: task.dueDate.slice(0, 10) } : t))
+    setOpenTask(null)
+  }, [openTask])
+
+  const handleTaskDelete = useCallback(async () => {
+    if (!openTask) return
+    const r = await fetch(`/api/tasks/${openTask.id}`, { method: "DELETE" })
+    if (!r.ok) throw new Error("Failed to delete")
+    setTasks((prev) => prev.filter((t) => t.id !== openTask.id))
+    setOpenTask(null)
+  }, [openTask])
 
   const handleDayUpdate = useCallback(
     (date: string, field: string, value: string | null) => {
@@ -144,7 +167,17 @@ export default function Home() {
         <p className={styles.subtitle}>Here&apos;s what&apos;s going on this week.</p>
       </div>
 
-      <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} />
+      <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} onOpenTask={setOpenTask} />
+
+      {openTask && (
+        <TaskModal
+          task={openTask}
+          members={members}
+          onSave={handleTaskSave}
+          onDelete={handleTaskDelete}
+          onClose={() => setOpenTask(null)}
+        />
+      )}
 
       {week ? (
         <WeekBlock
@@ -165,7 +198,7 @@ export default function Home() {
   )
 }
 
-function TasksWidget({ tasks, onToggleDone }: { tasks: FamilyTask[]; onToggleDone: (id: string) => void }) {
+function TasksWidget({ tasks, onToggleDone, onOpenTask }: { tasks: FamilyTask[]; onToggleDone: (id: string) => void; onOpenTask: (task: FamilyTask) => void }) {
   const today = new Date().toISOString().slice(0, 10)
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
@@ -194,7 +227,7 @@ function TasksWidget({ tasks, onToggleDone }: { tasks: FamilyTask[]; onToggleDon
                 onChange={() => onToggleDone(t.id)}
               />
               <div className={styles.tasksWidgetContent}>
-                <a href="/tasks" className={styles.tasksWidgetName}>{t.name}</a>
+                <button className={styles.tasksWidgetName} onClick={() => onOpenTask(t)}>{t.name}</button>
                 <span className={`${styles.tasksWidgetMeta}${isOverdue ? ` ${styles.overdue}` : ""}`}>
                   {formatDate(t.dueDate)}{names ? ` · ${names}` : ""}
                 </span>

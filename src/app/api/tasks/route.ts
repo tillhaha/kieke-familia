@@ -18,16 +18,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const includeDone = searchParams.get("includeDone") === "true"
 
-  const tasks = await prisma.task.findMany({
-    where: {
-      familyId,
-      ...(includeDone ? {} : { done: false }),
-    },
-    orderBy: { dueDate: "asc" },
-    include: { assignees: { select: assigneeSelect } },
-  })
-
-  return NextResponse.json({ tasks })
+  try {
+    const tasks = await prisma.task.findMany({
+      where: {
+        familyId,
+        ...(includeDone ? {} : { done: false }),
+      },
+      orderBy: { dueDate: "asc" },
+      include: { assignees: { select: assigneeSelect } },
+    })
+    return NextResponse.json({ tasks })
+  } catch (err) {
+    console.error("[GET /api/tasks]", err)
+    return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
@@ -51,6 +55,9 @@ export async function POST(request: Request) {
   if (!dueDate || typeof dueDate !== "string") {
     return NextResponse.json({ error: "dueDate is required" }, { status: 400 })
   }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+    return NextResponse.json({ error: "Invalid dueDate format" }, { status: 400 })
+  }
   const parsedDate = new Date(`${dueDate}T00:00:00.000Z`)
   if (isNaN(parsedDate.getTime())) {
     return NextResponse.json({ error: "Invalid dueDate" }, { status: 400 })
@@ -58,26 +65,31 @@ export async function POST(request: Request) {
 
   const ids: string[] = Array.isArray(assigneeIds) ? assigneeIds.filter((id): id is string => typeof id === "string") : []
 
-  // Validate all assigneeIds belong to the family
-  if (ids.length > 0) {
-    const count = await prisma.user.count({ where: { id: { in: ids }, familyId } })
-    if (count !== ids.length) {
-      return NextResponse.json({ error: "Invalid assignee" }, { status: 400 })
+  try {
+    // Validate all assigneeIds belong to the family
+    if (ids.length > 0) {
+      const count = await prisma.user.count({ where: { id: { in: ids }, familyId } })
+      if (count !== ids.length) {
+        return NextResponse.json({ error: "Invalid assignee" }, { status: 400 })
+      }
     }
-  }
 
-  const task = await prisma.task.create({
-    data: {
-      name: name.trim(),
-      description: typeof description === "string" && description.trim() !== "" ? description.trim() : null,
-      dueDate: parsedDate,
-      familyId,
-      assignees: {
-        create: ids.map((userId) => ({ userId })),
+    const task = await prisma.task.create({
+      data: {
+        name: name.trim(),
+        description: typeof description === "string" && description.trim() !== "" ? description.trim() : null,
+        dueDate: parsedDate,
+        familyId,
+        assignees: {
+          create: ids.map((userId) => ({ userId })),
+        },
       },
-    },
-    include: { assignees: { select: assigneeSelect } },
-  })
+      include: { assignees: { select: assigneeSelect } },
+    })
 
-  return NextResponse.json({ task }, { status: 201 })
+    return NextResponse.json({ task }, { status: 201 })
+  } catch (err) {
+    console.error("[POST /api/tasks]", err)
+    return NextResponse.json({ error: "Failed to create task" }, { status: 500 })
+  }
 }

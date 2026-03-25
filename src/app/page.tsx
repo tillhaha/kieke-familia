@@ -12,6 +12,7 @@ type FamilyTask = {
   name: string
   dueDate: string // YYYY-MM-DD
   assignees: { userId: string; user: { id: string; name: string | null } }[]
+  done: boolean
 }
 
 function todayUTCString(): string {
@@ -80,6 +81,15 @@ export default function Home() {
       .finally(() => setLoading(false))
   }, [status])
 
+  const handleToggleDone = useCallback((id: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== id))
+    fetch(`/api/tasks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ done: true }),
+    }).catch(() => {})
+  }, [])
+
   const handleDayUpdate = useCallback(
     (date: string, field: string, value: string | null) => {
       setWeek((prev) =>
@@ -134,7 +144,7 @@ export default function Home() {
         <p className={styles.subtitle}>Here&apos;s what&apos;s going on this week.</p>
       </div>
 
-      <TasksWidget tasks={tasks} />
+      <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} />
 
       {week ? (
         <WeekBlock
@@ -155,7 +165,7 @@ export default function Home() {
   )
 }
 
-function TasksWidget({ tasks }: { tasks: FamilyTask[] }) {
+function TasksWidget({ tasks, onToggleDone }: { tasks: FamilyTask[]; onToggleDone: (id: string) => void }) {
   const today = new Date().toISOString().slice(0, 10)
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
@@ -164,25 +174,35 @@ function TasksWidget({ tasks }: { tasks: FamilyTask[] }) {
   const endOfWeek = d.toISOString().slice(0, 10)
 
   const visible = tasks.filter(
-    (t) => t.dueDate < today || (t.dueDate >= today && t.dueDate <= endOfWeek)
+    (t) => !t.done && (t.dueDate < today || (t.dueDate >= today && t.dueDate <= endOfWeek))
   )
   if (visible.length === 0) return null
 
   return (
     <div className={styles.tasksWidget}>
       <div className={styles.tasksWidgetTitle}>Tasks this week</div>
-      {visible.map((t) => {
-        const isOverdue = t.dueDate < today
-        const names = t.assignees.map((a) => a.user.name ?? "?").join(", ")
-        return (
-          <div key={t.id} className={styles.tasksWidgetRow}>
-            <span className={styles.tasksWidgetName}>{t.name}</span>
-            <span className={`${styles.tasksWidgetMeta}${isOverdue ? ` ${styles.overdue}` : ""}`}>
-              {formatDate(t.dueDate)}{names ? ` · ${names}` : ""}
-            </span>
-          </div>
-        )
-      })}
+      <div className={styles.tasksWidgetList}>
+        {visible.map((t) => {
+          const isOverdue = t.dueDate < today
+          const names = t.assignees.map((a) => a.user.name ?? "?").join(", ")
+          return (
+            <div key={t.id} className={styles.tasksWidgetRow}>
+              <input
+                type="checkbox"
+                className={styles.tasksWidgetCheckbox}
+                checked={false}
+                onChange={() => onToggleDone(t.id)}
+              />
+              <div className={styles.tasksWidgetContent}>
+                <span className={styles.tasksWidgetName}>{t.name}</span>
+                <span className={`${styles.tasksWidgetMeta}${isOverdue ? ` ${styles.overdue}` : ""}`}>
+                  {formatDate(t.dueDate)}{names ? ` · ${names}` : ""}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
       <a href="/tasks" className={styles.tasksWidgetLink}>→ All tasks</a>
     </div>
   )

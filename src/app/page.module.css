@@ -225,6 +225,7 @@
 
 /* Tasks widget */
 .tasksWidget {
+  max-width: 50%;
   margin-bottom: 2rem;
 }
 
@@ -237,17 +238,42 @@
   margin-bottom: 0.5rem;
 }
 
+.tasksWidgetList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
 .tasksWidgetRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid var(--border, #e5e7eb);
+  gap: 0.625rem;
+  padding: 0.65rem 0.875rem;
+  border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
 }
 
-.tasksWidgetRow:last-of-type {
+.tasksWidgetRow:last-child {
   border-bottom: none;
+}
+
+.tasksWidgetCheckbox {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--foreground);
+}
+
+.tasksWidgetContent {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .tasksWidgetName {
@@ -255,13 +281,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 65%;
 }
 
 .tasksWidgetMeta {
   font-size: 0.8rem;
   color: var(--secondary);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tasksWidgetMeta.overdue {
@@ -282,6 +308,7 @@
 
 @media (max-width: 768px) {
   .tasksWidget {
+    max-width: 100%;
     margin-bottom: 1.5rem;
   }
 }

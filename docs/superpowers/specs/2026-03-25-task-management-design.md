@@ -18,9 +18,10 @@ model Task {
   family      Family         @relation(fields: [familyId], references: [id])
   name        String
   description String?
-  dueDate     DateTime       @db.Date
+  dueDate     DateTime       @db.Date   // required, non-nullable by design — UI enforces this
   done        Boolean        @default(false)
   createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   assignees   TaskAssignee[]
 }
 
@@ -45,7 +46,7 @@ All routes gate on `getServerSession` and verify `session.user.familyId` before 
 ### `GET /api/tasks`
 Returns all tasks for the session's family, sorted ascending by `dueDate`.
 - Query param `?includeDone=true` includes done tasks (default: only open tasks).
-- Each task includes its assignees (userId + name).
+- Each task includes its assignees selected as `{ userId, user: { select: { id, name } } }` — `User.name` is the display name.
 
 ### `POST /api/tasks`
 Creates a new task.
@@ -54,7 +55,7 @@ Creates a new task.
 
 ### `PATCH /api/tasks/[id]`
 Updates a task. Accepts any subset of: `{ name, description, dueDate, done, assigneeIds }`.
-- When `assigneeIds` is provided, replaces the full assignee set (delete + recreate in a transaction).
+- When `assigneeIds` is provided, replaces the full assignee set (delete + recreate in a transaction). All provided IDs must belong to the session's family (same validation as POST).
 - Verifies task belongs to session's family before updating.
 
 ### `DELETE /api/tasks/[id]`
@@ -83,7 +84,7 @@ Each task row shows:
 Clicking a task row opens the edit modal.
 
 ### Done tasks
-Hidden by default. A "Show done" toggle in the page header re-fetches with `?includeDone=true` and renders done tasks struck-through beneath each group (or in a single "Done" section at the bottom).
+Hidden by default. A "Show done" toggle in the page header re-fetches with `?includeDone=true` and renders done tasks struck-through in a single **Done** section at the bottom of the page (not interleaved within the Overdue/This week/Later groups).
 
 ### New task modal
 Triggered by the "**+ New task**" button. Same modal component is reused for editing.
@@ -104,7 +105,9 @@ Positioned **above** the existing `WeekBlock`.
 
 Shows open tasks that are either:
 - Overdue (`dueDate < today`), or
-- Due this week (`dueDate <= end of current week`)
+- Due this week (`dueDate >= today && dueDate <= end of current week (Sunday)`)
+
+These two sets are mutually exclusive: overdue = before today, this week = today through Sunday.
 
 Sorted by `dueDate` ascending. Overdue tasks display the due date in red.
 
@@ -114,7 +117,7 @@ Footer: **"→ All tasks"** link to `/tasks`.
 
 If there are no qualifying tasks, the widget is not rendered (no empty-state clutter).
 
-Data is fetched client-side alongside the existing week/weather fetch in `page.tsx`.
+Data is fetched client-side in `page.tsx`. The tasks fetch is added to the existing `Promise.all([fetch("/api/weeks"), fetch("/api/weather"), fetch("/api/tasks")])` so all three resolve together before the loading gate clears. The widget uses the same `loading` state as the rest of the page — no separate loading state.
 
 ---
 

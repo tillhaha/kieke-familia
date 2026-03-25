@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart } from "lucide-react"
+import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare } from "lucide-react"
 import styles from "./navbar.module.css"
 
 const navLinks = [
@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/week", label: "Week Planner", icon: CalendarDays },
   { href: "/meals", label: "Recipes", icon: UtensilsCrossed },
   { href: "/shopping", label: "Shopping", icon: ShoppingCart },
+  { href: "/tasks", label: "Tasks", icon: CheckSquare },
 ]
 
 export function Navbar() {

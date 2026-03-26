@@ -27,16 +27,16 @@ export async function POST(request: Request) {
   const name = typeof body.name === "string" ? body.name.trim() : ""
   const city = typeof body.city === "string" ? body.city.trim() : ""
 
-  // Generate a unique join code
-  let joinCode = generateJoinCode()
-  for (let i = 0; i < 10; i++) {
-    const existing = await prisma.family.findUnique({ where: { joinCode } })
-    if (!existing) break
-    joinCode = generateJoinCode()
-  }
-
   try {
     const family = await prisma.$transaction(async (tx) => {
+      // Generate a unique join code inside the transaction so any DB error is caught
+      let joinCode = generateJoinCode()
+      for (let i = 0; i < 10; i++) {
+        const existing = await tx.family.findUnique({ where: { joinCode } })
+        if (!existing) break
+        joinCode = generateJoinCode()
+      }
+
       const fam = await tx.family.create({
         data: {
           name: name || "My Family",

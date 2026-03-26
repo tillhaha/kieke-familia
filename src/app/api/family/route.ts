@@ -56,7 +56,6 @@ export async function PATCH(request: Request) {
     let newJoinCode: string | undefined
     if (generateCode) {
       newJoinCode = generateJoinCode()
-      // Ensure uniqueness
       for (let i = 0; i < 10; i++) {
         const existing = await prisma.family.findUnique({ where: { joinCode: newJoinCode } })
         if (!existing) break

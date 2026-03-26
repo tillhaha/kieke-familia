@@ -736,6 +736,19 @@
   }
 }
 
+/* ── Tablet ──────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .calendarContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .dayCell {
+    min-height: 80px;
+  }
+}
+
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -772,5 +785,11 @@
   .eventItem {
     font-size: 0.625rem;
     padding: 1px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendarGrid {
+    min-width: 480px;
   }
 }

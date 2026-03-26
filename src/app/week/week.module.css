@@ -490,28 +490,76 @@ tr:last-child .cell {
   letter-spacing: 0.03em;
 }
 
-/* ── Mobile ──────────────────────────────────────────── */
+/* ── Tablet ──────────────────────────────────────────── */
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .cornerCell,
   .rowLabel {
-    width: 56px;
-    min-width: 56px;
+    width: 80px;
+    min-width: 80px;
   }
 
   .rowLabel {
     font-size: 0.6875rem;
-    padding: 0.5rem 0.375rem;
+    padding: 0.5rem 0.5rem;
   }
 
   .dayHeader {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     padding: 0.5rem 0.25rem;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+    gap: 1rem;
+  }
+
+  .tableWrapper {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .table {
+    min-width: 640px;
+  }
+
+  .cornerCell,
+  .rowLabel {
+    width: 60px;
+    min-width: 60px;
+  }
+
+  .rowLabel {
+    font-size: 0.625rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .dayHeader {
+    font-size: 0.6rem;
+    padding: 0.375rem 0.125rem;
+  }
+
+  .pageHeader {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .table {
+    min-width: 560px;
   }
 }

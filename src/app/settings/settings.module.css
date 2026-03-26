@@ -365,6 +365,24 @@
   background: var(--accent-soft);
 }
 
+/* ── Tablet ──────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  .container {
+    gap: 1.5rem;
+  }
+
+  .sidebar {
+    width: 160px;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+
+  .content {
+    min-width: 0;
+  }
+}
+
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -399,4 +417,77 @@
   .fieldInput {
     max-width: 100%;
   }
+}
+
+/* ── Inline row ───────────────────────────────────────────── */
+
+.inlineRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inlineRow .fieldInput {
+  flex: 1;
+}
+
+.fieldHint {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Join code ────────────────────────────────────────────── */
+
+.joinCodeBlock {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.joinCodeLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.joinCodeHint {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  margin-bottom: 0.75rem;
+}
+
+.joinCodeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.625rem 1rem;
+  width: fit-content;
+}
+
+.joinCode {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.copyBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.25rem 0.375rem;
+  cursor: pointer;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  transition: border-color 150ms, color 150ms;
+}
+
+.copyBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
 }

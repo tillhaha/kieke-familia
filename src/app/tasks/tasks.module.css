@@ -1,6 +1,5 @@
 /* src/app/tasks/tasks.module.css */
 .page {
-  min-width: 720px;
   max-width: 720px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
@@ -325,8 +324,11 @@
 
 @media (max-width: 768px) {
   .page {
-    min-width: 0;
     padding: 1.25rem 0.75rem;
+  }
+
+  .filterBar {
+    flex-wrap: wrap;
   }
 
   .title {

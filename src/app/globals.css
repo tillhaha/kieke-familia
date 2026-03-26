@@ -75,3 +75,9 @@ button {
     min-height: 44px;
   }
 }
+
+/* ─── Breakpoint reference ──────────────────────────────
+ *   480px  phones (max-width: 480px)
+ *   768px  tablet portrait / existing mobile breakpoint
+ *   1024px tablet landscape / small desktop
+ * ─────────────────────────────────────────────────────── */

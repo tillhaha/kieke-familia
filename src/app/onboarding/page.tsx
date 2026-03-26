@@ -33,17 +33,23 @@ export default function OnboardingPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: familyName, city }),
       })
-      const data = await res.json()
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong")
+      let data: Record<string, unknown>
+      try {
+        data = await res.json()
+      } catch {
+        setError(`Server error (${res.status} ${res.statusText})`)
         return
       }
-      setGeneratedCode(data.family.joinCode)
-      setCreatedFamilyName(data.family.name)
-      await update({ familyId: data.family.id, role: "ADMIN" })
+      if (!res.ok) {
+        setError((data.error as string) ?? `Error ${res.status}`)
+        return
+      }
+      setGeneratedCode(data.family ? (data.family as Record<string, unknown>).joinCode as string : "")
+      setCreatedFamilyName(data.family ? (data.family as Record<string, unknown>).name as string : "")
+      await update({ familyId: data.family ? (data.family as Record<string, unknown>).id : undefined, role: "ADMIN" })
       setStep("created")
-    } catch {
-      setError("Something went wrong. Please try again.")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
     } finally {
       setLoading(false)
     }

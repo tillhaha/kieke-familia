@@ -1,6 +1,7 @@
 /* src/app/tasks/tasks.module.css */
 .page {
-  max-width: 720px;
+  max-width: 50vw;
+  min-width: 480px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   display: flex;
@@ -324,6 +325,8 @@
 
 @media (max-width: 768px) {
   .page {
+    max-width: 100%;
+    min-width: 0;
     padding: 1.25rem 0.75rem;
   }
 

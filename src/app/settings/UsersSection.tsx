@@ -51,6 +51,7 @@ export function UsersSection() {
   const [resetting, setResetting] = useState(false)
 
   // Create form
+  const [showAddModal, setShowAddModal] = useState(false)
   const [name, setName] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -174,52 +175,65 @@ export function UsersSection() {
       })
       const data = await res.json()
       if (!res.ok) { setCreateError(data.error ?? "Failed to create account"); return }
-      setName(""); setUsername(""); setPassword("")
+      setName(""); setUsername(""); setPassword(""); setShowAddModal(false)
       await fetchMembers()
     } finally {
       setCreating(false)
     }
   }
 
+  function closeAddModal() {
+    setShowAddModal(false)
+    setName(""); setUsername(""); setPassword(""); setCreateError("")
+  }
+
   return (
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>Family</h2>
 
-      <div className={styles.fieldGroup}>
-        <label className={styles.fieldLabel}>Family name</label>
-        <div className={styles.inlineRow}>
-          <input
-            type="text"
-            className={styles.fieldInput}
-            value={familyName}
-            onChange={(e) => setFamilyName(e.target.value)}
-            placeholder="My Family"
-          />
-          <button
-            className={styles.saveBtn}
-            onClick={handleSaveName}
-            disabled={savingName || !familyName.trim() || familyName.trim() === initialFamilyName.trim()}
-          >
-            {savingName ? "…" : nameSaved ? "Saved!" : "Save"}
-          </button>
-        </div>
-      </div>
-
-      <div className={styles.fieldGroup}>
-        <label className={styles.fieldLabel}>Join code</label>
-        <p className={styles.fieldHint}>Share this with family members so they can join.</p>
-        {joinCode ? (
-          <div className={styles.joinCodeRow}>
-            <span className={styles.joinCode}>{joinCode}</span>
-            <button className={styles.copyBtn} onClick={copyCode} title="Copy code">
-              {copied ? <Check size={14} /> : <Copy size={14} />}
+      <div className={styles.memberList}>
+        <div className={styles.memberRow}>
+          <div className={styles.memberInfo}>
+            <span className={styles.memberName}>Family name</span>
+          </div>
+          <div className={styles.memberActions}>
+            <input
+              type="text"
+              className={styles.fieldInput}
+              value={familyName}
+              onChange={(e) => setFamilyName(e.target.value)}
+              placeholder="My Family"
+            />
+            <button
+              className={styles.saveBtn}
+              onClick={handleSaveName}
+              disabled={savingName || !familyName.trim() || familyName.trim() === initialFamilyName.trim()}
+            >
+              {savingName ? "…" : nameSaved ? "Saved!" : "Save"}
             </button>
           </div>
-        ) : (
-          <button className={styles.saveBtn} style={{ width: "fit-content" }} onClick={handleGenerateCode} disabled={generatingCode}>
-            {generatingCode ? "Generating…" : "Generate join code"}
-          </button>
-        )}
+        </div>
+
+        <div className={styles.memberRow}>
+          <div className={styles.memberInfo}>
+            <span className={styles.memberName}>Join code</span>
+            <span className={styles.memberUsername}>Share with family members to invite them.</span>
+          </div>
+          <div className={styles.memberActions}>
+            {joinCode ? (
+              <>
+                <span className={styles.joinCode}>{joinCode}</span>
+                <button className={styles.copyBtn} onClick={copyCode} title="Copy code">
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </>
+            ) : (
+              <button className={styles.saveBtn} onClick={handleGenerateCode} disabled={generatingCode}>
+                {generatingCode ? "Generating…" : "Generate"}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       <h3 className={styles.subTitle}>Members</h3>
@@ -327,31 +341,42 @@ export function UsersSection() {
       )}
 
       {canManage && (
-        <>
-          <h3 className={styles.subTitle}>Add child account</h3>
-          <form onSubmit={handleCreate}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Display name</label>
-              <input type="text" placeholder="Emma" value={name}
-                onChange={(e) => setName(e.target.value)} className={styles.fieldInput} required />
-            </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Username</label>
-              <input type="text" placeholder="emma-smith" value={username}
-                onChange={(e) => setUsername(e.target.value)} className={styles.fieldInput} required />
-            </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Password</label>
-              <input type="password" placeholder="Min. 8 characters" value={password}
-                onChange={(e) => setPassword(e.target.value)} className={styles.fieldInput}
-                required minLength={8} />
-            </div>
-            {createError && <p className={styles.saveError}>{createError}</p>}
-            <button type="submit" disabled={creating} className={styles.saveBtn}>
-              {creating ? "Creating…" : "Create account"}
-            </button>
-          </form>
-        </>
+        <button className={styles.saveBtn} style={{ width: "fit-content" }} onClick={() => setShowAddModal(true)}>
+          + Add Member
+        </button>
+      )}
+
+      {showAddModal && (
+        <div className={styles.modalOverlay} onClick={closeAddModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2 className={styles.modalTitle}>Add Member</h2>
+            <form onSubmit={handleCreate}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Name</label>
+                <input type="text" placeholder="Emma" value={name}
+                  onChange={(e) => setName(e.target.value)} className={styles.fieldInput} required autoFocus />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Username</label>
+                <input type="text" placeholder="emma-smith" value={username}
+                  onChange={(e) => setUsername(e.target.value)} className={styles.fieldInput} required />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.fieldLabel}>Password</label>
+                <input type="password" placeholder="Min. 8 characters" value={password}
+                  onChange={(e) => setPassword(e.target.value)} className={styles.fieldInput}
+                  required minLength={8} />
+              </div>
+              {createError && <p className={styles.saveError}>{createError}</p>}
+              <div className={styles.modalFooter}>
+                <button type="button" className={styles.cancelBtn} onClick={closeAddModal}>Cancel</button>
+                <button type="submit" disabled={creating} className={styles.saveBtn}>
+                  {creating ? "Creating…" : "Add Member"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   )

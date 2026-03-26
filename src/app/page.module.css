@@ -310,13 +310,6 @@
   text-decoration: underline;
 }
 
-/* Tablet */
-@media (max-width: 1023px) {
-  .tasksWidget {
-    max-width: 66%;
-  }
-}
-
 /* Mobile */
 @media (max-width: 768px) {
   .main {

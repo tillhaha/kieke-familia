@@ -23,13 +23,17 @@ export async function POST(request: Request) {
   const code = typeof body.code === "string" ? body.code.trim() : ""
   if (!code) return NextResponse.json({ error: "Join code is required" }, { status: 400 })
 
-  const family = await prisma.family.findUnique({ where: { joinCode: code } })
-  if (!family) return NextResponse.json({ error: "Invalid join code" }, { status: 404 })
+  try {
+    const family = await prisma.family.findUnique({ where: { joinCode: code } })
+    if (!family) return NextResponse.json({ error: "Invalid join code" }, { status: 404 })
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: { familyId: family.id, role: "MEMBER" },
-  })
+    await prisma.user.update({
+      where: { id: userId },
+      data: { familyId: family.id, role: "MEMBER" },
+    })
 
-  return NextResponse.json({ family: { id: family.id, name: family.name } })
+    return NextResponse.json({ family: { id: family.id, name: family.name } })
+  } catch {
+    return NextResponse.json({ error: "Failed to join family" }, { status: 500 })
+  }
 }

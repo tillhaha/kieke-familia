@@ -97,7 +97,7 @@ export function Navbar() {
                 </Link>
                 <button
                   className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`}
-                  onClick={() => signOut()}
+                  onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   <LogOut size={13} strokeWidth={2} />
                   Sign out

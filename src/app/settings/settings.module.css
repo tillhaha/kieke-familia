@@ -395,9 +395,11 @@
 
   .sidebar {
     width: 100%;
+    max-width: 100%; /* cap to container width so overflow-x: auto actually scrolls */
     display: flex;
     flex-direction: row;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding-bottom: 0;

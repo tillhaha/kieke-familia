@@ -461,6 +461,7 @@ export default function CalendarPage() {
       )}
 
       {/* Calendar Grid */}
+      <div className={styles.calendarScrollWrapper}>
       <div className={styles.calendarGrid}>
         {weekdays.map((day) => (
           <div key={day} className={styles.weekdayHeader}>
@@ -577,6 +578,7 @@ export default function CalendarPage() {
             </div>
           )
         })}
+      </div>
       </div>
 
       {/* Add Modal (tabbed) */}

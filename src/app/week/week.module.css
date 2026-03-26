@@ -525,6 +525,7 @@ tr:last-child .cell {
   }
 
   .tableWrapper {
+    min-width: 0; /* allow flex item to shrink so overflow-x: auto actually scrolls */
     border-left: none;
     border-right: none;
     border-radius: 0;

@@ -214,15 +214,6 @@
   }
 }
 
-/* ── Mobile ──────────────────────────────────────────── */
-
-@media (max-width: 768px) {
-  .main {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-}
-
 /* Tasks widget */
 .tasksWidget {
   max-width: 50%;
@@ -319,7 +310,24 @@
   text-decoration: underline;
 }
 
+/* Tablet */
+@media (max-width: 1023px) {
+  .tasksWidget {
+    max-width: 66%;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
+  .main {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .greeting {
+    font-size: 1.5rem;
+  }
+
   .tasksWidget {
     max-width: 100%;
     margin-bottom: 1.5rem;

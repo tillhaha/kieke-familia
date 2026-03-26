@@ -59,8 +59,10 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as unknown as Record<string, unknown>).role
         token.name = user.name
       }
-      if (trigger === "update" && session?.name !== undefined) {
-        token.name = session.name
+      if (trigger === "update") {
+        if (session?.name !== undefined) token.name = session.name
+        if (session?.familyId !== undefined) token.familyId = session.familyId
+        if (session?.role !== undefined) token.role = session.role
       }
       // Refresh familyId from DB if missing (covers credential users on first login)
       if (!token.familyId && token.id) {

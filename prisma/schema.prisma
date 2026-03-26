@@ -71,6 +71,7 @@ model Family {
   id               String            @id @default(cuid())
   name             String
   city             String?
+  joinCode         String?           @unique
   users            User[]
   birthdays        Birthday[]
   dayPlans         DayPlan[]

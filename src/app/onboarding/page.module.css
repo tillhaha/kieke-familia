@@ -1,0 +1,233 @@
+/* src/app/onboarding/page.module.css */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-md);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.9375rem;
+  color: var(--secondary);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.back:hover {
+  color: var(--foreground);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.choiceBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 1.125rem 1.25rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 150ms, box-shadow 150ms;
+  width: 100%;
+}
+
+.choiceBtn:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+.choiceLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.choiceDesc {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.optional {
+  color: var(--secondary);
+  font-weight: 400;
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+
+.input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 150ms;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.codeInput {
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  text-align: center;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.primaryBtn {
+  padding: 0.75rem 1.25rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms;
+  width: 100%;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: #ef4444;
+}
+
+/* Success / created state */
+
+.successIcon {
+  width: 48px;
+  height: 48px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.codeBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.generatedCode {
+  flex: 1;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 1.75rem;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+}
+
+.copyBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  transition: border-color 150ms, color 150ms;
+}
+
+.copyBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.codeHint {
+  font-size: 0.8125rem;
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1.25rem;
+  }
+
+  .generatedCode {
+    font-size: 1.375rem;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
+import { Copy, Check } from "lucide-react"
 import styles from "./settings.module.css"
 
 type Member = {
@@ -30,6 +31,15 @@ export function UsersSection() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Family name + join code
+  const [familyName, setFamilyName] = useState("")
+  const [initialFamilyName, setInitialFamilyName] = useState("")
+  const [joinCode, setJoinCode] = useState<string | null>(null)
+  const [savingName, setSavingName] = useState(false)
+  const [nameSaved, setNameSaved] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [generatingCode, setGeneratingCode] = useState(false)
+
   // Per-member patch state
   const [pendingRole, setPendingRole] = useState<Record<string, string>>({})
   const [savingId, setSavingId] = useState<string | null>(null)
@@ -50,15 +60,64 @@ export function UsersSection() {
   const fetchMembers = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch("/api/family/members")
-      const data = await res.json()
-      setMembers(data.members ?? [])
+      const [membersRes, familyRes] = await Promise.all([
+        fetch("/api/family/members"),
+        fetch("/api/family"),
+      ])
+      const membersData = await membersRes.json()
+      const familyData = await familyRes.json()
+      setMembers(membersData.members ?? [])
+      const n = familyData.family?.name ?? ""
+      setFamilyName(n)
+      setInitialFamilyName(n)
+      setJoinCode(familyData.family?.joinCode ?? null)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => { fetchMembers() }, [fetchMembers])
+
+  async function handleSaveName() {
+    setSavingName(true)
+    try {
+      const res = await fetch("/api/family", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: familyName }),
+      })
+      if (res.ok) {
+        setInitialFamilyName(familyName)
+        setNameSaved(true)
+        setTimeout(() => setNameSaved(false), 2000)
+      }
+    } finally {
+      setSavingName(false)
+    }
+  }
+
+  function copyCode() {
+    if (!joinCode) return
+    navigator.clipboard.writeText(joinCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  async function handleGenerateCode() {
+    setGeneratingCode(true)
+    try {
+      const res = await fetch("/api/family", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ generateJoinCode: true }),
+      })
+      const data = await res.json()
+      if (res.ok) setJoinCode(data.family?.joinCode ?? null)
+    } finally {
+      setGeneratingCode(false)
+    }
+  }
 
   async function patch(id: string, body: Record<string, unknown>) {
     setSavingId(id)
@@ -124,9 +183,48 @@ export function UsersSection() {
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Users</h2>
+      <h2 className={styles.sectionTitle}>Family</h2>
+
+      <div className={styles.fieldGroup}>
+        <label className={styles.fieldLabel}>Family name</label>
+        <div className={styles.inlineRow}>
+          <input
+            type="text"
+            className={styles.fieldInput}
+            value={familyName}
+            onChange={(e) => setFamilyName(e.target.value)}
+            placeholder="My Family"
+          />
+          <button
+            className={styles.saveBtn}
+            onClick={handleSaveName}
+            disabled={savingName || !familyName.trim() || familyName.trim() === initialFamilyName.trim()}
+          >
+            {savingName ? "…" : nameSaved ? "Saved!" : "Save"}
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.fieldGroup}>
+        <label className={styles.fieldLabel}>Join code</label>
+        <p className={styles.fieldHint}>Share this with family members so they can join.</p>
+        {joinCode ? (
+          <div className={styles.joinCodeRow}>
+            <span className={styles.joinCode}>{joinCode}</span>
+            <button className={styles.copyBtn} onClick={copyCode} title="Copy code">
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+            </button>
+          </div>
+        ) : (
+          <button className={styles.saveBtn} style={{ width: "fit-content" }} onClick={handleGenerateCode} disabled={generatingCode}>
+            {generatingCode ? "Generating…" : "Generate join code"}
+          </button>
+        )}
+      </div>
+
+      <h3 className={styles.subTitle}>Members</h3>
       <p className={styles.sectionDesc}>
-        Everyone in your family. Admins can change roles and activate or deactivate accounts.
+        Admins can change roles and activate or deactivate accounts.
       </p>
 
       {loading ? (

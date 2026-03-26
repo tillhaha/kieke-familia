@@ -54,7 +54,9 @@ export async function POST(request: Request) {
     return NextResponse.json({
       family: { id: family.id, name: family.name, joinCode: family.joinCode },
     })
-  } catch {
-    return NextResponse.json({ error: "Failed to create family" }, { status: 500 })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error("[family/create] error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

@@ -107,6 +107,15 @@ export function Navbar() {
           </div>
         )}
       </nav>
+
+      {/* Backdrop — only rendered on mobile when drawer is open */}
+      {menuOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </header>
   )
 }

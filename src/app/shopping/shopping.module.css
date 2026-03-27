@@ -1,6 +1,7 @@
 /* src/app/shopping/shopping.module.css */
 
 .container {
+  width: 100%;
   max-width: 50vw;
   min-width: 480px;
   margin: 0 auto;

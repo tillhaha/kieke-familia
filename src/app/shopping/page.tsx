@@ -3,18 +3,16 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo } from "react"
-import { Plus, X, Settings } from "lucide-react"
+import { Plus, X } from "lucide-react"
 import styles from "./shopping.module.css"
 
 type Category = { id: string; name: string; order: number }
 type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null }
-type BlacklistTerm = { id: string; term: string }
 
 export default function ShoppingPage() {
   const { status } = useSession()
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<ShoppingItem[]>([])
-  const [blacklist, setBlacklist] = useState<BlacklistTerm[]>([])
   const [loading, setLoading] = useState(true)
 
   // Add form
@@ -28,24 +26,16 @@ export default function ShoppingPage() {
   // Inline category reassign
   const [editingCategoryFor, setEditingCategoryFor] = useState<string | null>(null)
 
-  // Manage panel
   const [clearing, setClearing] = useState(false)
-  const [manageOpen, setManageOpen] = useState(false)
-  const [newCatName, setNewCatName] = useState("")
-  const [newBlacklistTerm, setNewBlacklistTerm] = useState("")
-  const [editingCatId, setEditingCatId] = useState<string | null>(null)
-  const [editingCatName, setEditingCatName] = useState("")
 
   useEffect(() => {
     if (status !== "authenticated") return
     Promise.all([
       fetch("/api/shopping/categories").then((r) => r.json()),
       fetch("/api/shopping/items").then((r) => r.json()),
-      fetch("/api/shopping/blacklist").then((r) => r.json()),
-    ]).then(([catData, itemData, blData]) => {
+    ]).then(([catData, itemData]) => {
       setCategories(catData.categories ?? [])
       setItems(itemData.items ?? [])
-      setBlacklist(blData.terms ?? [])
     }).finally(() => setLoading(false))
   }, [status])
 
@@ -145,77 +135,6 @@ export default function ShoppingPage() {
     } catch {
       if (oldItem) setItems((prev) => prev.map((i) => i.id === itemId ? oldItem : i))
     }
-  }
-
-  const handleAddCategory = async () => {
-    if (!newCatName.trim()) return
-    try {
-      const res = await fetch("/api/shopping/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCatName.trim() }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setCategories((prev) => [...prev, data])
-        setNewCatName("")
-      }
-    } catch { /* ignore */ }
-  }
-
-  const handleRenameCategory = async (id: string) => {
-    if (!editingCatName.trim()) return
-    try {
-      const res = await fetch(`/api/shopping/categories/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: editingCatName.trim() }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setCategories((prev) => prev.map((c) => c.id === id ? data : c))
-        setEditingCatId(null)
-        setEditingCatName("")
-      }
-    } catch { /* ignore */ }
-  }
-
-  const handleDeleteCategory = async (id: string) => {
-    const prevCategories = categories
-    const prevItems = items
-    setCategories((prev) => prev.filter((c) => c.id !== id))
-    setItems((prev) => prev.map((i) => i.categoryId === id ? { ...i, categoryId: null, category: null } : i))
-    try {
-      const res = await fetch(`/api/shopping/categories/${id}`, { method: "DELETE" })
-      if (!res.ok) {
-        setCategories(prevCategories)
-        setItems(prevItems)
-      }
-    } catch {
-      setCategories(prevCategories)
-      setItems(prevItems)
-    }
-  }
-
-  const handleAddBlacklist = async () => {
-    if (!newBlacklistTerm.trim()) return
-    try {
-      const res = await fetch("/api/shopping/blacklist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ term: newBlacklistTerm.trim() }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setBlacklist((prev) => [...prev, data])
-        setNewBlacklistTerm("")
-      }
-    } catch { /* ignore */ }
-  }
-
-  const handleDeleteBlacklist = async (id: string) => {
-    setBlacklist((prev) => prev.filter((t) => t.id !== id))
-    await fetch(`/api/shopping/blacklist/${id}`, { method: "DELETE" })
   }
 
   async function handleClearList() {
@@ -355,79 +274,7 @@ export default function ShoppingPage() {
         >
           Clear list
         </button>
-        <button className={styles.manageBtn} onClick={() => setManageOpen((v) => !v)}>
-          <Settings size={13} strokeWidth={2} />
-          {manageOpen ? "Close" : "Manage"}
-        </button>
       </div>
-
-      {/* Manage panel */}
-      {manageOpen && (
-        <div className={styles.managePanel}>
-          {/* Categories */}
-          <div className={styles.manageSection}>
-            <div className={styles.manageSectionTitle}>Categories</div>
-            <div className={styles.manageList}>
-              {categories.map((cat) => (
-                <div key={cat.id} className={styles.manageRow}>
-                  {editingCatId === cat.id ? (
-                    <>
-                      <input
-                        className={styles.manageInput}
-                        value={editingCatName}
-                        autoFocus
-                        onChange={(e) => setEditingCatName(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === "Enter") handleRenameCategory(cat.id) }}
-                      />
-                      <button className={styles.manageSaveBtn} onClick={() => handleRenameCategory(cat.id)}>Save</button>
-                      <button className={styles.manageDeleteBtn} aria-label="Cancel rename" onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
-                    </>
-                  ) : (
-                    <>
-                      <span className={styles.manageRowName}>{cat.name}</span>
-                      <button className={styles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name) }}>Rename</button>
-                      <button className={styles.manageDeleteBtn} aria-label="Delete category" onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className={styles.manageAddRow}>
-              <input
-                className={styles.manageInput}
-                placeholder="New category…"
-                value={newCatName}
-                onChange={(e) => setNewCatName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleAddCategory() }}
-              />
-              <button className={styles.manageSaveBtn} onClick={handleAddCategory}>Add</button>
-            </div>
-          </div>
-
-          {/* Blacklist */}
-          <div className={styles.manageSection}>
-            <div className={styles.manageSectionTitle}>Blacklist (excluded from Generate)</div>
-            <div className={styles.manageList}>
-              {blacklist.map((entry) => (
-                <div key={entry.id} className={styles.manageRow}>
-                  <span className={styles.manageRowName}>{entry.term}</span>
-                  <button className={styles.manageDeleteBtn} aria-label="Remove from blacklist" onClick={() => handleDeleteBlacklist(entry.id)}><X size={13} /></button>
-                </div>
-              ))}
-            </div>
-            <div className={styles.manageAddRow}>
-              <input
-                className={styles.manageInput}
-                placeholder="New term…"
-                value={newBlacklistTerm}
-                onChange={(e) => setNewBlacklistTerm(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleAddBlacklist() }}
-              />
-              <button className={styles.manageSaveBtn} onClick={handleAddBlacklist}>Add</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -123,7 +123,7 @@ Add breakpoint overrides at the bottom of each CSS module. Never modify desktop 
 - Settings (`.container`): CSS Grid `grid-template-columns: 180px 1fr` with `width: 100%; max-width: 1100px; margin: 0 auto`. The `width: 100%` is required — omitting it causes the flex child to shrink-wrap its content, making `margin: 0 auto` shift the layout whenever section content changes width.
 - Meals pages use `max-width: 720px` centered.
 
-**Flex children + `margin: 0 auto`**: applying `margin: 0 auto` to a flex child overrides `align-self: stretch`, causing it to shrink-wrap its content. Always add `width: 100%` alongside `max-width` + `margin: 0 auto` on any direct flex child that should fill available width.
+**Flex children + `margin: 0 auto`**: applying `margin: 0 auto` to a flex child overrides `align-self: stretch`, causing it to shrink-wrap its content on first render then jump wide when real content loads. Always add `width: 100%` alongside `max-width` + `margin: 0 auto` on any direct flex child of `appShell`. All page containers already follow this pattern.
 
 ## Environment variables required
 ```

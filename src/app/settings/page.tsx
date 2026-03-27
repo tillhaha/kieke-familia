@@ -3,14 +3,15 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { User, CalendarDays, MapPin, Home } from "lucide-react"
+import { User, CalendarDays, MapPin, Home, ShoppingCart } from "lucide-react"
 import { GoogleSection } from "./GoogleSection"
 import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
+import { ShoppingSection } from "./ShoppingSection"
 import styles from "./settings.module.css"
 
-type Section = "profile" | "google" | "location" | "family"
+type Section = "profile" | "google" | "location" | "family" | "shopping"
 
 export default function SettingsPage() {
   const { status } = useSession()
@@ -50,6 +51,13 @@ export default function SettingsPage() {
           <Home size={15} />
           Family
         </button>
+        <button
+          className={`${styles.sectionBtn} ${activeSection === "shopping" ? styles.active : ""}`}
+          onClick={() => setActiveSection("shopping")}
+        >
+          <ShoppingCart size={15} />
+          Shopping
+        </button>
       </aside>
 
       <div className={styles.content}>
@@ -57,6 +65,7 @@ export default function SettingsPage() {
         {activeSection === "google" && <GoogleSection />}
         {activeSection === "location" && <LocationSection />}
         {activeSection === "family" && <UsersSection />}
+        {activeSection === "shopping" && <ShoppingSection />}
       </div>
     </div>
   )

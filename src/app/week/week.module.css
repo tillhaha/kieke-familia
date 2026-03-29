@@ -654,6 +654,13 @@ tr:last-child .cell {
   cursor: pointer;
 }
 
+.mobileDayFieldIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
 .mobileDayFieldEmpty {
   font-size: 0.75rem;
   color: var(--secondary);
@@ -759,6 +766,11 @@ tr:last-child .cell {
   align-items: center;
   justify-content: center;
   padding: 0.25rem 0.125rem;
+}
+
+.mobileWeekTableCustodyCell {
+  align-items: center;
+  justify-content: center;
 }
 
 .mobileWeekTableTempText {

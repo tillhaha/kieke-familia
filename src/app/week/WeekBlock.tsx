@@ -558,112 +558,116 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
                     const linkedMealId = isMealField ? mealIds[key] : null
                     const hasError = cellErrors.has(key)
                     return (
-                      <div key={field} className={`${styles.mobileDayField} ${hasError ? styles.cellError : ""}`}>
-                        <span className={styles.mobileDayFieldLabel}>{label}</span>
-                        {isSearching ? (
-                          <div className={styles.recipeSearchContainer}>
-                            <input
-                              autoFocus
-                              className={styles.recipeSearchInput}
-                              value={recipeSearch!.query}
-                              placeholder="Search meals…"
-                              onChange={(e) =>
-                                setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Escape") {
-                                  setRecipeSearch((prev) => {
-                                    if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
-                                    return null
-                                  })
+                      <Fragment key={field}>
+                        <div className={`${styles.mobileDayField} ${hasError ? styles.cellError : ""}`}>
+                          <span className={styles.mobileDayFieldLabel}>{label}</span>
+                          {isSearching ? (
+                            <div className={styles.recipeSearchContainer}>
+                              <input
+                                autoFocus
+                                className={styles.recipeSearchInput}
+                                value={recipeSearch!.query}
+                                placeholder="Search meals…"
+                                onChange={(e) =>
+                                  setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
                                 }
-                              }}
-                              onBlur={() => {
-                                setTimeout(() => {
-                                  setRecipeSearch((prev) => {
-                                    if (prev?.key === key) {
-                                      setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                                onKeyDown={(e) => {
+                                  if (e.key === "Escape") {
+                                    setRecipeSearch((prev) => {
+                                      if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
                                       return null
-                                    }
-                                    return prev
-                                  })
-                                }, 150)
+                                    })
+                                  }
+                                }}
+                                onBlur={() => {
+                                  setTimeout(() => {
+                                    setRecipeSearch((prev) => {
+                                      if (prev?.key === key) {
+                                        setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                                        return null
+                                      }
+                                      return prev
+                                    })
+                                  }, 150)
+                                }}
+                              />
+                              {recipeSearch!.results.length > 0 && (
+                                <ul className={styles.recipeDropdown}>
+                                  {recipeSearch!.results.map((meal) => (
+                                    <li
+                                      key={meal.id}
+                                      className={styles.recipeDropdownItem}
+                                      onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
+                                    >
+                                      <span className={styles.recipeDropdownName}>{meal.name}</span>
+                                      <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                          ) : isFocused ? (
+                            <textarea
+                              autoFocus
+                              className={styles.cellInput}
+                              value={value}
+                              placeholder={placeholder}
+                              disabled={isDisabled}
+                              onChange={(e) => {
+                                const v = e.target.value
+                                if (isMealField && v.trimEnd().endsWith("/recipe")) {
+                                  const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
+                                  setFocusedKey(null)
+                                  setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
+                                  return
+                                }
+                                setDrafts((prev) => ({ ...prev, [key]: v }))
+                                autoResize(e.target)
                               }}
+                              onBlur={() => handleBlur(day.date, field)}
+                              ref={(el) => { if (el) autoResize(el) }}
                             />
-                            {recipeSearch!.results.length > 0 && (
-                              <ul className={styles.recipeDropdown}>
-                                {recipeSearch!.results.map((meal) => (
-                                  <li
-                                    key={meal.id}
-                                    className={styles.recipeDropdownItem}
-                                    onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
-                                  >
-                                    <span className={styles.recipeDropdownName}>{meal.name}</span>
-                                    <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        ) : isFocused ? (
-                          <textarea
-                            autoFocus
-                            className={styles.cellInput}
-                            value={value}
-                            placeholder={placeholder}
-                            disabled={isDisabled}
-                            onChange={(e) => {
-                              const v = e.target.value
-                              if (isMealField && v.trimEnd().endsWith("/recipe")) {
-                                const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
-                                setFocusedKey(null)
-                                setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
-                                return
-                              }
-                              setDrafts((prev) => ({ ...prev, [key]: v }))
-                              autoResize(e.target)
-                            }}
-                            onBlur={() => handleBlur(day.date, field)}
-                            ref={(el) => { if (el) autoResize(el) }}
-                          />
-                        ) : (
-                          <div
-                            className={styles.mobileDayFieldContent}
-                            onClick={() => { if (!isDisabled) setFocusedKey(key) }}
-                          >
-                            {value ? (
-                              <>
-                                <ReactMarkdown components={{ ...pillComponents }}>{value}</ReactMarkdown>
-                                {linkedMealId && (
-                                  <a
-                                    href={`/meals/${linkedMealId}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.mealLink}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <ExternalLink size={11} />
-                                  </a>
-                                )}
-                              </>
-                            ) : (
-                              <span className={styles.mobileDayFieldEmpty}>–</span>
-                            )}
+                          ) : (
+                            <div
+                              className={styles.mobileDayFieldContent}
+                              onClick={() => { if (!isDisabled) setFocusedKey(key) }}
+                            >
+                              {value ? (
+                                <>
+                                  <ReactMarkdown components={{ ...pillComponents }}>{value}</ReactMarkdown>
+                                  {linkedMealId && (
+                                    <a
+                                      href={`/meals/${linkedMealId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={styles.mealLink}
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <ExternalLink size={11} />
+                                    </a>
+                                  )}
+                                </>
+                              ) : (
+                                <span className={styles.mobileDayFieldEmpty}>–</span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        {field === "dinnerActivity" && custodyEntry && (
+                          <div className={styles.mobileDayField}>
+                            <span className={styles.mobileDayFieldLabel}>Emilia</span>
+                            <div className={styles.mobileDayFieldIconWrap}>
+                              <Baby
+                                size={14}
+                                strokeWidth={2}
+                                className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                              />
+                            </div>
                           </div>
                         )}
-                      </div>
+                      </Fragment>
                     )
                   })}
-                  {custodyEntry && (
-                    <div className={styles.mobileDayField}>
-                      <span className={styles.mobileDayFieldLabel}>Emilia</span>
-                      <Baby
-                        size={14}
-                        strokeWidth={2}
-                        className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
-                      />
-                    </div>
-                  )}
                 </div>
               )
             })}
@@ -736,34 +740,32 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
                     </div>
                   )
                 })}
+                {field === "dinnerActivity" && custodyEntries && custodyEntries.length > 0 && (
+                  <>
+                    <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
+                    {week.days.map((day) => {
+                      const isToday = day.date === todayDateStr
+                      const entry = custodyEntries.find(c => c.date === day.date)
+                      return (
+                        <div
+                          key={day.date}
+                          className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableCustodyCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                          onClick={() => setMobileDayDetail(day.date)}
+                        >
+                          {entry && (
+                            <Baby
+                              size={10}
+                              strokeWidth={2}
+                              className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
+                  </>
+                )}
               </Fragment>
             ))}
-
-            {/* Custody row */}
-            {custodyEntries && custodyEntries.length > 0 && (
-              <>
-                <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
-                {week.days.map((day) => {
-                  const isToday = day.date === todayDateStr
-                  const entry = custodyEntries.find(c => c.date === day.date)
-                  return (
-                    <div
-                      key={day.date}
-                      className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
-                      onClick={() => setMobileDayDetail(day.date)}
-                    >
-                      {entry && (
-                        <Baby
-                          size={10}
-                          strokeWidth={2}
-                          className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
-                        />
-                      )}
-                    </div>
-                  )
-                })}
-              </>
-            )}
           </div>
         )}
 

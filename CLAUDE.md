@@ -68,7 +68,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
-| `/settings` | Profile, location, Google Calendar sync selection, family management |
+| `/settings` | Profile, location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
 - `WeekBlock` (`src/app/week/WeekBlock.tsx`) — shared week display used on both `/` (read-only) and `/week` (editable); supports a `/recipe` slash command in lunch/dinner cells to link a meal from the library
@@ -95,6 +95,10 @@ All under `src/app/api/`:
 - `family/create/` — POST (create family + assign user as ADMIN)
 - `family/join/` — POST (join by joinCode)
 - `family/members/` — GET (list family members); `[id]/` — PATCH/DELETE
+- `shopping/items/` — GET/POST/DELETE (list, add, clear all); `[id]/` — PATCH/DELETE
+- `shopping/categories/` — GET/POST; `[id]/` — PATCH/DELETE
+- `shopping/blacklist/` — GET/POST; `[id]/` — DELETE
+- `shopping/generate/` — POST (Anthropic API: generate shopping list from meal plan)
 - `user/` — GET/PATCH (profile)
 - `weather/` — GET (weather for family city)
 - `auth/[...nextauth]/` — NextAuth handler

@@ -138,6 +138,40 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
   const [recipeSearch, setRecipeSearch] = useState<RecipeSearch | null>(null)
   const [generating, setGenerating] = useState(false)
 
+  // Mobile views
+  const [mobileView, setMobileView] = useState<"day" | "3day" | "week">("3day")
+  const [mobileDayDetail, setMobileDayDetail] = useState<string | null>(null)
+  const [mobilePillDetail, setMobilePillDetail] = useState<string | null>(null)
+
+  const pillComponents = {
+    li: ({ children, ...props }: React.ComponentPropsWithoutRef<"li">) => {
+      const text = typeof children === "string" ? children : Array.isArray(children) ? children.map((c) => (typeof c === "string" ? c : "")).join("") : ""
+      return (
+        <li
+          onMouseEnter={(e) => showPillTooltip(text, e)}
+          onMouseLeave={hidePillTooltip}
+          onClick={(e) => { e.stopPropagation(); setMobilePillDetail(text) }}
+          {...props}
+        >
+          {children}
+        </li>
+      )
+    },
+  }
+
+  const todayDateStr = (() => {
+    const t = new Date()
+    return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`
+  })()
+
+  const getMobileDays = (): DayData[] => {
+    const idx = week.days.findIndex(d => d.date === todayDateStr)
+    const start = idx >= 0 ? idx : 0
+    if (mobileView === "day") return week.days.slice(start, start + 1)
+    if (mobileView === "3day") return week.days.slice(start, start + 3)
+    return week.days
+  }
+
   // Pill tooltip
   const [pillTooltip, setPillTooltip] = useState<{ text: string; x: number; y: number } | null>(null)
   const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -420,10 +454,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
                             <div className={styles.cellPreviewInner}>
                               <ReactMarkdown
                                 components={{
-                                  li: ({ children, ...props }) => {
-                                    const text = typeof children === "string" ? children : Array.isArray(children) ? children.map((c) => (typeof c === "string" ? c : "")).join("") : ""
-                                    return <li onMouseEnter={(e) => showPillTooltip(text, e)} onMouseLeave={hidePillTooltip} {...props}>{children}</li>
-                                  },
+                                  ...pillComponents,
                                 }}
                               >{value}</ReactMarkdown>
                               {linkedMealId && (
@@ -469,6 +500,327 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* ── Mobile Views (≤768px) ─────────────────────────── */}
+      <div className={styles.mobileViews}>
+        {/* View switcher pills */}
+        <div className={styles.mobileViewSwitcher}>
+          {(["day", "3day", "week"] as const).map((v) => (
+            <button
+              key={v}
+              className={`${styles.mobileViewBtn} ${mobileView === v ? styles.mobileViewBtnActive : ""}`}
+              onClick={() => setMobileView(v)}
+            >
+              {v === "day" ? "Day" : v === "3day" ? "3 Days" : "Week"}
+            </button>
+          ))}
+        </div>
+
+        {/* Day / 3-Day columns */}
+        {(mobileView === "day" || mobileView === "3day") && (
+          <div className={styles.mobileDaysRow}>
+            {getMobileDays().map((day) => {
+              const isToday = day.date === todayDateStr
+              const { weekday, day: dayNum } = formatDayHeader(day.date)
+              const w = weather?.[day.date]
+              const custodyEntry = custodyEntries?.find(c => c.date === day.date)
+              return (
+                <div key={day.date} className={`${styles.mobileDayCol} ${isToday ? styles.mobileDayColToday : ""}`}>
+                  <div className={styles.mobileDayColHeader}>
+                    <span className={styles.mobileDayColWeekday}>{weekday}</span>
+                    <span className={styles.mobileDayColDate}>{dayNum}</span>
+                    {w && (
+                      <>
+                        <span className={styles.mobileDayColTemp}>{w.low}–{w.high}°</span>
+                        <div className={styles.mobileDayColPhases}>
+                          <div className={styles.mobileDayColPhase}><WeatherIcon rain={w.morningRain} /><span>AM</span></div>
+                          <div className={styles.mobileDayColPhase}><WeatherIcon rain={w.afternoonRain} /><span>PM</span></div>
+                          <div className={styles.mobileDayColPhase}><WeatherIcon rain={w.eveningRain} /><span>Eve</span></div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {ALL_ROWS.map(({ field, label, placeholder }) => {
+                    const key = `${day.date}:${field}`
+                    const value = drafts[key] ?? ""
+                    const isDisabled = readOnly || past || saving.has(key)
+                    const isFocused = focusedKey === key
+                    const isSearching = recipeSearch?.key === key
+                    const isMealField = MEAL_FIELDS.has(field)
+                    const linkedMealId = isMealField ? mealIds[key] : null
+                    const hasError = cellErrors.has(key)
+                    return (
+                      <div key={field} className={`${styles.mobileDayField} ${hasError ? styles.cellError : ""}`}>
+                        <span className={styles.mobileDayFieldLabel}>{label}</span>
+                        {isSearching ? (
+                          <div className={styles.recipeSearchContainer}>
+                            <input
+                              autoFocus
+                              className={styles.recipeSearchInput}
+                              value={recipeSearch!.query}
+                              placeholder="Search meals…"
+                              onChange={(e) =>
+                                setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Escape") {
+                                  setRecipeSearch((prev) => {
+                                    if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                                    return null
+                                  })
+                                }
+                              }}
+                              onBlur={() => {
+                                setTimeout(() => {
+                                  setRecipeSearch((prev) => {
+                                    if (prev?.key === key) {
+                                      setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                                      return null
+                                    }
+                                    return prev
+                                  })
+                                }, 150)
+                              }}
+                            />
+                            {recipeSearch!.results.length > 0 && (
+                              <ul className={styles.recipeDropdown}>
+                                {recipeSearch!.results.map((meal) => (
+                                  <li
+                                    key={meal.id}
+                                    className={styles.recipeDropdownItem}
+                                    onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
+                                  >
+                                    <span className={styles.recipeDropdownName}>{meal.name}</span>
+                                    <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        ) : isFocused ? (
+                          <textarea
+                            autoFocus
+                            className={styles.cellInput}
+                            value={value}
+                            placeholder={placeholder}
+                            disabled={isDisabled}
+                            onChange={(e) => {
+                              const v = e.target.value
+                              if (isMealField && v.trimEnd().endsWith("/recipe")) {
+                                const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
+                                setFocusedKey(null)
+                                setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
+                                return
+                              }
+                              setDrafts((prev) => ({ ...prev, [key]: v }))
+                              autoResize(e.target)
+                            }}
+                            onBlur={() => handleBlur(day.date, field)}
+                            ref={(el) => { if (el) autoResize(el) }}
+                          />
+                        ) : (
+                          <div
+                            className={styles.mobileDayFieldContent}
+                            onClick={() => { if (!isDisabled) setFocusedKey(key) }}
+                          >
+                            {value ? (
+                              <>
+                                <ReactMarkdown components={{ ...pillComponents }}>{value}</ReactMarkdown>
+                                {linkedMealId && (
+                                  <a
+                                    href={`/meals/${linkedMealId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.mealLink}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <ExternalLink size={11} />
+                                  </a>
+                                )}
+                              </>
+                            ) : (
+                              <span className={styles.mobileDayFieldEmpty}>–</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                  {custodyEntry && (
+                    <div className={styles.mobileDayField}>
+                      <span className={styles.mobileDayFieldLabel}>Emilia</span>
+                      <Baby
+                        size={14}
+                        strokeWidth={2}
+                        className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Week view — mini-table with all rows */}
+        {mobileView === "week" && (
+          <div className={styles.mobileWeekTable}>
+            {/* Header row: empty label corner + 7 day headers */}
+            <div className={styles.mobileWeekTableCorner} />
+            {week.days.map((day) => {
+              const isToday = day.date === todayDateStr
+              const { weekday, day: dayNum } = formatDayHeader(day.date)
+              return (
+                <div
+                  key={day.date}
+                  className={`${styles.mobileWeekTableDayHeader} ${isToday ? styles.mobileWeekTableDayHeaderToday : ""}`}
+                  onClick={() => setMobileDayDetail(day.date)}
+                >
+                  <span className={styles.mobileWeekTableWeekday}>{weekday}</span>
+                  <span className={`${styles.mobileWeekTableDayNum} ${isToday ? styles.mobileWeekTableDayNumToday : ""}`}>{dayNum}</span>
+                </div>
+              )
+            })}
+
+            {/* Weather row */}
+            {weather && (
+              <>
+                <div className={styles.mobileWeekTableLabel}>Weather</div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  const w = weather[day.date]
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableWeatherCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      {w && (
+                        <>
+                          <span className={styles.mobileWeekTableTempText}>{w.low}–{w.high}°</span>
+                          <div className={styles.mobileWeekTablePhases}>
+                            <WeatherIcon rain={w.morningRain} />
+                            <WeatherIcon rain={w.afternoonRain} />
+                            <WeatherIcon rain={w.eveningRain} />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
+
+            {/* Content rows */}
+            {ALL_ROWS.map(({ field, label }) => (
+              <Fragment key={field}>
+                <div className={styles.mobileWeekTableLabel}>{label}</div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  const value = drafts[`${day.date}:${field}`] ?? ""
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      <span className={styles.mobileWeekTableCellText}>{value}</span>
+                    </div>
+                  )
+                })}
+              </Fragment>
+            ))}
+
+            {/* Custody row */}
+            {custodyEntries && custodyEntries.length > 0 && (
+              <>
+                <div className={styles.mobileWeekTableLabel}>Emilia</div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  const entry = custodyEntries.find(c => c.date === day.date)
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      {entry && (
+                        <Baby
+                          size={10}
+                          strokeWidth={2}
+                          className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Pill detail modal (tap a pill item) */}
+        {mobilePillDetail && (
+          <div className={styles.mobileModalBackdrop} onClick={() => setMobilePillDetail(null)}>
+            <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
+              <p className={styles.mobileModalFieldValue}>{mobilePillDetail}</p>
+              <button className={styles.mobileModalClose} onClick={() => setMobilePillDetail(null)}>Close</button>
+            </div>
+          </div>
+        )}
+
+        {/* Day detail modal (week view tap) */}
+        {mobileDayDetail && (() => {
+          const day = week.days.find(d => d.date === mobileDayDetail)
+          if (!day) return null
+          const { weekday, day: dayNum } = formatDayHeader(day.date)
+          const w = weather?.[day.date]
+          const custodyEntry = custodyEntries?.find(c => c.date === day.date)
+          return (
+            <div className={styles.mobileModalBackdrop} onClick={() => setMobileDayDetail(null)}>
+              <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
+                <div className={styles.mobileModalHeader}>
+                  <span className={styles.mobileModalWeekday}>{weekday}</span>
+                  <span className={styles.mobileModalDate}>{dayNum}</span>
+                </div>
+                {w && (
+                  <div className={styles.mobileModalWeather}>
+                    <span>{w.low}–{w.high}°</span>
+                    <WeatherIcon rain={w.afternoonRain} />
+                  </div>
+                )}
+                {ALL_ROWS.map(({ field, label }) => {
+                  const value = drafts[`${day.date}:${field}`] ?? ""
+                  if (!value) return null
+                  const isMealField = MEAL_FIELDS.has(field)
+                  const linkedMealId = isMealField ? mealIds[`${day.date}:${field}`] : null
+                  return (
+                    <div key={field} className={styles.mobileModalField}>
+                      <span className={styles.mobileModalFieldLabel}>{label}</span>
+                      <div className={styles.mobileModalFieldValue}>{value}</div>
+                      {linkedMealId && (
+                        <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
+                          <ExternalLink size={11} /> View recipe
+                        </a>
+                      )}
+                    </div>
+                  )
+                })}
+                {custodyEntry && (
+                  <div className={styles.mobileModalField}>
+                    <span className={styles.mobileModalFieldLabel}>Emilia</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                      <Baby size={14} strokeWidth={2} className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona} />
+                      <span className={styles.mobileModalFieldValue}>{custodyEntry.location === "WITH_US" ? "With us" : "With Mona"}</span>
+                    </div>
+                  </div>
+                )}
+                <button className={styles.mobileModalClose} onClick={() => setMobileDayDetail(null)}>Close</button>
+              </div>
+            </div>
+          )
+        })()}
       </div>
 
       {pillTooltip && (

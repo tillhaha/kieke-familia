@@ -16,8 +16,10 @@ function todayStr() {
 function endOfWeekStr() {
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
-  const daysUntilSunday = (7 - d.getUTCDay()) % 7
-  d.setUTCDate(d.getUTCDate() + daysUntilSunday)
+  // Week is Sun–Sat (matches the week planner). Target the coming Saturday.
+  // getUTCDay(): Sun=0, Mon=1, ..., Sat=6
+  const daysUntilSaturday = (6 - d.getUTCDay() + 7) % 7
+  d.setUTCDate(d.getUTCDate() + daysUntilSaturday)
   return d.toISOString().slice(0, 10)
 }
 

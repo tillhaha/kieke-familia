@@ -92,7 +92,7 @@ export default function OnboardingPage() {
 
         {step === "choose" && (
           <>
-            <h1 className={styles.title}>Welcome to Familia</h1>
+            <h1 className={styles.title}>Welcome to YourKieke</h1>
             <p className={styles.subtitle}>Do you want to create a new family or join an existing one?</p>
             <div className={styles.choices}>
               <button className={styles.choiceBtn} onClick={() => setStep("create")}>

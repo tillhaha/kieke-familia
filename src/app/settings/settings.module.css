@@ -400,8 +400,7 @@
 
   .sectionBtn {
     white-space: nowrap;
-    padding: 0.75rem 1rem;
-    min-height: 44px;
+    padding: 0.5rem 0.875rem;
     border-radius: 0;
   }
 

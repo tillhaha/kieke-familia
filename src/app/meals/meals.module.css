@@ -824,4 +824,13 @@
     align-items: flex-start;
     gap: 0.75rem;
   }
+
+  .controlsRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterBar {
+    flex-wrap: wrap;
+  }
 }

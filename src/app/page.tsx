@@ -202,8 +202,8 @@ function TasksWidget({ tasks, onToggleDone, onOpenTask }: { tasks: FamilyTask[];
   const today = new Date().toISOString().slice(0, 10)
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
-  const daysUntilSunday = (7 - d.getUTCDay()) % 7
-  d.setUTCDate(d.getUTCDate() + daysUntilSunday)
+  const daysUntilSaturday = (6 - d.getUTCDay() + 7) % 7
+  d.setUTCDate(d.getUTCDate() + daysUntilSaturday)
   const endOfWeek = d.toISOString().slice(0, 10)
 
   const visible = tasks.filter(

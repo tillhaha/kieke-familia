@@ -3,7 +3,7 @@
 
 import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import ReactMarkdown from "react-markdown"
-import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart } from "lucide-react"
+import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
 import styles from "./week.module.css"
 
 export type DayWeather = {
@@ -73,6 +73,13 @@ const SECTION_ROWS: { section: string; rows: { field: Field; label: string; plac
 ]
 
 const ALL_ROWS = SECTION_ROWS.flatMap((s) => s.rows)
+
+const FIELD_ICON: Record<string, React.ReactNode> = {
+  note:          <MapPin size={11} strokeWidth={2} />,
+  dinnerActivity:<Zap size={11} strokeWidth={2} />,
+  lunch:         <Coffee size={11} strokeWidth={2} />,
+  dinner:        <Utensils size={11} strokeWidth={2} />,
+}
 
 const MEAL_FIELDS = new Set<Field>(["lunch", "dinner"])
 
@@ -686,7 +693,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             {/* Weather row */}
             {weather && (
               <>
-                <div className={styles.mobileWeekTableLabel}>Weather</div>
+                <div className={styles.mobileWeekTableLabel}><Cloud size={11} strokeWidth={2} /></div>
                 {week.days.map((day) => {
                   const isToday = day.date === todayDateStr
                   const w = weather[day.date]
@@ -715,7 +722,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             {/* Content rows */}
             {ALL_ROWS.map(({ field, label }) => (
               <Fragment key={field}>
-                <div className={styles.mobileWeekTableLabel}>{label}</div>
+                <div className={styles.mobileWeekTableLabel}>{FIELD_ICON[field]}</div>
                 {week.days.map((day) => {
                   const isToday = day.date === todayDateStr
                   const value = drafts[`${day.date}:${field}`] ?? ""
@@ -735,7 +742,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, readOnly
             {/* Custody row */}
             {custodyEntries && custodyEntries.length > 0 && (
               <>
-                <div className={styles.mobileWeekTableLabel}>Emilia</div>
+                <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
                 {week.days.map((day) => {
                   const isToday = day.date === todayDateStr
                   const entry = custodyEntries.find(c => c.date === day.date)

@@ -718,18 +718,13 @@ tr:last-child .cell {
 
 .mobileWeekTableLabel {
   background: var(--surface);
-  font-size: 0.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   color: var(--secondary);
-  padding: 0.35rem 0.25rem;
+  padding: 0.35rem 0;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  white-space: nowrap;
-  overflow: hidden;
+  justify-content: center;
 }
 
 .mobileWeekTableCell {

@@ -71,7 +71,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/settings` | Profile, location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
-- `WeekBlock` (`src/app/week/WeekBlock.tsx`) — shared week display used on both `/` (read-only) and `/week` (editable); supports a `/recipe` slash command in lunch/dinner cells to link a meal from the library
+- `WeekBlock` (`src/app/week/WeekBlock.tsx`) — shared week display used on both `/` (read-only) and `/week` (editable); supports a `/recipe` slash command in lunch/dinner cells to link a meal from the library. On mobile (≤768px) the table is hidden and replaced by Day / 3-Day / Week pill-switcher views. The Week view is a mini-table (`grid-template-columns: 40px repeat(7, 1fr)`) with a label column. Pill tap-to-detail uses shared `pillComponents` + `mobilePillDetail` state (bottom-sheet modal).
 - `TaskModal` (`src/app/tasks/TaskModal.tsx`) — shared create/edit modal; exports `TaskData` type; used on both `/tasks` page and the homepage tasks widget
 - `Providers` (`src/components/Providers.tsx`) — wraps `SessionProvider`
 - `Navbar` (`src/components/Navbar.tsx`) — client component, shows nav only when authenticated; mobile: slide-in drawer triggered by hamburger, closes on backdrop click
@@ -128,6 +128,10 @@ Add breakpoint overrides at the bottom of each CSS module. Never modify desktop 
 - Meals pages use `max-width: 720px` centered.
 
 **Flex children + `margin: 0 auto`**: applying `margin: 0 auto` to a flex child overrides `align-self: stretch`, causing it to shrink-wrap its content on first render then jump wide when real content loads. Always add `width: 100%` alongside `max-width` + `margin: 0 auto` on any direct flex child of `appShell`. All page containers already follow this pattern.
+
+**WeekBlock mobile pill rendering**: The mobile day cards use `.mobileDayFieldContent` (defined in `week.module.css`) for markdown/ReactMarkdown output — **not** `.cellPreview`. `cellPreview` is table-cell-specific (carries `min-height`, double-padding, flex-context assumptions) and breaks pill rendering when reused in the mobile card context. `.mobileDayFieldContent` has its own `ul li` pill CSS. Do not replace `.mobileDayFieldContent` with `.cellPreview` in the mobile day card render path.
+
+**Shopping management**: Categories and blacklist are managed under Settings → Shopping (`src/app/settings/ShoppingSection.tsx`). The `/shopping` page no longer contains a manage panel — it only handles the live shopping list (add/check/clear items) plus category grouping.
 
 ## Environment variables required
 ```

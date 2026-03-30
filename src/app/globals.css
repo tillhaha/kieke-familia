@@ -1,28 +1,28 @@
 /* src/app/globals.css */
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --secondary: #64748b;
-  --border: #e2e8f0;
-  --surface: #f8fafc;
-  --surface-hover: #f1f5f9;
-  --accent-soft: #eef2ff;
-  --radius: 8px;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --background: #fdf6ee;
+  --foreground: #3d2010;
+  --primary: #c2692a;
+  --primary-hover: #a85520;
+  --secondary: #a07050;
+  --border: #f0dfc8;
+  --surface: #fff8f0;
+  --surface-hover: #fce9d5;
+  --accent-soft: #fce9d5;
+  --radius: 10px;
+  --shadow-sm: 0 1px 3px rgba(180, 100, 40, 0.08);
+  --shadow-md: 0 4px 16px rgba(180, 100, 40, 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-    --border: #1e293b;
-    --surface: #1e293b;
-    --surface-hover: #334155;
-    --accent-soft: #1e1b4b;
+    --background: #1c0e06;
+    --foreground: #f5e8d8;
+    --border: #3d2010;
+    --surface: #2a1508;
+    --surface-hover: #3d2010;
+    --accent-soft: #4a2010;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   }

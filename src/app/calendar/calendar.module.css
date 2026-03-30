@@ -176,49 +176,49 @@
 }
 
 .filterBirthday.filterBtnActive {
-  background: #fce7f3;
-  color: #be185d;
-  border-color: #f9a8d4;
+  background: #f0d8e0;
+  color: #8b3055;
+  border-color: #d4a8b8;
 }
 
 .filterTravel.filterBtnActive {
-  background: #fef3c7;
-  color: #92400e;
-  border-color: #fde68a;
+  background: #ede0bc;
+  color: #7a5010;
+  border-color: #c8b070;
 }
 
 .filterCustody.filterBtnActive {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-color: #bfdbfe;
+  background: #d5e5ea;
+  color: #285060;
+  border-color: #90b8c8;
 }
 
 .filterGoogle.filterBtnActive {
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-color: #93c5fd;
+  background: #d8ead8;
+  color: #2d6040;
+  border-color: #a8c8a8;
 }
 
 @media (prefers-color-scheme: dark) {
   .filterBirthday.filterBtnActive {
-    background: #4a1030;
-    color: #f9a8d4;
-    border-color: #9d174d;
+    background: #3a1025;
+    color: #d49aad;
+    border-color: #7a3050;
   }
   .filterTravel.filterBtnActive {
-    background: #3b2800;
-    color: #fcd34d;
-    border-color: #92400e;
+    background: #3a2808;
+    color: #c8a850;
+    border-color: #7a5820;
   }
   .filterCustody.filterBtnActive {
-    background: #1e3a5f;
-    color: #93c5fd;
-    border-color: #1d4ed8;
+    background: #102030;
+    color: #7ab0c8;
+    border-color: #204858;
   }
   .filterGoogle.filterBtnActive {
-    background: #1e3a5f;
-    color: #93c5fd;
-    border-color: #1d4ed8;
+    background: #1a3028;
+    color: #7abf90;
+    border-color: #2a5840;
   }
 }
 
@@ -393,32 +393,32 @@
 }
 
 .googleEvent {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #d8ead8;
+  color: #2d6040;
 }
 
 .birthdayEvent {
-  background: #fce7f3;
-  color: #be185d;
+  background: #f0d8e0;
+  color: #8b3055;
 }
 
 .travelEvent {
-  background: #fef3c7;
-  color: #92400e;
+  background: #ede0bc;
+  color: #7a5010;
 }
 
 @media (prefers-color-scheme: dark) {
   .googleEvent {
-    background: #1e3a5f;
-    color: #93c5fd;
+    background: #1a3028;
+    color: #7abf90;
   }
   .birthdayEvent {
-    background: #4a1030;
-    color: #f9a8d4;
+    background: #3a1025;
+    color: #d49aad;
   }
   .travelEvent {
-    background: #3b2800;
-    color: #fcd34d;
+    background: #3a2808;
+    color: #c8a850;
   }
 }
 
@@ -481,7 +481,7 @@
 .formGroup input:focus,
 .formGroup select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  box-shadow: 0 0 0 3px rgba(194, 105, 42, 0.15);
 }
 
 .formRow {
@@ -638,21 +638,21 @@
 /* ── Custody ─────────────────────────────────────────────── */
 
 .custodyHomeEvent {
-  background: #eff6ff;
+  background: #d5e5ea;
   color: var(--foreground);
 }
 
 .custodyMonaEvent {
-  background: #fdf2f8;
+  background: #e8d5e8;
   color: var(--foreground);
 }
 
 @media (prefers-color-scheme: dark) {
   .custodyHomeEvent {
-    background: #1e3a5f;
+    background: #102030;
   }
   .custodyMonaEvent {
-    background: #4a1030;
+    background: #280a28;
   }
 }
 
@@ -707,21 +707,21 @@
 }
 
 .custodyPopoverBtnActive.custodyHomeEvent {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: #285060;
+  background: #d5e5ea;
 }
 
 .custodyPopoverBtnActive.custodyMonaEvent {
-  border-color: #ec4899;
-  background: #fdf2f8;
+  border-color: #6a2a6a;
+  background: #e8d5e8;
 }
 
 @media (prefers-color-scheme: dark) {
   .custodyPopoverBtnActive.custodyHomeEvent {
-    background: #1e3a5f;
+    background: #102030;
   }
   .custodyPopoverBtnActive.custodyMonaEvent {
-    background: #4a1030;
+    background: #280a28;
   }
 }
 

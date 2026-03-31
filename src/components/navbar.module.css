@@ -174,11 +174,11 @@
 }
 
 .dropdownItemDanger {
-  color: #dc2626;
+  color: #c0392b;
 }
 
 .dropdownItemDanger:hover {
-  background: #fef2f2;
+  background: #fdecea;
 }
 
 @media (prefers-color-scheme: dark) {

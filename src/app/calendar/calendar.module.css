@@ -230,18 +230,18 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: #fdecea;
+  border: 1px solid #c0392b;
   border-radius: var(--radius);
-  color: #991b1b;
+  color: #c0392b;
   font-size: 0.875rem;
 }
 
 @media (prefers-color-scheme: dark) {
   .errorBanner {
     background: #2d0a0a;
-    border-color: #7f1d1d;
-    color: #fca5a5;
+    border-color: #c0392b;
+    color: #e07070;
   }
 }
 
@@ -249,7 +249,7 @@
   flex-shrink: 0;
   padding: 0.3rem 0.75rem;
   border-radius: 5px;
-  border: 1px solid #fca5a5;
+  border: 1px solid #c0392b;
   background: transparent;
   color: inherit;
   font-size: 0.8125rem;
@@ -590,7 +590,7 @@
 
 .modalError {
   font-size: 0.875rem;
-  color: #dc2626;
+  color: #c0392b;
   margin: 0.75rem 0 0;
 }
 
@@ -609,7 +609,7 @@
     background: #3d1010;
   }
   .modalError {
-    color: #f87171;
+    color: #e07070;
   }
 }
 
@@ -723,11 +723,14 @@
   .custodyPopoverBtnActive.custodyMonaEvent {
     background: #280a28;
   }
+  .custodyPopoverError {
+    color: #e07070;
+  }
 }
 
 .custodyPopoverError {
   font-size: 11px;
-  color: #dc2626;
+  color: #c0392b;
   margin-top: 2px;
 }
 

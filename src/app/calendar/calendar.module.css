@@ -567,17 +567,17 @@
 }
 
 .deleteBtn:hover {
-  background: #fef2f2;
-  color: #991b1b;
-  border-color: #fecaca;
+  background: #fdecea;
+  color: #c0392b;
+  border-color: #c0392b;
 }
 
 .deleteBtnConfirm {
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  border: 1px solid #fecaca;
-  background: #fef2f2;
-  color: #991b1b;
+  border: 1px solid #c0392b;
+  background: #fdecea;
+  color: #c0392b;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -585,7 +585,7 @@
 }
 
 .deleteBtnConfirm:hover {
-  background: #fee2e2;
+  background: #fbd5d5;
 }
 
 .modalError {
@@ -597,13 +597,13 @@
 @media (prefers-color-scheme: dark) {
   .deleteBtn:hover {
     background: #2d0a0a;
-    color: #fca5a5;
-    border-color: #7f1d1d;
+    color: #e07070;
+    border-color: #e07070;
   }
   .deleteBtnConfirm {
     background: #2d0a0a;
-    border-color: #7f1d1d;
-    color: #fca5a5;
+    border-color: #e07070;
+    color: #e07070;
   }
   .deleteBtnConfirm:hover {
     background: #3d1010;

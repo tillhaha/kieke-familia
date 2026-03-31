@@ -182,7 +182,7 @@
 
 .saveError {
   font-size: 0.875rem;
-  color: #dc2626;
+  color: #c0392b;
   margin-bottom: 0.75rem;
 }
 
@@ -206,10 +206,10 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: #fdecea;
+  border: 1px solid #c0392b;
   border-radius: var(--radius);
-  color: #991b1b;
+  color: #c0392b;
   font-size: 0.875rem;
   margin-bottom: 1rem;
 }
@@ -217,11 +217,11 @@
 @media (prefers-color-scheme: dark) {
   .errorBox {
     background: #2d0a0a;
-    border-color: #7f1d1d;
-    color: #fca5a5;
+    border-color: #c0392b;
+    color: #e07070;
   }
   .saveError {
-    color: #f87171;
+    color: #e07070;
   }
 }
 

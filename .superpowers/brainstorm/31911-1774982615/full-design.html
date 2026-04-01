@@ -1,0 +1,231 @@
+<h2>Design 3 · Minimal / Airy — full app review</h2>
+<p class="subtitle">How the design reads across key pages. Light theme shown — dark mirrors it with deep green tones.</p>
+
+<style>
+  .screen { background: #f8faf8; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 14px rgba(0,0,0,0.1); margin-bottom: 24px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .screen-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 8px; }
+  .fnav { background: #f8faf8; border-bottom: 1px solid #d8e8dc; padding: 0 18px; height: 46px; display: flex; align-items: center; justify-content: space-between; }
+  .fnav-logo { display: flex; align-items: center; gap: 7px; }
+  .fnav-icon { width: 22px; height: 22px; background: #2d6a4f; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 800; }
+  .fnav-name { font-size: 13px; font-weight: 600; color: #1a2e22; letter-spacing: -0.01em; }
+  .fnav-links { display: flex; gap: 3px; }
+  .fnav-link { font-size: 11px; font-weight: 500; padding: 4px 11px; border-radius: 20px; color: #5a8a6a; }
+  .fnav-link.active { background: #2d6a4f; color: #fff; font-weight: 600; }
+  .fnav-user { font-size: 11px; color: #7aaa8a; font-weight: 500; }
+  .page-body { padding: 20px 18px 18px; }
+  .eyebrow { font-size: 10px; color: #7aaa8a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .page-title { font-size: 24px; font-weight: 300; color: #1a2e22; line-height: 1.15; margin-bottom: 14px; }
+  .page-title strong { font-weight: 700; }
+  .card { background: #fff; border: 1px solid #d8e8dc; border-radius: 8px; padding: 11px 13px; }
+  .card-label { font-size: 9px; color: #7aaa8a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 5px; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1a2e22; }
+  .card-sub { font-size: 12px; color: #5a7a66; }
+  .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #7aaa8a; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #d8e8dc; }
+  .task-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid #eef4f0; }
+  .task-row:last-child { border-bottom: none; }
+  .task-check { width: 14px; height: 14px; border: 1.5px solid #2d6a4f; border-radius: 3px; flex-shrink: 0; }
+  .task-check.done { background: #2d6a4f; border-color: #2d6a4f; }
+  .task-name { font-size: 12px; color: #1a2e22; flex: 1; }
+  .task-name.done { color: #aaa; text-decoration: line-through; }
+  .task-meta { font-size: 10px; color: #aaa; }
+  .task-meta.overdue { color: #d4604a; }
+  .pill-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; }
+  .pill-btn-primary { background: #2d6a4f; color: #fff; }
+  .pill-btn-ghost { background: transparent; border: 1px solid #d8e8dc; color: #5a8a6a; }
+  .week-grid { display: grid; grid-template-columns: 36px repeat(7, 1fr); gap: 0; font-size: 10px; }
+  .week-cell { border: 1px solid #e8f0ea; padding: 5px 6px; min-height: 32px; }
+  .week-cell.header { background: #f0f8f2; font-weight: 700; color: #3d7a58; text-align: center; font-size: 9px; text-transform: uppercase; }
+  .week-cell.label { background: #f8faf8; color: #7aaa8a; font-weight: 700; letter-spacing: 0.05em; font-size: 9px; display: flex; align-items: center; }
+  .week-cell.today { background: #e8f4ee; }
+  .week-content { font-size: 10px; color: #2a4a35; }
+  .tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 10px; }
+  .tag-green { background: #e8f4ee; color: #2d6a4f; }
+  .tag-red { background: #fdecea; color: #c0392b; }
+  .input { border: 1px solid #d8e8dc; border-radius: 7px; padding: 7px 10px; font-size: 12px; color: #1a2e22; background: #fff; outline: none; width: 100%; font-family: inherit; }
+  .input:focus { border-color: #2d6a4f; }
+</style>
+
+<!-- ── Page 1: Homepage ──────────────────────────────────── -->
+<p class="screen-label">Homepage</p>
+<div class="screen">
+  <div class="fnav">
+    <div class="fnav-logo">
+      <div class="fnav-icon">F</div>
+      <span class="fnav-name">familia</span>
+    </div>
+    <div class="fnav-links">
+      <span class="fnav-link active">Home</span>
+      <span class="fnav-link">Week</span>
+      <span class="fnav-link">Calendar</span>
+      <span class="fnav-link">Meals</span>
+      <span class="fnav-link">Shopping</span>
+      <span class="fnav-link">Tasks</span>
+    </div>
+    <span class="fnav-user">Till ▾</span>
+  </div>
+  <div class="page-body">
+    <div class="eyebrow">Tuesday · 31 March 2026</div>
+    <div class="page-title">Good morning, <strong>Till</strong></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+      <div class="card" style="grid-column: 1 / -1; display:flex;align-items:center;justify-content:space-between;background:#e8f4ee;border-color:#c0ddc8;">
+        <div>
+          <div class="card-label">Tonight's dinner</div>
+          <div class="card-title">Spaghetti Carbonara</div>
+        </div>
+        <span style="font-size:22px;">🍝</span>
+      </div>
+      <div class="card" style="grid-column:span 2;">
+        <div class="card-label">Tasks due this week</div>
+        <div class="task-row" style="border-bottom:1px solid #eef4f0;">
+          <div class="task-check"></div><span class="task-name">Buy groceries</span><span class="task-meta overdue">overdue</span>
+        </div>
+        <div class="task-row" style="border-bottom:1px solid #eef4f0;">
+          <div class="task-check"></div><span class="task-name">Call dentist</span><span class="task-meta">Thu</span>
+        </div>
+        <div class="task-row">
+          <div class="task-check done"></div><span class="task-name done">Book holiday</span><span class="task-meta">done</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label">This week</div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:11px;color:#2a4a35;">
+          <div><strong style="color:#7aaa8a;font-size:9px;">MON</strong> Pasta</div>
+          <div><strong style="color:#2d6a4f;font-size:9px;">TUE ←</strong> Salad</div>
+          <div><strong style="color:#7aaa8a;font-size:9px;">WED</strong> Soup</div>
+          <div><strong style="color:#7aaa8a;font-size:9px;">THU</strong> Pizza</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Page 2: Tasks ─────────────────────────────────────── -->
+<p class="screen-label">Tasks page</p>
+<div class="screen">
+  <div class="fnav">
+    <div class="fnav-logo"><div class="fnav-icon">F</div><span class="fnav-name">familia</span></div>
+    <div class="fnav-links">
+      <span class="fnav-link">Home</span>
+      <span class="fnav-link">Week</span>
+      <span class="fnav-link">Calendar</span>
+      <span class="fnav-link">Meals</span>
+      <span class="fnav-link">Shopping</span>
+      <span class="fnav-link active">Tasks</span>
+    </div>
+    <span class="fnav-user">Till ▾</span>
+  </div>
+  <div class="page-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div class="eyebrow">Family</div>
+        <div style="font-size:20px;font-weight:700;color:#1a2e22;letter-spacing:-0.02em;">Tasks</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select style="font-size:11px;border:1px solid #d8e8dc;border-radius:20px;padding:4px 10px;color:#5a8a6a;background:#fff;outline:none;font-family:inherit;">
+          <option>All members</option>
+        </select>
+        <button class="pill-btn pill-btn-primary">+ New task</button>
+      </div>
+    </div>
+    <div class="section-title" style="color:#d4604a;border-color:#fde8e4;">Overdue · 1</div>
+    <div style="margin-bottom:14px;">
+      <div class="task-row">
+        <div class="task-check"></div>
+        <span class="task-name">Buy groceries</span>
+        <span class="tag tag-red">2 days late</span>
+      </div>
+    </div>
+    <div class="section-title">This week · 2</div>
+    <div style="margin-bottom:14px;">
+      <div class="task-row">
+        <div class="task-check"></div>
+        <span class="task-name">Call dentist</span>
+        <span class="task-meta">Thu · Till</span>
+      </div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <span class="task-name">Renew car insurance</span>
+        <span class="task-meta">Fri · Till</span>
+      </div>
+    </div>
+    <div class="section-title">Later · 1</div>
+    <div>
+      <div class="task-row">
+        <div class="task-check"></div>
+        <span class="task-name">Plan summer trip</span>
+        <span class="task-meta">Apr 15</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Page 3: Week planner ──────────────────────────────── -->
+<p class="screen-label">Week planner</p>
+<div class="screen">
+  <div class="fnav">
+    <div class="fnav-logo"><div class="fnav-icon">F</div><span class="fnav-name">familia</span></div>
+    <div class="fnav-links">
+      <span class="fnav-link">Home</span>
+      <span class="fnav-link active">Week</span>
+      <span class="fnav-link">Calendar</span>
+      <span class="fnav-link">Meals</span>
+      <span class="fnav-link">Shopping</span>
+      <span class="fnav-link">Tasks</span>
+    </div>
+    <span class="fnav-user">Till ▾</span>
+  </div>
+  <div class="page-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div>
+        <div class="eyebrow">Week 14</div>
+        <div style="font-size:20px;font-weight:700;color:#1a2e22;letter-spacing:-0.02em;">March 30 – April 5</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="pill-btn pill-btn-ghost">← Prev</button>
+        <button class="pill-btn pill-btn-ghost">Next →</button>
+      </div>
+    </div>
+    <div class="week-grid">
+      <div class="week-cell label"></div>
+      <div class="week-cell header">MON</div>
+      <div class="week-cell header today">TUE</div>
+      <div class="week-cell header">WED</div>
+      <div class="week-cell header">THU</div>
+      <div class="week-cell header">FRI</div>
+      <div class="week-cell header">SAT</div>
+      <div class="week-cell header">SUN</div>
+
+      <div class="week-cell label">Lunch</div>
+      <div class="week-cell"><span class="week-content">Salad</span></div>
+      <div class="week-cell today"><span class="week-content">Soup</span></div>
+      <div class="week-cell"><span class="week-content"></span></div>
+      <div class="week-cell"><span class="week-content">Pizza</span></div>
+      <div class="week-cell"><span class="week-content"></span></div>
+      <div class="week-cell"><span class="week-content">Brunch</span></div>
+      <div class="week-cell"><span class="week-content"></span></div>
+
+      <div class="week-cell label">Dinner</div>
+      <div class="week-cell"><span class="week-content">Pasta</span></div>
+      <div class="week-cell today"><span class="week-content" style="color:#2d6a4f;font-weight:600;">Carbonara</span></div>
+      <div class="week-cell"><span class="week-content">Tacos</span></div>
+      <div class="week-cell"><span class="week-content">Steak</span></div>
+      <div class="week-cell"><span class="week-content">Sushi</span></div>
+      <div class="week-cell"><span class="week-content"></span></div>
+      <div class="week-cell"><span class="week-content">Roast</span></div>
+
+      <div class="week-cell label">Notes</div>
+      <div class="week-cell"><span class="week-content" style="color:#aaa">—</span></div>
+      <div class="week-cell today"><span class="week-content">Pickup 15:30</span></div>
+      <div class="week-cell"><span class="week-content" style="color:#aaa">—</span></div>
+      <div class="week-cell"><span class="week-content">Dentist</span></div>
+      <div class="week-cell"><span class="week-content" style="color:#aaa">—</span></div>
+      <div class="week-cell"><span class="week-content">Hiking</span></div>
+      <div class="week-cell"><span class="week-content" style="color:#aaa">—</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" data-choice="approve" onclick="toggleSelect(this)" style="background:#e8f4ee;border-color:#2d6a4f;text-align:center;padding:16px;cursor:pointer;">
+  <div style="font-size:14px;font-weight:700;color:#2d6a4f;">✓ Looks good — approve this design</div>
+  <div style="font-size:12px;color:#5a8a6a;margin-top:4px;">Click to confirm and move to implementation planning</div>
+</div>

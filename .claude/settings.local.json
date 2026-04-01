@@ -20,7 +20,8 @@
       "Bash(grep -A 15 \"export async function DELETE\" /Users/till/Development/familia/src/app/api/meals/[id]/route.ts)",
       "Bash(grep:*)",
       "Bash(npm install:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(bash /Users/till/Development/familia/.claude/skills/brainstorming/scripts/start-server.sh --project-dir /Users/till/Development/familia 2>&1)"
     ]
   }
 }

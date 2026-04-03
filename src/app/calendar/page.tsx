@@ -4,12 +4,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Baby, Link2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Baby, Link2 } from "lucide-react"
 import styles from "./calendar.module.css"
 import CustodyPopover from "./CustodyPopover"
 
-type ModalType = "NONE" | "BIRTHDAY" | "TRAVEL" | "CUSTODY" | "ADD"
-type AddTab = "BIRTHDAY" | "TRAVEL" | "CUSTODY"
+type ModalType = "NONE" | "CUSTODY"
 
 type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WITH_MONA"; personName: string }
 type GoogleEvent = { id: string; summary?: string; start?: { date?: string; dateTime?: string }; end?: { date?: string; dateTime?: string }; calendarId?: string; calendarName?: string }
@@ -27,25 +26,9 @@ function googleEventTooltip(e: GoogleEvent): string {
   if (e.calendarName) parts.push(e.calendarName)
   return parts.join(" · ")
 }
-type BirthdayEntry = { id: string; name: string; month: number; day: number; year?: number | null }
-type TravelEntry = { id: string; destination: string; startDate: string; endDate: string; userId: string }
 type ImportedEvent = { id: string; summary: string; start: string; end: string; allDay: boolean; calendarId: string; calendarName: string; calendarColor: string }
 
 type SpanPos = "single" | "start" | "middle" | "end"
-
-function getTravelSpanPos(date: Date, t: TravelEntry): SpanPos {
-  const d = date.getDay()
-  const check = new Date(date); check.setHours(0, 0, 0, 0)
-  const start = new Date(t.startDate); start.setHours(0, 0, 0, 0)
-  const end = new Date(t.endDate); end.setHours(0, 0, 0, 0)
-  if (start.getTime() === end.getTime()) return "single"
-  const isSpanStart = check.getTime() === start.getTime() || d === 1
-  const isSpanEnd = check.getTime() === end.getTime() || d === 0
-  if (isSpanStart && isSpanEnd) return "single"
-  if (isSpanStart) return "start"
-  if (isSpanEnd) return "end"
-  return "middle"
-}
 
 function getCustodySpanPos(date: Date, entry: CustodyEntry, allEntries: CustodyEntry[]): SpanPos {
   const d = date.getDay()
@@ -108,15 +91,11 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<{
     googleEvents: GoogleEvent[]
-    birthdays: BirthdayEntry[]
-    travels: TravelEntry[]
     custodyEntries: CustodyEntry[]
     calendarSyncCount: number
     importedEvents: ImportedEvent[]
   }>({
     googleEvents: [],
-    birthdays: [],
-    travels: [],
     custodyEntries: [],
     calendarSyncCount: 0,
     importedEvents: [],
@@ -125,33 +104,10 @@ export default function CalendarPage() {
   const [calendarError, setCalendarError] = useState<string | null>(null)
   const [modal, setModal] = useState<ModalType>("NONE")
 
-  // Birthday form state
-  const [bName, setBName] = useState("")
-  const [bMonth, setBMonth] = useState(new Date().getMonth() + 1)
-  const [bDay, setBDay] = useState(new Date().getDate())
-  const [bYear, setBYear] = useState<string>("")
-
-  // Travel form state
-  const [tDest, setTDest] = useState("")
-  const [tStart, setTStart] = useState(new Date().toISOString().split("T")[0])
-  const [tEnd, setTEnd] = useState(new Date().toISOString().split("T")[0])
-
-  // Edit mode state
-  const [editingBirthday, setEditingBirthday] = useState<{
-    id: string; name: string; month: number; day: number; year?: number | null
-  } | null>(null)
-  const [editingTravel, setEditingTravel] = useState<{
-    id: string; destination: string; startDate: string; endDate: string
-  } | null>(null)
   const [deleteConfirming, setDeleteConfirming] = useState(false)
   const [modalError, setModalError] = useState<string | null>(null)
 
-  // Add modal tab state
-  const [addTab, setAddTab] = useState<AddTab>("BIRTHDAY")
-
   // Filter state
-  const [showBirthdays, setShowBirthdays] = useState(true)
-  const [showTravel, setShowTravel] = useState(true)
   const [showCustody, setShowCustody] = useState(true)
   const [showGoogle, setShowGoogle] = useState(true)
   const [showImported, setShowImported] = useState(true)
@@ -192,8 +148,6 @@ export default function CalendarPage() {
       if (data.error) throw new Error(data.error)
       setEvents({
         googleEvents: data.googleEvents ?? [],
-        birthdays: data.birthdays ?? [],
-        travels: data.travels ?? [],
         custodyEntries: data.custodyEntries ?? [],
         calendarSyncCount: data.calendarSyncCount ?? 0,
         importedEvents: data.importedEvents ?? [],
@@ -203,90 +157,6 @@ export default function CalendarPage() {
       setCalendarError(err instanceof Error ? err.message : "Failed to load calendar events.")
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleSaveBirthday = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setModalError(null)
-    try {
-      const url = editingBirthday
-        ? `/api/calendar/birthdays/${editingBirthday.id}`
-        : "/api/calendar/birthdays"
-      const res = await fetch(url, {
-        method: editingBirthday ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: bName, month: bMonth, day: bDay, year: bYear ? parseInt(bYear) : null }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Failed to save")
-      closeModal()
-      fetchEvents()
-    } catch (err: unknown) {
-      setModalError(err instanceof Error ? err.message : "Failed to save")
-    }
-  }
-
-  const handleDeleteBirthday = async () => {
-    if (!editingBirthday) return
-    if (!deleteConfirming) {
-      setDeleteConfirming(true)
-      return
-    }
-    setModalError(null)
-    try {
-      const res = await fetch(`/api/calendar/birthdays/${editingBirthday.id}`, {
-        method: "DELETE",
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Failed to delete")
-      closeModal()
-      fetchEvents()
-    } catch (err: unknown) {
-      setModalError(err instanceof Error ? err.message : "Failed to delete")
-      setDeleteConfirming(false)
-    }
-  }
-
-  const handleSaveTravel = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setModalError(null)
-    try {
-      const url = editingTravel
-        ? `/api/calendar/travel/${editingTravel.id}`
-        : "/api/calendar/travel"
-      const res = await fetch(url, {
-        method: editingTravel ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ destination: tDest, startDate: tStart, endDate: tEnd }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Failed to save")
-      closeModal()
-      fetchEvents()
-    } catch (err: unknown) {
-      setModalError(err instanceof Error ? err.message : "Failed to save")
-    }
-  }
-
-  const handleDeleteTravel = async () => {
-    if (!editingTravel) return
-    if (!deleteConfirming) {
-      setDeleteConfirming(true)
-      return
-    }
-    setModalError(null)
-    try {
-      const res = await fetch(`/api/calendar/travel/${editingTravel.id}`, {
-        method: "DELETE",
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Failed to delete")
-      closeModal()
-      fetchEvents()
-    } catch (err: unknown) {
-      setModalError(err instanceof Error ? err.message : "Failed to delete")
-      setDeleteConfirming(false)
     }
   }
 
@@ -333,21 +203,6 @@ export default function CalendarPage() {
       return start ? new Date(start).toDateString() === dStr : false
     })
 
-    const birthdays = events.birthdays.filter(
-      (b) => b.month === date.getMonth() + 1 && b.day === date.getDate()
-    )
-
-    const travels = events.travels.filter((t) => {
-      const checkDate = new Date(date)
-      checkDate.setHours(0, 0, 0, 0)
-      const s = new Date(t.startDate)
-      s.setHours(0, 0, 0, 0)
-      const e = new Date(t.endDate)
-      e.setHours(0, 0, 0, 0)
-      return checkDate >= s && checkDate <= e
-    })
-
-    // Custody: compare as YYYY-MM-DD strings to avoid timezone issues
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
     const custody = events.custodyEntries.filter((c) => c.date === dateStr)
 
@@ -358,8 +213,6 @@ export default function CalendarPage() {
 
     return {
       google: showGoogle ? google : [],
-      birthdays: showBirthdays ? birthdays : [],
-      travels: showTravel ? travels : [],
       custody: showCustody ? custody : [],
       imported: showImported ? imported : [],
     }
@@ -378,15 +231,6 @@ export default function CalendarPage() {
           </h1>
           <button
             onClick={() => {
-              setEditingBirthday(null)
-              setBName("")
-              setBMonth(new Date().getMonth() + 1)
-              setBDay(new Date().getDate())
-              setBYear("")
-              setEditingTravel(null)
-              setTDest("")
-              setTStart(new Date().toISOString().split("T")[0])
-              setTEnd(new Date().toISOString().split("T")[0])
               const today = new Date().toISOString().split("T")[0]
               const sixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split("T")[0]
               setCStart(today)
@@ -397,11 +241,10 @@ export default function CalendarPage() {
               setOpenCustodyId(null)
               setDeleteConfirming(false)
               setModalError(null)
-              setAddTab("BIRTHDAY")
-              setModal("ADD")
+              setModal("CUSTODY")
             }}
             className={styles.addBtn}
-            aria-label="Add event"
+            aria-label="Add custody schedule"
           >
             <Plus size={16} />
           </button>
@@ -423,20 +266,6 @@ export default function CalendarPage() {
       {/* Filters */}
       <div className={styles.filterBar}>
         <span className={styles.filterLabel}>Show:</span>
-        <button
-          className={`${styles.filterBtn} ${styles.filterBirthday} ${showBirthdays ? styles.filterBtnActive : ""}`}
-          onClick={() => setShowBirthdays((v) => !v)}
-        >
-          <Cake size={12} strokeWidth={2} />
-          Birthdays
-        </button>
-        <button
-          className={`${styles.filterBtn} ${styles.filterTravel} ${showTravel ? styles.filterBtnActive : ""}`}
-          onClick={() => setShowTravel((v) => !v)}
-        >
-          <Plane size={12} strokeWidth={2} />
-          Travel
-        </button>
         <button
           className={`${styles.filterBtn} ${styles.filterCustody} ${showCustody ? styles.filterBtnActive : ""}`}
           onClick={() => setShowCustody((v) => !v)}
@@ -538,64 +367,6 @@ export default function CalendarPage() {
                 </div>
               ))}
 
-              {dayEvents.birthdays.map((b, idx) => (
-                <div
-                  key={idx}
-                  className={`${styles.eventItem} ${styles.birthdayEvent}`}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    setEditingBirthday({ id: b.id, name: b.name, month: b.month, day: b.day, year: b.year })
-                    setBName(b.name)
-                    setBMonth(b.month)
-                    setBDay(b.day)
-                    setBYear(b.year ? String(b.year) : "")
-                    setDeleteConfirming(false)
-                    setModalError(null)
-                    setModal("BIRTHDAY")
-                  }}
-                  data-tooltip={b.name}
-                >
-                  <Cake size={10} strokeWidth={2} />
-                  <span>{b.name}</span>
-                </div>
-              ))}
-
-              {dayEvents.travels.map((t, idx) => {
-                const currentUserId = (session?.user as { id?: string })?.id
-                const isOwner = t.userId === currentUserId
-                const spanPos = getTravelSpanPos(dayObj.date, t)
-                const spanClass = spanPos === "single" ? "" : spanPos === "start" ? styles.eventSpanStart : spanPos === "end" ? styles.eventSpanEnd : styles.eventSpanMiddle
-                return (
-                  <div
-                    key={idx}
-                    className={`${styles.eventItem} ${styles.travelEvent} ${spanClass}`}
-                    style={isOwner ? { cursor: "pointer" } : undefined}
-                    onClick={
-                      isOwner
-                        ? () => {
-                            setEditingTravel({
-                              id: t.id,
-                              destination: t.destination,
-                              startDate: new Date(t.startDate).toISOString().split("T")[0],
-                              endDate: new Date(t.endDate).toISOString().split("T")[0],
-                            })
-                            setTDest(t.destination)
-                            setTStart(new Date(t.startDate).toISOString().split("T")[0])
-                            setTEnd(new Date(t.endDate).toISOString().split("T")[0])
-                            setDeleteConfirming(false)
-                            setModalError(null)
-                            setModal("TRAVEL")
-                          }
-                        : undefined
-                    }
-                    data-tooltip={t.destination}
-                  >
-                    <Plane size={10} strokeWidth={2} />
-                    <span>{t.destination}</span>
-                  </div>
-                )
-              })}
-
               {dayEvents.imported.map((e, idx) => (
                 <div
                   key={idx}
@@ -612,316 +383,6 @@ export default function CalendarPage() {
         })}
       </div>
       </div>
-
-      {/* Add Modal (tabbed) */}
-      {modal === "ADD" && (
-        <div className={styles.modalBackdrop} onClick={closeModal}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalTabNav}>
-              <button
-                type="button"
-                className={`${styles.modalTab} ${addTab === "BIRTHDAY" ? styles.modalTabActive : ""}`}
-                onClick={() => setAddTab("BIRTHDAY")}
-              >
-                <Cake size={13} strokeWidth={2} /> Birthday
-              </button>
-              <button
-                type="button"
-                className={`${styles.modalTab} ${addTab === "TRAVEL" ? styles.modalTabActive : ""}`}
-                onClick={() => setAddTab("TRAVEL")}
-              >
-                <Plane size={13} strokeWidth={2} /> Travel
-              </button>
-              <button
-                type="button"
-                className={`${styles.modalTab} ${addTab === "CUSTODY" ? styles.modalTabActive : ""}`}
-                onClick={() => setAddTab("CUSTODY")}
-              >
-                <Baby size={13} strokeWidth={2} /> Custody
-              </button>
-            </div>
-
-            {addTab === "BIRTHDAY" && (
-              <form onSubmit={handleSaveBirthday}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="add-bName">Name</label>
-                  <input id="add-bName" type="text" value={bName} onChange={(e) => setBName(e.target.value)} placeholder="Who's birthday is it?" required />
-                </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-bDay">Day</label>
-                    <input id="add-bDay" type="number" min="1" max="31" value={bDay} onChange={(e) => setBDay(parseInt(e.target.value))} required />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-bMonth">Month</label>
-                    <select id="add-bMonth" value={bMonth} onChange={(e) => setBMonth(parseInt(e.target.value))} required>
-                      {["January","February","March","April","May","June","July","August","September","October","November","December"].map((name, i) => (
-                        <option key={i + 1} value={i + 1}>{name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-bYear">Year <span style={{ fontWeight: 400, color: "var(--secondary)" }}>(optional)</span></label>
-                    <input id="add-bYear" type="number" min="1900" max={new Date().getFullYear()} value={bYear} onChange={(e) => setBYear(e.target.value)} placeholder="e.g. 1990" />
-                  </div>
-                </div>
-                {modalError && <p className={styles.modalError}>{modalError}</p>}
-                <div className={styles.modalActions}>
-                  <button type="button" className={styles.cancelBtn} onClick={closeModal}>Cancel</button>
-                  <button type="submit" className={styles.saveBtn}>Save</button>
-                </div>
-              </form>
-            )}
-
-            {addTab === "TRAVEL" && (
-              <form onSubmit={handleSaveTravel}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="add-tDest">Destination</label>
-                  <input id="add-tDest" type="text" value={tDest} onChange={(e) => setTDest(e.target.value)} placeholder="Where are you going?" required />
-                </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-tStart">Start Date</label>
-                    <input id="add-tStart" type="date" value={tStart} onChange={(e) => { const v = e.target.value; setTStart(v); setTEnd(v) }} required />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-tEnd">End Date</label>
-                    <input id="add-tEnd" type="date" value={tEnd} min={tStart} onChange={(e) => setTEnd(e.target.value)} required />
-                  </div>
-                </div>
-                {modalError && <p className={styles.modalError}>{modalError}</p>}
-                <div className={styles.modalActions}>
-                  <button type="button" className={styles.cancelBtn} onClick={closeModal}>Cancel</button>
-                  <button type="submit" className={styles.saveBtn}>Save</button>
-                </div>
-              </form>
-            )}
-
-            {addTab === "CUSTODY" && (
-              <form onSubmit={async (e) => {
-                e.preventDefault()
-                setModalError(null)
-                try {
-                  const res = await fetch("/api/calendar/custody", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      startDate: cStart,
-                      startsWith: cStartsWith,
-                      recurring: cRecurring,
-                      until: cRecurring ? cUntil : cStart,
-                      force: cConflictPending,
-                    }),
-                  })
-                  const data = await res.json()
-                  if (res.status === 409 && data.conflict) { setCConflictPending(true); return }
-                  if (!res.ok) throw new Error(data.error ?? "Failed to save")
-                  closeModal()
-                  fetchEvents()
-                } catch (err: unknown) {
-                  setModalError(err instanceof Error ? err.message : "Failed to save")
-                }
-              }}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="add-cStart">First night</label>
-                  <input id="add-cStart" type="date" value={cStart} onChange={(e) => { setCStart(e.target.value); setCConflictPending(false) }} required />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Emilia sleeps at</label>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button type="button" onClick={() => setCStartsWith("WITH_US")} style={{ flex: 1, padding: "8px", borderRadius: "6px", border: cStartsWith === "WITH_US" ? "2px solid var(--primary)" : "1px solid var(--border)", background: cStartsWith === "WITH_US" ? "var(--accent-soft)" : "transparent", fontWeight: cStartsWith === "WITH_US" ? 700 : 500, cursor: "pointer", fontFamily: "inherit", fontSize: "0.875rem" }}>
-                      With us
-                    </button>
-                    <button type="button" onClick={() => setCStartsWith("WITH_MONA")} style={{ flex: 1, padding: "8px", borderRadius: "6px", border: cStartsWith === "WITH_MONA" ? "2px solid var(--primary)" : "1px solid var(--border)", background: cStartsWith === "WITH_MONA" ? "var(--accent-soft)" : "transparent", fontWeight: cStartsWith === "WITH_MONA" ? 700 : 500, cursor: "pointer", fontFamily: "inherit", fontSize: "0.875rem" }}>
-                      Elsewhere
-                    </button>
-                  </div>
-                </div>
-                <div className={styles.formGroup}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <label style={{ marginBottom: 0 }}>Recurring</label>
-                    <button type="button" onClick={() => setCRecurring(!cRecurring)} style={{ width: "36px", height: "20px", borderRadius: "10px", border: "none", background: cRecurring ? "var(--primary)" : "var(--border)", cursor: "pointer", position: "relative", transition: "background 150ms" }} aria-label="Toggle recurring">
-                      <span style={{ position: "absolute", top: "2px", left: cRecurring ? "calc(100% - 18px)" : "2px", width: "16px", height: "16px", borderRadius: "50%", background: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 150ms" }} />
-                    </button>
-                  </div>
-                  {cRecurring && <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>Alternating weeks · switches on Sunday</p>}
-                </div>
-                {cRecurring && (
-                  <div className={styles.formGroup}>
-                    <label htmlFor="add-cUntil">Until</label>
-                    <input id="add-cUntil" type="date" value={cUntil} onChange={(e) => setCUntil(e.target.value)} required />
-                    {cStart && cUntil && (
-                      <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
-                        Creates ~{Math.round((new Date(cUntil).getTime() - new Date(cStart).getTime()) / (7 * 24 * 60 * 60 * 1000))} weeks of schedule entries
-                      </p>
-                    )}
-                  </div>
-                )}
-                {cConflictPending && (
-                  <p className={styles.modalError} style={{ background: "var(--warning-soft, #fff8e1)", borderColor: "var(--warning, #f59e0b)", color: "var(--warning-text, #92400e)" }}>
-                    There are already entries for these dates. Submit again to overwrite them.
-                  </p>
-                )}
-                {modalError && <p className={styles.modalError}>{modalError}</p>}
-                <div className={styles.modalActions}>
-                  <button type="button" className={styles.cancelBtn} onClick={closeModal}>Cancel</button>
-                  <button type="submit" className={cConflictPending ? styles.deleteBtnConfirm : styles.saveBtn}>
-                    {cConflictPending ? "Overwrite" : "Save Schedule"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Birthday Modal */}
-      {modal === "BIRTHDAY" && (
-        <div className={styles.modalBackdrop} onClick={closeModal}>
-          <form
-            className={styles.modalContent}
-            onSubmit={handleSaveBirthday}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2>{editingBirthday ? "Edit Birthday" : "Add Birthday"}</h2>
-            <div className={styles.formGroup}>
-              <label htmlFor="bName">Name</label>
-              <input
-                id="bName"
-                type="text"
-                value={bName}
-                onChange={(e) => setBName(e.target.value)}
-                placeholder="Who's birthday is it?"
-                required
-              />
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="bDay">Day</label>
-                <input
-                  id="bDay"
-                  type="number"
-                  min="1"
-                  max="31"
-                  value={bDay}
-                  onChange={(e) => setBDay(parseInt(e.target.value))}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="bMonth">Month</label>
-                <select
-                  id="bMonth"
-                  value={bMonth}
-                  onChange={(e) => setBMonth(parseInt(e.target.value))}
-                  required
-                >
-                  {["January","February","March","April","May","June","July","August","September","October","November","December"].map((name, i) => (
-                    <option key={i + 1} value={i + 1}>{name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="bYear">Year <span style={{ fontWeight: 400, color: "var(--secondary)" }}>(optional)</span></label>
-                <input
-                  id="bYear"
-                  type="number"
-                  min="1900"
-                  max={new Date().getFullYear()}
-                  value={bYear}
-                  onChange={(e) => setBYear(e.target.value)}
-                  placeholder="e.g. 1990"
-                />
-              </div>
-            </div>
-            {modalError && <p className={styles.modalError}>{modalError}</p>}
-            <div className={styles.modalActions}>
-              {editingBirthday && (
-                <button
-                  type="button"
-                  className={deleteConfirming ? styles.deleteBtnConfirm : styles.deleteBtn}
-                  onClick={handleDeleteBirthday}
-                >
-                  {deleteConfirming ? "Confirm delete" : "Delete"}
-                </button>
-              )}
-              <div style={{ flex: 1 }} />
-              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
-                Cancel
-              </button>
-              <button type="submit" className={styles.saveBtn}>
-                Save
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Travel Modal */}
-      {modal === "TRAVEL" && (
-        <div className={styles.modalBackdrop} onClick={closeModal}>
-          <form
-            className={styles.modalContent}
-            onSubmit={handleSaveTravel}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2>{editingTravel ? "Edit Travel" : "Add Travel"}</h2>
-            <div className={styles.formGroup}>
-              <label htmlFor="tDest">Destination</label>
-              <input
-                id="tDest"
-                type="text"
-                value={tDest}
-                onChange={(e) => setTDest(e.target.value)}
-                placeholder="Where are you going?"
-                required
-              />
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label htmlFor="tStart">Start Date</label>
-                <input
-                  id="tStart"
-                  type="date"
-                  value={tStart}
-                  onChange={(e) => { const v = e.target.value; setTStart(v); setTEnd(v) }}
-                  required
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="tEnd">End Date</label>
-                <input
-                  id="tEnd"
-                  type="date"
-                  value={tEnd}
-                  min={tStart}
-                  onChange={(e) => setTEnd(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-            {modalError && <p className={styles.modalError}>{modalError}</p>}
-            <div className={styles.modalActions}>
-              {editingTravel && (
-                <button
-                  type="button"
-                  className={deleteConfirming ? styles.deleteBtnConfirm : styles.deleteBtn}
-                  onClick={handleDeleteTravel}
-                >
-                  {deleteConfirming ? "Confirm delete" : "Delete"}
-                </button>
-              )}
-              <div style={{ flex: 1 }} />
-              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
-                Cancel
-              </button>
-              <button type="submit" className={styles.saveBtn}>
-                Save
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Custody Modal */}
       {modal === "CUSTODY" && (

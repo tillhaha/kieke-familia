@@ -2,6 +2,7 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { listEventsFromCalendars } from "@/lib/google/calendar"
+import { fetchAndParseIcal } from "@/lib/ical"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 
@@ -68,7 +69,19 @@ export async function GET(request: Request) {
       date: c.date.toISOString().split("T")[0],
     }))
 
-    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody })
+    const importedCalendars = await prisma.importedCalendar.findMany({
+      where: { userId },
+      select: { id: true, url: true, name: true, color: true },
+    })
+
+    const importedEventsNested = await Promise.all(
+      importedCalendars.map((cal) =>
+        fetchAndParseIcal(cal.url, cal.id, cal.name, cal.color, timeMin, timeMax)
+      )
+    )
+    const importedEvents = importedEventsNested.flat()
+
+    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody, importedEvents })
   } catch (error: unknown) {
     console.error("Calendar fetch error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })

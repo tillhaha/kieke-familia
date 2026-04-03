@@ -58,6 +58,7 @@ model User {
   activities    Activity[]
   travels       Travel[]
   calendarSyncs CalendarSync[]
+  importedCalendars ImportedCalendar[]
   taskAssignments    TaskAssignee[]
 }
 
@@ -140,6 +141,17 @@ model CalendarSync {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, calendarId])
+}
+
+model ImportedCalendar {
+  id        String   @id @default(cuid())
+  userId    String
+  url       String   @db.Text
+  name      String
+  color     String   @default("#d8ead8")
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DayPlan {

@@ -199,6 +199,12 @@
   border-color: #a8c8a8;
 }
 
+.filterImported.filterBtnActive {
+  background: #dde8f0;
+  color: #1a2a3a;
+  border-color: #90a8c0;
+}
+
 @media (prefers-color-scheme: dark) {
   .filterBirthday.filterBtnActive {
     background: #3a1025;
@@ -219,6 +225,11 @@
     background: #1a3028;
     color: #7abf90;
     border-color: #2a5840;
+  }
+  .filterImported.filterBtnActive {
+    background: #182838;
+    color: #a8c0d8;
+    border-color: #304858;
   }
 }
 
@@ -407,6 +418,12 @@
   color: #7a5010;
 }
 
+.importedEvent {
+  /* background set via inline style from stored color; this is the fallback */
+  background: #dde8f0;
+  color: #1a2a3a;
+}
+
 @media (prefers-color-scheme: dark) {
   .googleEvent {
     background: #1a3028;
@@ -419,6 +436,10 @@
   .travelEvent {
     background: #3a2808;
     color: #c8a850;
+  }
+  .importedEvent {
+    background: #182838;
+    color: #a8c0d8;
   }
 }
 

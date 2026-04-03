@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Baby } from "lucide-react"
+import { ChevronLeft, ChevronRight, Cake, Plane, Plus, Baby, Link2 } from "lucide-react"
 import styles from "./calendar.module.css"
 import CustodyPopover from "./CustodyPopover"
 
@@ -29,6 +29,7 @@ function googleEventTooltip(e: GoogleEvent): string {
 }
 type BirthdayEntry = { id: string; name: string; month: number; day: number; year?: number | null }
 type TravelEntry = { id: string; destination: string; startDate: string; endDate: string; userId: string }
+type ImportedEvent = { id: string; summary: string; start: string; end: string; allDay: boolean; calendarId: string; calendarName: string; calendarColor: string }
 
 type SpanPos = "single" | "start" | "middle" | "end"
 
@@ -111,12 +112,14 @@ export default function CalendarPage() {
     travels: TravelEntry[]
     custodyEntries: CustodyEntry[]
     calendarSyncCount: number
+    importedEvents: ImportedEvent[]
   }>({
     googleEvents: [],
     birthdays: [],
     travels: [],
     custodyEntries: [],
     calendarSyncCount: 0,
+    importedEvents: [],
   })
   const [loading, setLoading] = useState(false)
   const [calendarError, setCalendarError] = useState<string | null>(null)
@@ -151,6 +154,7 @@ export default function CalendarPage() {
   const [showTravel, setShowTravel] = useState(true)
   const [showCustody, setShowCustody] = useState(true)
   const [showGoogle, setShowGoogle] = useState(true)
+  const [showImported, setShowImported] = useState(true)
 
   // Custody popover + modal form state
   const [openCustodyId, setOpenCustodyId] = useState<string | null>(null)
@@ -192,6 +196,7 @@ export default function CalendarPage() {
         travels: data.travels ?? [],
         custodyEntries: data.custodyEntries ?? [],
         calendarSyncCount: data.calendarSyncCount ?? 0,
+        importedEvents: data.importedEvents ?? [],
       })
     } catch (err: unknown) {
       console.error(err)
@@ -346,11 +351,17 @@ export default function CalendarPage() {
     const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
     const custody = events.custodyEntries.filter((c) => c.date === dateStr)
 
+    const imported = events.importedEvents.filter((e) => {
+      if (e.allDay) return e.start === dateStr
+      return new Date(e.start).toDateString() === dStr
+    })
+
     return {
       google: showGoogle ? google : [],
       birthdays: showBirthdays ? birthdays : [],
       travels: showTravel ? travels : [],
       custody: showCustody ? custody : [],
+      imported: showImported ? imported : [],
     }
   }
 
@@ -439,6 +450,15 @@ export default function CalendarPage() {
         >
           Google Calendars
         </button>
+        {events.importedEvents.length > 0 && (
+          <button
+            className={`${styles.filterBtn} ${styles.filterImported} ${showImported ? styles.filterBtnActive : ""}`}
+            onClick={() => setShowImported((v) => !v)}
+          >
+            <Link2 size={12} strokeWidth={2} />
+            Imported
+          </button>
+        )}
       </div>
 
       {/* No Calendars Prompt */}
@@ -575,6 +595,18 @@ export default function CalendarPage() {
                   </div>
                 )
               })}
+
+              {dayEvents.imported.map((e, idx) => (
+                <div
+                  key={idx}
+                  className={`${styles.eventItem} ${styles.importedEvent}`}
+                  style={{ backgroundColor: e.calendarColor }}
+                  data-tooltip={`${e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${e.calendarName ? " · " + e.calendarName : ""}`}
+                >
+                  <Link2 size={10} strokeWidth={2} />
+                  <span>{e.summary}</span>
+                </div>
+              ))}
             </div>
           )
         })}

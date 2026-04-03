@@ -6,6 +6,7 @@ import styles from "./settings.module.css"
 
 type GoogleCalendar = { id: string; name: string; color: string | null }
 type SelectedCalendar = { calendarId: string; name: string; color: string | null }
+type ImportedCalendar = { id: string; url: string; name: string; color: string; createdAt: string }
 
 export function GoogleSection() {
   const [available, setAvailable] = useState<GoogleCalendar[]>([])
@@ -17,15 +18,26 @@ export function GoogleSection() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  // Imported calendars state
+  const [imported, setImported] = useState<ImportedCalendar[]>([])
+  const [newUrl, setNewUrl] = useState("")
+  const [newName, setNewName] = useState("")
+  const [newColor, setNewColor] = useState("#d8ead8")
+  const [addState, setAddState] = useState<"idle" | "adding" | "error">("idle")
+  const [addError, setAddError] = useState<string | null>(null)
+  const [deletingImportedId, setDeletingImportedId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+
   const fetchData = async () => {
     setLoading(true)
     setAvailableError(null)
     setSelectedError(null)
     setSaveError(null)
 
-    const [availResult, selectedResult] = await Promise.allSettled([
+    const [availResult, selectedResult, importedResult] = await Promise.allSettled([
       fetch("/api/settings/calendars/available").then((r) => r.json()),
       fetch("/api/settings/calendars/selected").then((r) => r.json()),
+      fetch("/api/calendar/imported").then((r) => r.json()),
     ])
 
     if (availResult.status === "fulfilled" && !availResult.value.error) {
@@ -48,6 +60,10 @@ export function GoogleSection() {
           ? selectedResult.value.error
           : "Could not load your saved selection."
       )
+    }
+
+    if (importedResult.status === "fulfilled" && !importedResult.value.error) {
+      setImported(importedResult.value)
     }
 
     setLoading(false)
@@ -102,6 +118,46 @@ export function GoogleSection() {
     } catch (err: unknown) {
       setSaveError(err instanceof Error ? err.message : "Failed to save")
       setSaveState("idle")
+    }
+  }
+
+  const handleAddImported = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newUrl.trim() || !newName.trim()) return
+    setAddState("adding")
+    setAddError(null)
+
+    try {
+      const res = await fetch("/api/calendar/imported", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: newUrl.trim(), name: newName.trim(), color: newColor }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Failed to add")
+      setImported((prev) => [...prev, data])
+      setNewUrl("")
+      setNewName("")
+      setNewColor("#d8ead8")
+      setAddState("idle")
+    } catch (err: unknown) {
+      setAddError(err instanceof Error ? err.message : "Failed to add calendar")
+      setAddState("error")
+    }
+  }
+
+  const handleDeleteImported = async (id: string) => {
+    if (confirmDeleteId !== id) {
+      setConfirmDeleteId(id)
+      return
+    }
+    setDeletingImportedId(id)
+    setConfirmDeleteId(null)
+    try {
+      await fetch(`/api/calendar/imported/${id}`, { method: "DELETE" })
+      setImported((prev) => prev.filter((c) => c.id !== id))
+    } finally {
+      setDeletingImportedId(null)
     }
   }
 
@@ -161,6 +217,82 @@ export function GoogleSection() {
           </button>
         </>
       )}
+
+      {/* Imported calendars sub-section */}
+      <div className={styles.importedSection}>
+        <h3 className={styles.importedTitle}>Imported Calendars (iCal)</h3>
+        <p className={styles.sectionDesc}>
+          Add any calendar via its .ics URL — Google Calendar, Outlook, public feeds, etc.
+        </p>
+
+        {imported.length > 0 && (
+          <div className={styles.calendarList}>
+            {imported.map((cal) => (
+              <div key={cal.id} className={styles.calendarRow}>
+                <span
+                  className={styles.colorDot}
+                  style={{ backgroundColor: cal.color }}
+                />
+                <span className={styles.calendarName}>{cal.name}</span>
+                <span className={styles.importedUrlText} title={cal.url}>
+                  {cal.url}
+                </span>
+                <button
+                  className={confirmDeleteId === cal.id ? styles.confirmDeleteBtn : styles.deleteBtn}
+                  disabled={deletingImportedId === cal.id}
+                  onClick={() => handleDeleteImported(cal.id)}
+                >
+                  {confirmDeleteId === cal.id ? "Confirm?" : deletingImportedId === cal.id ? "…" : "Remove"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {imported.length === 0 && (
+          <p className={styles.emptyMsg}>No imported calendars yet.</p>
+        )}
+
+        <form onSubmit={handleAddImported} className={styles.importedForm}>
+          <input
+            type="text"
+            className={styles.fieldInput}
+            placeholder="Calendar name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            required
+          />
+          <input
+            type="url"
+            className={styles.fieldInput}
+            placeholder="https://calendar.google.com/…/basic.ics"
+            value={newUrl}
+            onChange={(e) => setNewUrl(e.target.value)}
+            required
+          />
+          <div className={styles.importedFormRow}>
+            <label className={styles.importedColorLabel}>
+              Color
+              <input
+                type="color"
+                value={newColor}
+                onChange={(e) => setNewColor(e.target.value)}
+                className={styles.colorPicker}
+              />
+            </label>
+            <button
+              type="submit"
+              className={styles.saveBtn}
+              disabled={addState === "adding"}
+            >
+              {addState === "adding" ? "Adding…" : "Add calendar"}
+            </button>
+          </div>
+          {addState === "error" && addError && (
+            <p className={styles.saveError}>{addError}</p>
+          )}
+        </form>
+      </div>
     </div>
   )
 }

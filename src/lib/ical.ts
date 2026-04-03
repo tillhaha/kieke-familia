@@ -19,7 +19,7 @@ function toDateString(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
-export function normalizeIcalUrl(url: string): string {
+function normalizeIcalUrl(url: string): string {
   return url.replace(/^webcal:\/\//i, "https://")
 }
 

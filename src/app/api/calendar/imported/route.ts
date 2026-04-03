@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { normalizeIcalUrl } from "@/lib/ical"
+function normalizeIcalUrl(url: string): string {
+  return url.replace(/^webcal:\/\//i, "https://")
+}
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -47,8 +49,13 @@ export async function POST(request: Request) {
   try {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 8000)
-    const res = await fetch(normalized, { signal: controller.signal })
+    const res = await fetch(normalized, {
+      signal: controller.signal,
+      headers: { "User-Agent": "Familia-Calendar/1.0" },
+    })
     clearTimeout(timer)
+
+    console.log(`[imported] fetch ${normalized} → status=${res.status} content-type=${res.headers.get("content-type")} final-url=${res.url}`)
 
     if (!res.ok) {
       return NextResponse.json(
@@ -60,29 +67,36 @@ export async function POST(request: Request) {
     const text = await res.text()
     const first = text.trimStart().slice(0, 200)
     const ct = res.headers.get("content-type") ?? ""
+    console.log(`[imported] first 200 chars: ${first}`)
+
     if (!first.includes("BEGIN:VCALENDAR") && !ct.includes("text/calendar") && !ct.includes("application/octet-stream")) {
       return NextResponse.json(
-        { error: "URL does not appear to be a valid iCal feed" },
+        { error: `URL does not appear to be a valid iCal feed (content-type: ${ct || "none"})` },
         { status: 422 }
       )
     }
   } catch (err: unknown) {
     const isAbort = err instanceof Error && err.name === "AbortError"
+    console.error(`[imported] fetch error:`, err)
     return NextResponse.json(
-      { error: isAbort ? "Request timed out — check the URL and try again" : "Failed to fetch URL" },
+      { error: isAbort ? "Request timed out — check the URL and try again" : `Failed to fetch URL: ${err instanceof Error ? err.message : err}` },
       { status: 422 }
     )
   }
 
-  const calendar = await prisma.importedCalendar.create({
-    data: {
-      userId,
-      url: normalized,
-      name: name.trim(),
-      color: color ?? "#d8ead8",
-    },
-    select: { id: true, url: true, name: true, color: true, createdAt: true },
-  })
-
-  return NextResponse.json(calendar, { status: 201 })
+  try {
+    const calendar = await prisma.importedCalendar.create({
+      data: {
+        userId,
+        url: normalized,
+        name: name.trim(),
+        color: color ?? "#d8ead8",
+      },
+      select: { id: true, url: true, name: true, color: true, createdAt: true },
+    })
+    return NextResponse.json(calendar, { status: 201 })
+  } catch (err) {
+    console.error("[imported calendar] create error:", err)
+    return NextResponse.json({ error: "Failed to save calendar" }, { status: 500 })
+  }
 }

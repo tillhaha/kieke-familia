@@ -501,7 +501,12 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       return (
                         <td key={day.date} className={`${styles.cell} ${styles.eventsCell}`}>
                           {dayEvents.map((e) => (
-                            <div key={e.id} className={styles.calEventChip}>
+                            <div
+                              key={e.id}
+                              className={styles.calEventChip}
+                              onMouseEnter={(ev) => showPillTooltip(e.calendarName ? `${e.summary} · ${e.calendarName}` : e.summary, ev)}
+                              onMouseLeave={hidePillTooltip}
+                            >
                               {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
                               <span className={styles.calEventName}>{e.summary}</span>
                             </div>

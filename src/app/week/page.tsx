@@ -144,7 +144,7 @@ export default function WeekPage() {
               }
               onGenerateShopping={handleGenerateShopping}
               calendarEvents={calendarEvents.filter(
-                (e) => e.date >= week.startDate && e.date <= week.endDate
+                (e) => e.date <= week.endDate && e.endDate > week.startDate
               )}
             />
           ))}

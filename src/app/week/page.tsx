@@ -34,14 +34,25 @@ export default function WeekPage() {
           .then((r) => r.json())
           .then((d) => {
             const events: CalendarEvent[] = []
+            const nextDay = (d: string) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10) }
             for (const e of (d.googleEvents ?? [])) {
-              const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
-              if (!date || !e.summary) continue
-              events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, endDate: e.end?.date ?? e.end?.dateTime?.slice(0, 10) ?? date, allDay: !!e.start?.date, startTime: e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) : null, calendarName: e.calendarName ?? null, color: null })
+              if (!e.summary) continue
+              if (e.start?.date) {
+                let cur = e.start.date; const end = e.end?.date ?? nextDay(cur)
+                while (cur < end) { const nd = nextDay(cur); events.push({ id: `${e.id ?? Math.random()}_${cur}`, summary: e.summary, date: cur, endDate: nd, allDay: true, startTime: null, calendarName: e.calendarName ?? null, color: null }); cur = nd }
+              } else if (e.start?.dateTime) {
+                const date = e.start.dateTime.slice(0, 10)
+                events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, endDate: nextDay(date), allDay: false, startTime: new Date(e.start.dateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }), calendarName: e.calendarName ?? null, color: null })
+              }
             }
             for (const e of (d.importedEvents ?? [])) {
-              const date = e.start.slice(0, 10)
-              events.push({ id: e.id, summary: e.summary, date, endDate: e.end.slice(0, 10), allDay: e.allDay, startTime: e.allDay ? null : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }), calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+              if (e.allDay) {
+                let cur = e.start.slice(0, 10); const end = e.end.slice(0, 10)
+                while (cur < end) { const nd = nextDay(cur); events.push({ id: `${e.id}_${cur}`, summary: e.summary, date: cur, endDate: nd, allDay: true, startTime: null, calendarName: e.calendarName ?? null, color: e.calendarColor ?? null }); cur = nd }
+              } else {
+                const date = e.start.slice(0, 10)
+                events.push({ id: e.id, summary: e.summary, date, endDate: nextDay(date), allDay: false, startTime: new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }), calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+              }
             }
             setCalendarEvents(events)
           })

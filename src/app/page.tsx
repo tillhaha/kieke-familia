@@ -204,16 +204,16 @@ export default function Home() {
         <div className={styles.weekNav}>
           <button
             className={styles.weekNavBtn}
-            onClick={() => setWeekIndex((i) => i - 1)}
-            disabled={weekIndex === 0}
+            onClick={() => setWeekIndex((i) => i + 1)}
+            disabled={weekIndex === allWeeks.length - 1}
           >
             <ChevronLeft size={15} strokeWidth={2} />
             Previous
           </button>
           <button
             className={styles.weekNavBtn}
-            onClick={() => setWeekIndex((i) => i + 1)}
-            disabled={weekIndex === allWeeks.length - 1}
+            onClick={() => setWeekIndex((i) => i - 1)}
+            disabled={weekIndex === 0}
           >
             Next
             <ChevronRight size={15} strokeWidth={2} />

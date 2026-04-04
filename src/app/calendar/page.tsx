@@ -10,6 +10,13 @@ import CustodyPopover from "./CustodyPopover"
 
 type ModalType = "NONE" | "CUSTODY"
 
+type EventDetail = {
+  summary: string
+  timeLabel: string
+  calendarName?: string
+  color?: string
+}
+
 type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WITH_MONA"; personName: string }
 type GoogleEvent = { id: string; summary?: string; start?: { date?: string; dateTime?: string }; end?: { date?: string; dateTime?: string }; calendarId?: string; calendarName?: string }
 
@@ -113,6 +120,7 @@ export default function CalendarPage() {
   const [showImported, setShowImported] = useState(true)
 
   // Custody popover + modal form state
+  const [eventDetail, setEventDetail] = useState<EventDetail | null>(null)
   const [openCustodyId, setOpenCustodyId] = useState<string | null>(null)
   const [cStart, setCStart] = useState("")
   const [cStartsWith, setCStartsWith] = useState<"WITH_US" | "WITH_MONA">("WITH_US")
@@ -362,6 +370,7 @@ export default function CalendarPage() {
                   key={idx}
                   className={`${styles.eventItem} ${styles.googleEvent}`}
                   data-tooltip={googleEventTooltip(e)}
+                  onClick={() => setEventDetail({ summary: e.summary ?? "", timeLabel: googleEventTooltip(e), calendarName: e.calendarName ?? undefined })}
                 >
                   <span>{e.summary}</span>
                 </div>
@@ -373,6 +382,7 @@ export default function CalendarPage() {
                   className={`${styles.eventItem} ${styles.importedEvent}`}
                   style={{ backgroundColor: e.calendarColor }}
                   data-tooltip={`${e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${e.calendarName ? " · " + e.calendarName : ""}`}
+                  onClick={() => setEventDetail({ summary: e.summary, timeLabel: e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), calendarName: e.calendarName, color: e.calendarColor })}
                 >
                   <Link2 size={10} strokeWidth={2} />
                   <span>{e.summary}</span>
@@ -383,6 +393,23 @@ export default function CalendarPage() {
         })}
       </div>
       </div>
+
+      {/* Event detail modal */}
+      {eventDetail && (
+        <div className={styles.eventModalBackdrop} onClick={() => setEventDetail(null)}>
+          <div className={styles.eventModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.eventModalHeader}>
+              {eventDetail.color && <span className={styles.eventModalDot} style={{ background: eventDetail.color }} />}
+              <span className={styles.eventModalTitle}>{eventDetail.summary}</span>
+            </div>
+            <div className={styles.eventModalMeta}>{eventDetail.timeLabel}</div>
+            {eventDetail.calendarName && (
+              <div className={styles.eventModalMeta}>{eventDetail.calendarName}</div>
+            )}
+            <button className={styles.eventModalClose} onClick={() => setEventDetail(null)}>Close</button>
+          </div>
+        </div>
+      )}
 
       {/* Custody Modal */}
       {modal === "CUSTODY" && (

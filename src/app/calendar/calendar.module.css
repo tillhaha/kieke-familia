@@ -824,6 +824,63 @@
 
 }
 
+/* ── Event detail modal (mobile tap) ────────────────── */
+
+.eventModalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+}
+
+.eventModal {
+  width: 100%;
+  background: var(--background);
+  border-radius: 16px 16px 0 0;
+  padding: 1.25rem 1.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eventModalHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eventModalDot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.eventModalTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.eventModalMeta {
+  font-size: 0.875rem;
+  color: var(--secondary);
+}
+
+.eventModalClose {
+  margin-top: 0.75rem;
+  padding: 0.625rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--foreground);
+}
+
 @media (max-width: 480px) {
   .calendarScrollWrapper {
     padding-left: 0.5rem;

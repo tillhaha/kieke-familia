@@ -38,6 +38,7 @@ export type CalendarEvent = {
   summary: string
   date: string // YYYY-MM-DD
   allDay: boolean
+  startTime?: string | null // "HH:MM" for timed events, null for all-day
   calendarName?: string | null
   color?: string | null
 }
@@ -504,7 +505,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             <div
                               key={e.id}
                               className={styles.calEventChip}
-                              onMouseEnter={(ev) => showPillTooltip(e.calendarName ? `${e.summary} · ${e.calendarName}` : e.summary, ev)}
+                              onMouseEnter={(ev) => showPillTooltip([e.summary, e.allDay ? "All-Day" : e.startTime, e.calendarName].filter(Boolean).join(" · "), ev)}
                               onMouseLeave={hidePillTooltip}
                             >
                               {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}

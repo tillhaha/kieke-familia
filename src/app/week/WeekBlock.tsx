@@ -493,6 +493,24 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 })}
                   </tr>
                 ))}
+                {section === "Notes" && calendarEvents && (
+                  <tr>
+                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Events</td>
+                    {week.days.map((day) => {
+                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      return (
+                        <td key={day.date} className={`${styles.cell} ${styles.eventsCell}`}>
+                          {dayEvents.map((e) => (
+                            <div key={e.id} className={styles.calEventChip}>
+                              {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
+                              <span className={styles.calEventName}>{e.summary}</span>
+                            </div>
+                          ))}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )}
                 {section === "Notes" && custodyEntries && (
                   <tr>
                     <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Emilia</td>
@@ -507,24 +525,6 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                               className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
                             />
                           )}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )}
-                {section === "Notes" && calendarEvents && (
-                  <tr>
-                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Events</td>
-                    {week.days.map((day) => {
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
-                      return (
-                        <td key={day.date} className={`${styles.cell} ${styles.eventsCell}`}>
-                          {dayEvents.map((e) => (
-                            <div key={e.id} className={styles.calEventChip}>
-                              {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
-                              <span className={styles.calEventName}>{e.summary}</span>
-                            </div>
-                          ))}
                         </td>
                       )
                     })}
@@ -691,6 +691,26 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   })}
                 </div>
 
+                {field === "note" && calendarEvents && (
+                  <div className={styles.mobileRowGroup}>
+                    {getMobileDays().map((day) => {
+                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      return (
+                        <div key={day.date} className={styles.mobileDayField}>
+                          <span className={styles.mobileDayFieldLabel}>Events</span>
+                          <div className={styles.mobileDayFieldContent}>
+                            {dayEvents.length > 0 ? dayEvents.map((e) => (
+                              <div key={e.id} className={styles.calEventChip}>
+                                {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
+                                <span className={styles.calEventName}>{e.summary}</span>
+                              </div>
+                            )) : <span className={styles.mobileDayFieldEmpty}>–</span>}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
                 {field === "note" && custodyEntries && custodyEntries.length > 0 && (
                   <div className={styles.mobileRowGroup}>
                     {getMobileDays().map((day) => {
@@ -706,26 +726,6 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                                 className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
                               />
                             )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-                {field === "note" && calendarEvents && (
-                  <div className={styles.mobileRowGroup}>
-                    {getMobileDays().map((day) => {
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
-                      return (
-                        <div key={day.date} className={styles.mobileDayField}>
-                          <span className={styles.mobileDayFieldLabel}>Events</span>
-                          <div className={styles.mobileDayFieldContent}>
-                            {dayEvents.length > 0 ? dayEvents.map((e) => (
-                              <div key={e.id} className={styles.calEventChip}>
-                                {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
-                                <span className={styles.calEventName}>{e.summary}</span>
-                              </div>
-                            )) : <span className={styles.mobileDayFieldEmpty}>–</span>}
                           </div>
                         </div>
                       )
@@ -803,6 +803,26 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     </div>
                   )
                 })}
+                {field === "note" && calendarEvents && (
+                  <>
+                    <div className={styles.mobileWeekTableLabel}><Zap size={11} strokeWidth={2} /></div>
+                    {week.days.map((day) => {
+                      const isToday = day.date === todayDateStr
+                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      return (
+                        <div
+                          key={day.date}
+                          className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                          onClick={() => setMobileDayDetail(day.date)}
+                        >
+                          <span className={styles.mobileWeekTableCellText}>
+                            {dayEvents.map((e) => e.summary).join(", ")}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </>
+                )}
                 {field === "note" && custodyEntries && custodyEntries.length > 0 && (
                   <>
                     <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
@@ -822,26 +842,6 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                               className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
                             />
                           )}
-                        </div>
-                      )
-                    })}
-                  </>
-                )}
-                {field === "note" && calendarEvents && (
-                  <>
-                    <div className={styles.mobileWeekTableLabel}><Zap size={11} strokeWidth={2} /></div>
-                    {week.days.map((day) => {
-                      const isToday = day.date === todayDateStr
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
-                      return (
-                        <div
-                          key={day.date}
-                          className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
-                          onClick={() => setMobileDayDetail(day.date)}
-                        >
-                          <span className={styles.mobileWeekTableCellText}>
-                            {dayEvents.map((e) => e.summary).join(", ")}
-                          </span>
                         </div>
                       )
                     })}

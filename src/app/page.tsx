@@ -2,8 +2,8 @@
 "use client"
 
 import { useSession, signIn } from "next-auth/react"
-import { useState, useEffect, useCallback } from "react"
-import { LogIn } from "lucide-react"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { LogIn, ChevronLeft, ChevronRight } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import styles from "./page.module.css"
@@ -36,7 +36,8 @@ function formatDate(dateStr: string) {
 export default function Home() {
   const { data: session, status } = useSession()
 
-  const [week, setWeek] = useState<WeekData | null>(null)
+  const [allWeeks, setAllWeeks] = useState<WeekData[]>([])
+  const [weekIndex, setWeekIndex] = useState<number>(0)
   const [weather, setWeather] = useState<Record<string, DayWeather> | null>(null)
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
@@ -44,6 +45,8 @@ export default function Home() {
   const [tasks, setTasks] = useState<FamilyTask[]>([])
   const [members, setMembers] = useState<{ id: string; name: string | null }[]>([])
   const [openTask, setOpenTask] = useState<FamilyTask | null>(null)
+
+  const week = allWeeks[weekIndex] ?? null
 
   useEffect(() => {
     if (status !== "authenticated") return
@@ -57,31 +60,10 @@ export default function Home() {
       .then(([weeksData, weatherData, taskData, memberData]) => {
         const weeks: WeekData[] = weeksData.weeks ?? []
         const currentWeek = findCurrentWeek(weeks)
-        setWeek(currentWeek)
+        const idx = currentWeek ? weeks.indexOf(currentWeek) : 0
+        setAllWeeks(weeks)
+        setWeekIndex(idx >= 0 ? idx : 0)
         setWeather(weatherData.weather ?? null)
-
-        if (currentWeek) {
-          const timeMin = `${currentWeek.startDate}T00:00:00Z`
-          const timeMax = `${currentWeek.endDate}T23:59:59Z`
-          fetch(`/api/calendar/events?timeMin=${timeMin}&timeMax=${timeMax}`)
-            .then((r) => r.json())
-            .then((d) => {
-              setCustodyEntries(d.custodyEntries ?? [])
-              const events: CalendarEvent[] = []
-              for (const e of (d.googleEvents ?? [])) {
-                const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
-                if (!date || !e.summary) continue
-                events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, allDay: !!e.start?.date, calendarName: e.calendarName ?? null, color: null })
-              }
-              for (const e of (d.importedEvents ?? [])) {
-                const date = e.allDay ? e.start : e.start.slice(0, 10)
-                events.push({ id: e.id, summary: e.summary, date, allDay: e.allDay, calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
-              }
-              setCalendarEvents(events)
-            })
-            .catch(() => {})
-        }
-
         setTasks(
           (taskData.tasks ?? []).map((t: any) => ({
             ...t,
@@ -93,6 +75,33 @@ export default function Home() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [status])
+
+  const calendarFetchRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!week) return
+    const key = week.startDate
+    if (calendarFetchRef.current === key) return
+    calendarFetchRef.current = key
+    const timeMin = `${week.startDate}T00:00:00Z`
+    const timeMax = `${week.endDate}T23:59:59Z`
+    fetch(`/api/calendar/events?timeMin=${timeMin}&timeMax=${timeMax}`)
+      .then((r) => r.json())
+      .then((d) => {
+        setCustodyEntries(d.custodyEntries ?? [])
+        const events: CalendarEvent[] = []
+        for (const e of (d.googleEvents ?? [])) {
+          const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
+          if (!date || !e.summary) continue
+          events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, allDay: !!e.start?.date, calendarName: e.calendarName ?? null, color: null })
+        }
+        for (const e of (d.importedEvents ?? [])) {
+          const date = e.allDay ? e.start : e.start.slice(0, 10)
+          events.push({ id: e.id, summary: e.summary, date, allDay: e.allDay, calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+        }
+        setCalendarEvents(events)
+      })
+      .catch(() => {})
+  }, [week])
 
   const handleToggleDone = useCallback((id: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== id))
@@ -129,16 +138,15 @@ export default function Home() {
 
   const handleDayUpdate = useCallback(
     (date: string, field: string, value: string | null) => {
-      setWeek((prev) =>
-        prev
-          ? {
-              ...prev,
-              days: prev.days.map((d) => (d.date === date ? { ...d, [field]: value } : d)),
-            }
-          : prev
+      setAllWeeks((prev) =>
+        prev.map((w, i) =>
+          i === weekIndex
+            ? { ...w, days: w.days.map((d) => (d.date === date ? { ...d, [field]: value } : d)) }
+            : w
+        )
       )
     },
-    []
+    [weekIndex]
   )
 
   if (status === "loading") return null
@@ -192,6 +200,26 @@ export default function Home() {
         />
       )}
 
+      {allWeeks.length > 0 && (
+        <div className={styles.weekNav}>
+          <button
+            className={styles.weekNavBtn}
+            onClick={() => setWeekIndex((i) => i - 1)}
+            disabled={weekIndex === 0}
+          >
+            <ChevronLeft size={15} strokeWidth={2} />
+            Previous
+          </button>
+          <button
+            className={styles.weekNavBtn}
+            onClick={() => setWeekIndex((i) => i + 1)}
+            disabled={weekIndex === allWeeks.length - 1}
+          >
+            Next
+            <ChevronRight size={15} strokeWidth={2} />
+          </button>
+        </div>
+      )}
       {week ? (
         <WeekBlock
           week={week}

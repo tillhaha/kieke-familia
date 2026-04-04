@@ -164,7 +164,6 @@ export default function Home() {
         <h1 className={styles.greeting}>
           {greeting}, {firstName}
         </h1>
-        <p className={styles.subtitle}>Here&apos;s what&apos;s going on this week.</p>
       </div>
 
       <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} onOpenTask={setOpenTask} />

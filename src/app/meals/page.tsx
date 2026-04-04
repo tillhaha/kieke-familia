@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Plus, Search } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./meals.module.css"
 
 type MealSummary = {
@@ -16,14 +17,9 @@ type MealSummary = {
   thirtyMinute: boolean
 }
 
-const DIET_LABELS: Record<string, string> = {
-  Vegetarian: "🥦 Veggie",
-  Fish: "🐟 Fish",
-  Meat: "🥩 Meat",
-}
-
 export default function MealsPage() {
   const { status } = useSession()
+  const { t } = useTranslation()
   const [meals, setMeals] = useState<MealSummary[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -63,6 +59,13 @@ export default function MealsPage() {
     }, 300)
   }
 
+  const dietLabel = (diet: string) => {
+    if (diet === "Vegetarian") return `🥦 ${t.meals.dietVegetarian}`
+    if (diet === "Fish") return `🐟 ${t.meals.dietFish}`
+    if (diet === "Meat") return `🥩 ${t.meals.dietMeat}`
+    return diet
+  }
+
   const hasFilters = query || filterMealType || filterDiet || filterOffice || filterThirty
 
   if (status === "loading") return null
@@ -70,10 +73,10 @@ export default function MealsPage() {
   return (
     <div className={styles.container}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Recipes</h1>
+        <h1 className={styles.pageTitle}>{t.meals.title}</h1>
         <Link href="/meals/new" className={styles.newBtn}>
           <Plus size={14} strokeWidth={2.5} />
-          New Recipe
+          {t.meals.newRecipe}
         </Link>
       </div>
 
@@ -95,11 +98,11 @@ export default function MealsPage() {
           value={filterMealType}
           onChange={(e) => setFilterMealType(e.target.value)}
         >
-          <option value="">All types</option>
-          <option value="Meal">Meal</option>
-          <option value="Snack">Snack</option>
-          <option value="Drink">Drink</option>
-          <option value="Baked">Baked</option>
+          <option value="">{t.meals.allTypes}</option>
+          <option value="Meal">{t.meals.typeMeal}</option>
+          <option value="Snack">{t.meals.typeSnack}</option>
+          <option value="Drink">{t.meals.typeDrink}</option>
+          <option value="Baked">{t.meals.typeBaked}</option>
         </select>
 
         <select
@@ -107,24 +110,24 @@ export default function MealsPage() {
           value={filterDiet}
           onChange={(e) => setFilterDiet(e.target.value)}
         >
-          <option value="">All diets</option>
-          <option value="Vegetarian">Vegetarian</option>
-          <option value="Fish">Fish</option>
-          <option value="Meat">Meat</option>
+          <option value="">{t.meals.allDiets}</option>
+          <option value="Vegetarian">{t.meals.dietVegetarian}</option>
+          <option value="Fish">{t.meals.dietFish}</option>
+          <option value="Meat">{t.meals.dietMeat}</option>
         </select>
 
         <button
           className={`${styles.filterToggle} ${filterOffice ? styles.filterToggleActive : ""}`}
           onClick={() => setFilterOffice((v) => !v)}
         >
-          Office
+          {t.meals.officeFilter}
         </button>
 
         <button
           className={`${styles.filterToggle} ${filterThirty ? styles.filterToggleActive : ""}`}
           onClick={() => setFilterThirty((v) => !v)}
         >
-          Quick
+          {t.meals.quickFilter}
         </button>
 
         {hasFilters && (
@@ -139,7 +142,7 @@ export default function MealsPage() {
       </div>
 
       {loading ? null : meals.length === 0 ? (
-        <p className={styles.emptyState}>{hasFilters ? "No recipes match your filters." : "No recipes yet. Add your first one!"}</p>
+        <p className={styles.emptyState}>{hasFilters ? t.meals.noRecipesMatch : t.meals.noRecipesYet}</p>
       ) : (
         <div className={styles.list}>
           {meals.map((meal) => (
@@ -147,9 +150,9 @@ export default function MealsPage() {
               <span className={styles.listItemName}>{meal.name}</span>
               <span className={styles.listItemMeta}>
                 {meal.mealType}
-                {" · "}{DIET_LABELS[meal.diet] ?? meal.diet}
-                {meal.officeFriendly ? " · Office" : ""}
-                {meal.thirtyMinute ? " · Quick" : ""}
+                {" · "}{dietLabel(meal.diet)}
+                {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
+                {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
               </span>
             </Link>
           ))}

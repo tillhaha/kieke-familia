@@ -4,6 +4,7 @@
 import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import ReactMarkdown from "react-markdown"
 import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
 
 export type DayWeather = {
@@ -130,6 +131,20 @@ function autoResize(el: HTMLTextAreaElement) {
 
 export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendarEvents, readOnly, id, editHref, onGenerateShopping }: Props) {
   const past = isPastWeek(week.endDate)
+  const { t } = useTranslation()
+
+  const rowLabel = (field: Field): string => {
+    if (field === "note") return t.weekBlock.location
+    if (field === "lunch") return t.weekBlock.lunch
+    if (field === "dinner") return t.weekBlock.dinner
+    return field
+  }
+  const rowPlaceholder = (field: Field): string => {
+    if (field === "note") return t.weekBlock.locationPlaceholder
+    if (field === "lunch") return t.weekBlock.lunchPlaceholder
+    if (field === "dinner") return t.weekBlock.dinnerPlaceholder
+    return ""
+  }
 
   const [drafts, setDrafts] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {}
@@ -344,7 +359,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
           <tbody>
             {weather && (
               <tr>
-                <td className={styles.rowLabel}>Weather</td>
+                <td className={styles.rowLabel}>{t.weekBlock.weather}</td>
                 {week.days.map((day) => {
                   const w = weather[day.date]
                   if (!w) return <td key={day.date} className={`${styles.cell} ${styles.weatherCell}`} />
@@ -375,9 +390,9 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 <tr>
                   <td colSpan={week.days.length + 1} className={styles.sectionHeader} />
                 </tr>
-                {rows.map(({ field, label, placeholder }) => (
+                {rows.map(({ field }) => (
                   <tr key={field}>
-                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{label}</td>
+                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{rowLabel(field)}</td>
                 {week.days.map((day) => {
                   const key = `${day.date}:${field}`
                   const hasError = cellErrors.has(key)
@@ -445,7 +460,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           autoFocus
                           className={styles.cellInput}
                           value={value}
-                          placeholder={placeholder}
+                          placeholder={rowPlaceholder(field)}
                           disabled={isDisabled}
                           onChange={(e) => {
                             const v = e.target.value
@@ -497,7 +512,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 ))}
                 {section === "Notes" && calendarEvents && (
                   <tr>
-                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Events</td>
+                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{t.weekBlock.events}</td>
                     {week.days.map((day) => {
                       const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
                       return (
@@ -506,7 +521,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             <div
                               key={e.id}
                               className={styles.calEventChip}
-                              onMouseEnter={(ev) => showPillTooltip([e.summary, e.allDay ? "All-Day" : e.startTime, e.calendarName].filter(Boolean).join(" · "), ev)}
+                              onMouseEnter={(ev) => showPillTooltip([e.summary, e.allDay ? t.weekBlock.allDay : e.startTime, e.calendarName].filter(Boolean).join(" · "), ev)}
                               onMouseLeave={hidePillTooltip}
                             >
                               {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
@@ -587,7 +602,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
             </div>
 
             {/* Field rows */}
-            {ALL_ROWS.map(({ field, label, placeholder }) => (
+            {ALL_ROWS.map(({ field }) => (
               <Fragment key={field}>
                 <div className={styles.mobileRowGroup}>
                   {getMobileDays().map((day) => {
@@ -601,7 +616,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     const hasError = cellErrors.has(key)
                     return (
                       <div key={day.date} className={`${styles.mobileDayField} ${hasError ? styles.cellError : ""}`}>
-                        <span className={styles.mobileDayFieldLabel}>{label}</span>
+                        <span className={styles.mobileDayFieldLabel}>{rowLabel(field)}</span>
                         {isSearching ? (
                           <div className={styles.recipeSearchContainer}>
                             <input
@@ -652,7 +667,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             autoFocus
                             className={styles.cellInput}
                             value={value}
-                            placeholder={placeholder}
+                            placeholder={rowPlaceholder(field)}
                             disabled={isDisabled}
                             onChange={(e) => {
                               const v = e.target.value
@@ -704,7 +719,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
                       return (
                         <div key={day.date} className={styles.mobileDayField}>
-                          <span className={styles.mobileDayFieldLabel}>Events</span>
+                          <span className={styles.mobileDayFieldLabel}>{t.weekBlock.events}</span>
                           <div className={styles.mobileDayFieldContent}>
                             {dayEvents.length > 0 ? dayEvents.map((e) => (
                               <div key={e.id} className={styles.calEventChip}>
@@ -794,7 +809,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
             )}
 
             {/* Content rows */}
-            {ALL_ROWS.map(({ field, label }) => (
+            {ALL_ROWS.map(({ field }) => (
               <Fragment key={field}>
                 <div className={styles.mobileWeekTableLabel}>{FIELD_ICON[field]}</div>
                 {week.days.map((day) => {
@@ -889,14 +904,14 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     <WeatherIcon rain={w.afternoonRain} />
                   </div>
                 )}
-                {ALL_ROWS.map(({ field, label }) => {
+                {ALL_ROWS.map(({ field }) => {
                   const value = drafts[`${day.date}:${field}`] ?? ""
                   if (!value) return null
                   const isMealField = MEAL_FIELDS.has(field)
                   const linkedMealId = isMealField ? mealIds[`${day.date}:${field}`] : null
                   return (
                     <div key={field} className={styles.mobileModalField}>
-                      <span className={styles.mobileModalFieldLabel}>{label}</span>
+                      <span className={styles.mobileModalFieldLabel}>{rowLabel(field)}</span>
                       <div className={styles.mobileModalFieldValue}>{value}</div>
                       {linkedMealId && (
                         <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
@@ -917,7 +932,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 )}
                 {calendarEvents && calendarEvents.filter((e) => e.date === day.date).length > 0 && (
                   <div className={styles.mobileModalField}>
-                    <span className={styles.mobileModalFieldLabel}>Events</span>
+                    <span className={styles.mobileModalFieldLabel}>{t.weekBlock.events}</span>
                     {calendarEvents.filter((e) => e.date === day.date).map((e) => (
                       <div key={e.id} className={styles.calEventChip}>
                         {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}

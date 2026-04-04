@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { LogIn, ChevronLeft, ChevronRight } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
 
 type FamilyTask = TaskData
@@ -35,6 +36,7 @@ function formatDate(dateStr: string) {
 
 export default function Home() {
   const { data: session, status } = useSession()
+  const { t } = useTranslation()
 
   const [allWeeks, setAllWeeks] = useState<WeekData[]>([])
   const [weekIndex, setWeekIndex] = useState<number>(0)
@@ -166,16 +168,16 @@ export default function Home() {
     return (
       <div className={styles.signInPage}>
         <div className={styles.signInCard}>
-          <h1 className={styles.signInTitle}>Welcome to YourKieke</h1>
-          <p className={styles.signInSubtitle}>Your shared family management hub.</p>
+          <h1 className={styles.signInTitle}>{t.home.welcomeTitle}</h1>
+          <p className={styles.signInSubtitle}>{t.home.welcomeSubtitle}</p>
 
           <button onClick={() => signIn("google", { callbackUrl: "/" })} className={styles.signInBtn}>
             <LogIn size={16} />
-            Sign in with Google
+            {t.home.signInWithGoogle}
           </button>
 
           <div className={styles.divider}>
-            <span className={styles.dividerText}>or</span>
+            <span className={styles.dividerText}>{t.home.or}</span>
           </div>
 
           <CredentialsForm />
@@ -189,7 +191,7 @@ export default function Home() {
   const firstName = session.user?.name?.split(" ")[0] ?? "there"
   const hour = new Date().getHours()
   const greeting =
-    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+    hour < 12 ? t.home.goodMorning : hour < 17 ? t.home.goodAfternoon : t.home.goodEvening
 
   return (
     <main className={styles.main}>
@@ -219,14 +221,14 @@ export default function Home() {
             disabled={weekIndex === allWeeks.length - 1}
           >
             <ChevronLeft size={15} strokeWidth={2} />
-            Previous
+            {t.home.previous}
           </button>
           <button
             className={styles.weekNavBtn}
             onClick={() => setWeekIndex((i) => i - 1)}
             disabled={weekIndex === 0}
           >
-            Next
+            {t.home.next}
             <ChevronRight size={15} strokeWidth={2} />
           </button>
         </div>
@@ -243,8 +245,8 @@ export default function Home() {
         />
       ) : (
         <p className={styles.noWeek}>
-          No plan for this week yet.{" "}
-          <a href="/week" className={styles.noWeekLink}>Go to week planning →</a>
+          {t.home.noWeekYet}{" "}
+          <a href="/week" className={styles.noWeekLink}>{t.home.goToWeekPlanning}</a>
         </p>
       )}
     </main>
@@ -252,6 +254,7 @@ export default function Home() {
 }
 
 function TasksWidget({ tasks, onToggleDone, onOpenTask }: { tasks: FamilyTask[]; onToggleDone: (id: string) => void; onOpenTask: (task: FamilyTask) => void }) {
+  const { t } = useTranslation()
   const today = new Date().toISOString().slice(0, 10)
   const d = new Date()
   d.setUTCHours(0, 0, 0, 0)
@@ -266,7 +269,7 @@ function TasksWidget({ tasks, onToggleDone, onOpenTask }: { tasks: FamilyTask[];
 
   return (
     <div className={styles.tasksWidget}>
-      <div className={styles.tasksWidgetTitle}>Tasks this week</div>
+      <div className={styles.tasksWidgetTitle}>{t.home.tasksThisWeek}</div>
       <div className={styles.tasksWidgetList}>
         {visible.map((t) => {
           const isOverdue = t.dueDate < today
@@ -289,7 +292,7 @@ function TasksWidget({ tasks, onToggleDone, onOpenTask }: { tasks: FamilyTask[];
           )
         })}
       </div>
-      <a href="/tasks" className={styles.tasksWidgetLink}>→ All tasks</a>
+      <a href="/tasks" className={styles.tasksWidgetLink}>{t.home.allTasks}</a>
     </div>
   )
 }

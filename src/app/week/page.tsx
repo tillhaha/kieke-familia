@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent } from "./WeekBlock"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
 
 export default function WeekPage() {
   const { status } = useSession()
   const router = useRouter()
+  const { t } = useTranslation()
   const [weeks, setWeeks] = useState<WeekData[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
@@ -126,14 +128,14 @@ export default function WeekPage() {
   return (
     <div className={styles.container}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Week Planner</h1>
+        <h1 className={styles.pageTitle}>{t.week.title}</h1>
         <button
           className={styles.planBtn}
           onClick={handlePlanNextWeek}
           disabled={planning}
         >
           <Plus size={14} strokeWidth={2.5} />
-          {planning ? "Planning…" : "Plan next week"}
+          {planning ? t.week.planning : t.week.planNextWeek}
         </button>
       </div>
 
@@ -141,7 +143,7 @@ export default function WeekPage() {
 
       {weeks.length === 0 ? (
         <p className={styles.emptyState}>
-          No weeks planned yet. Click "Plan next week" to get started.
+          {t.week.noWeeksYet}
         </p>
       ) : (
         <div className={styles.weeksList}>

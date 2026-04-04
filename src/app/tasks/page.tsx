@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import { Plus } from "lucide-react"
 import { TaskModal, TaskData } from "./TaskModal"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
 
 type Member = { id: string; name: string | null }
@@ -90,6 +91,7 @@ function Section({ label, tasks, isOverdue, today, setModalTask, toggleDone }: S
 
 export default function TasksPage() {
   const { status } = useSession()
+  const { t } = useTranslation()
   const [tasks, setTasks] = useState<TaskData[]>([])
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
@@ -216,10 +218,10 @@ export default function TasksPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Tasks</h1>
+        <h1 className={styles.title}>{t.tasks.title}</h1>
         <button className={styles.newBtn} onClick={() => setModalTask(null)}>
           <Plus size={14} strokeWidth={2.5} />
-          New task
+          {t.tasks.newTask}
         </button>
       </div>
 
@@ -229,7 +231,7 @@ export default function TasksPage() {
           value={filterAssigneeId}
           onChange={(e) => setFilterAssigneeId(e.target.value)}
         >
-          <option value="">All members</option>
+          <option value="">{t.tasks.allMembers}</option>
           {members.map((m) => (
             <option key={m.id} value={m.id}>{m.name ?? m.id}</option>
           ))}
@@ -249,9 +251,9 @@ export default function TasksPage() {
         <p className={styles.empty}>No tasks yet. Create one to get started.</p>
       )}
 
-      <Section label="Overdue" tasks={overdue} isOverdue today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
-      <Section label="This week" tasks={thisWeek} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
-      <Section label="Later" tasks={later} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      <Section label={t.tasks.overdue} tasks={overdue} isOverdue today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      <Section label={t.tasks.thisWeek} tasks={thisWeek} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
+      <Section label={t.tasks.later} tasks={later} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
 
       {showDone && doneTasks.length > 0 && (
         <div className={styles.section}>

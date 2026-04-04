@@ -228,7 +228,7 @@ tr:last-child .cell {
   border: none;
   background: transparent;
   color: var(--foreground);
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   font-family: inherit;
   resize: none;
   outline: none;
@@ -247,7 +247,7 @@ tr:last-child .cell {
 .cellPreview {
   min-height: 90px;
   padding: 0.6rem 0.75rem;
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   line-height: 1.45;
   color: var(--foreground);
   cursor: text;

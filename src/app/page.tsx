@@ -4,7 +4,7 @@
 import { useSession, signIn } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import { LogIn } from "lucide-react"
-import { WeekBlock, WeekData, DayWeather, CustodyEntry } from "./week/WeekBlock"
+import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import styles from "./page.module.css"
 
@@ -39,6 +39,7 @@ export default function Home() {
   const [week, setWeek] = useState<WeekData | null>(null)
   const [weather, setWeather] = useState<Record<string, DayWeather> | null>(null)
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [tasks, setTasks] = useState<FamilyTask[]>([])
   const [members, setMembers] = useState<{ id: string; name: string | null }[]>([])
@@ -64,7 +65,20 @@ export default function Home() {
           const timeMax = `${currentWeek.endDate}T23:59:59Z`
           fetch(`/api/calendar/events?timeMin=${timeMin}&timeMax=${timeMax}`)
             .then((r) => r.json())
-            .then((d) => setCustodyEntries(d.custodyEntries ?? []))
+            .then((d) => {
+              setCustodyEntries(d.custodyEntries ?? [])
+              const events: CalendarEvent[] = []
+              for (const e of (d.googleEvents ?? [])) {
+                const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
+                if (!date || !e.summary) continue
+                events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, allDay: !!e.start?.date, calendarName: e.calendarName ?? null, color: null })
+              }
+              for (const e of (d.importedEvents ?? [])) {
+                const date = e.allDay ? e.start : e.start.slice(0, 10)
+                events.push({ id: e.id, summary: e.summary, date, allDay: e.allDay, calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+              }
+              setCalendarEvents(events)
+            })
             .catch(() => {})
         }
 
@@ -184,6 +198,7 @@ export default function Home() {
           onDayUpdate={handleDayUpdate}
           weather={weather ?? undefined}
           custodyEntries={custodyEntries}
+          calendarEvents={calendarEvents}
           readOnly
           editHref={`/week#week-${week.startDate}`}
         />

@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import { Copy, Check } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 
 type Member = {
@@ -14,24 +15,24 @@ type Member = {
   active: boolean
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Admin",
-  PARENT: "Parent",
-  MEMBER: "Member",
-}
-
 export function UsersSection() {
   const { data: session } = useSession()
+  const { t } = useTranslation()
   const sessionUser = session?.user as Record<string, unknown> | undefined
   const sessionRole = sessionUser?.role as string | undefined
   const sessionId = sessionUser?.id as string | undefined
   const isAdmin = sessionRole === "ADMIN"
   const canManage = sessionRole === "PARENT" || sessionRole === "ADMIN"
 
+  const ROLE_LABELS: Record<string, string> = {
+    ADMIN: t.settings.roleAdmin,
+    PARENT: t.settings.roleParent,
+    MEMBER: t.settings.roleMember,
+  }
+
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Family name + join code
   const [familyName, setFamilyName] = useState("")
   const [initialFamilyName, setInitialFamilyName] = useState("")
   const [joinCode, setJoinCode] = useState<string | null>(null)
@@ -40,17 +41,14 @@ export function UsersSection() {
   const [copied, setCopied] = useState(false)
   const [generatingCode, setGeneratingCode] = useState(false)
 
-  // Per-member patch state
   const [pendingRole, setPendingRole] = useState<Record<string, string>>({})
   const [savingId, setSavingId] = useState<string | null>(null)
 
-  // Reset password state
   const [resetId, setResetId] = useState<string | null>(null)
   const [resetPassword, setResetPassword] = useState("")
   const [resetError, setResetError] = useState("")
   const [resetting, setResetting] = useState(false)
 
-  // Create form
   const [showAddModal, setShowAddModal] = useState(false)
   const [name, setName] = useState("")
   const [username, setUsername] = useState("")
@@ -189,12 +187,12 @@ export function UsersSection() {
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Family</h2>
+      <h2 className={styles.sectionTitle}>{t.settings.family}</h2>
 
       <div className={styles.memberList}>
         <div className={styles.memberRow}>
           <div className={styles.memberInfo}>
-            <span className={styles.memberName}>Family name</span>
+            <span className={styles.memberName}>{t.settings.familyNameLabel}</span>
           </div>
           <div className={styles.memberActions}>
             <input
@@ -202,47 +200,45 @@ export function UsersSection() {
               className={styles.fieldInput}
               value={familyName}
               onChange={(e) => setFamilyName(e.target.value)}
-              placeholder="My Family"
+              placeholder={t.settings.familyNamePlaceholder}
             />
             <button
               className={styles.saveBtn}
               onClick={handleSaveName}
               disabled={savingName || !familyName.trim() || familyName.trim() === initialFamilyName.trim()}
             >
-              {savingName ? "…" : nameSaved ? "Saved!" : "Save"}
+              {savingName ? "…" : nameSaved ? t.settings.saved : t.settings.save}
             </button>
           </div>
         </div>
 
         <div className={styles.memberRow}>
           <div className={styles.memberInfo}>
-            <span className={styles.memberName}>Join code</span>
-            <span className={styles.memberUsername}>Share with family members to invite them.</span>
+            <span className={styles.memberName}>{t.settings.joinCodeLabel}</span>
+            <span className={styles.memberUsername}>{t.settings.joinCodeDesc}</span>
           </div>
           <div className={styles.memberActions}>
             {joinCode ? (
               <>
                 <span className={styles.joinCode}>{joinCode}</span>
-                <button className={styles.copyBtn} onClick={copyCode} title="Copy code">
+                <button className={styles.copyBtn} onClick={copyCode} title={t.settings.copyCode}>
                   {copied ? <Check size={14} /> : <Copy size={14} />}
                 </button>
               </>
             ) : (
               <button className={styles.saveBtn} onClick={handleGenerateCode} disabled={generatingCode}>
-                {generatingCode ? "Generating…" : "Generate"}
+                {generatingCode ? t.settings.generating : t.settings.generate}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      <h3 className={styles.subTitle}>Members</h3>
-      <p className={styles.sectionDesc}>
-        Admins can change roles and activate or deactivate accounts.
-      </p>
+      <h3 className={styles.subTitle}>{t.settings.membersTitle}</h3>
+      <p className={styles.sectionDesc}>{t.settings.membersDesc}</p>
 
       {loading ? (
-        <p className={styles.spinner}>Loading…</p>
+        <p className={styles.spinner}>{t.settings.loading}</p>
       ) : (
         <div className={styles.memberList}>
           {members.map((m) => {
@@ -253,7 +249,7 @@ export function UsersSection() {
                 <div className={styles.memberInfo}>
                   <span className={styles.memberName}>
                     {m.name ?? m.username ?? "—"}
-                    {isSelf && <span className={styles.memberSelf}> (you)</span>}
+                    {isSelf && <span className={styles.memberSelf}> ({t.settings.you})</span>}
                   </span>
                   <span className={styles.memberUsername}>
                     {m.email ?? (m.username ? `@${m.username}` : null)}
@@ -261,7 +257,6 @@ export function UsersSection() {
                 </div>
 
                 <div className={styles.memberActions}>
-                  {/* Role badge / dropdown */}
                   {isAdmin && !isSelf ? (
                     <div className={styles.roleRow}>
                       <select
@@ -269,9 +264,9 @@ export function UsersSection() {
                         value={rolePending ?? m.role}
                         onChange={(e) => setPendingRole((p) => ({ ...p, [m.id]: e.target.value }))}
                       >
-                        <option value="MEMBER">Member</option>
-                        <option value="PARENT">Parent</option>
-                        <option value="ADMIN">Admin</option>
+                        <option value="MEMBER">{t.settings.roleMember}</option>
+                        <option value="PARENT">{t.settings.roleParent}</option>
+                        <option value="ADMIN">{t.settings.roleAdmin}</option>
                       </select>
                       {rolePending && rolePending !== m.role && (
                         <button
@@ -279,7 +274,7 @@ export function UsersSection() {
                           onClick={() => handleRoleChange(m.id)}
                           disabled={savingId === m.id}
                         >
-                          {savingId === m.id ? "…" : "Save"}
+                          {savingId === m.id ? "…" : t.settings.save}
                         </button>
                       )}
                     </div>
@@ -287,24 +282,22 @@ export function UsersSection() {
                     <span className={styles.roleBadge}>{ROLE_LABELS[m.role]}</span>
                   )}
 
-                  {/* Activate / Deactivate */}
                   {isAdmin && !isSelf && (
                     <button
                       className={m.active ? styles.cancelBtn : styles.activateBtn}
                       onClick={() => handleToggleActive(m)}
                       disabled={savingId === m.id}
                     >
-                      {m.active ? "Deactivate" : "Activate"}
+                      {m.active ? t.settings.deactivate : t.settings.activate}
                     </button>
                   )}
 
-                  {/* Password reset — credential users only */}
                   {canManage && m.username && !isSelf && (
                     resetId === m.id ? (
                       <>
                         <input
                           type="password"
-                          placeholder="New password (min 8)"
+                          placeholder={t.settings.newPasswordPlaceholder}
                           value={resetPassword}
                           onChange={(e) => setResetPassword(e.target.value)}
                           className={styles.fieldInput}
@@ -315,13 +308,13 @@ export function UsersSection() {
                           onClick={() => handleResetPassword(m.id)}
                           disabled={resetting || resetPassword.length < 8}
                         >
-                          {resetting ? "…" : "Save"}
+                          {resetting ? "…" : t.settings.save}
                         </button>
                         <button
                           className={styles.cancelBtn}
                           onClick={() => { setResetId(null); setResetPassword(""); setResetError("") }}
                         >
-                          Cancel
+                          {t.settings.cancel}
                         </button>
                       </>
                     ) : (
@@ -329,7 +322,7 @@ export function UsersSection() {
                         className={styles.cancelBtn}
                         onClick={() => { setResetId(m.id); setResetPassword(""); setResetError("") }}
                       >
-                        Reset password
+                        {t.settings.resetPassword}
                       </button>
                     )
                   )}
@@ -342,36 +335,36 @@ export function UsersSection() {
 
       {canManage && (
         <button className={styles.saveBtn} style={{ width: "fit-content" }} onClick={() => setShowAddModal(true)}>
-          + Add Member
+          {t.settings.addMember}
         </button>
       )}
 
       {showAddModal && (
         <div className={styles.modalOverlay} onClick={closeAddModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles.modalTitle}>Add Member</h2>
+            <h2 className={styles.modalTitle}>{t.settings.addMemberTitle}</h2>
             <form onSubmit={handleCreate}>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Name</label>
+                <label className={styles.fieldLabel}>{t.settings.nameLabel}</label>
                 <input type="text" placeholder="Emma" value={name}
                   onChange={(e) => setName(e.target.value)} className={styles.fieldInput} required autoFocus />
               </div>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Username</label>
+                <label className={styles.fieldLabel}>{t.settings.usernameLabel}</label>
                 <input type="text" placeholder="emma-smith" value={username}
                   onChange={(e) => setUsername(e.target.value)} className={styles.fieldInput} required />
               </div>
               <div className={styles.fieldGroup}>
-                <label className={styles.fieldLabel}>Password</label>
-                <input type="password" placeholder="Min. 8 characters" value={password}
+                <label className={styles.fieldLabel}>{t.settings.passwordLabel}</label>
+                <input type="password" placeholder={t.settings.minChars} value={password}
                   onChange={(e) => setPassword(e.target.value)} className={styles.fieldInput}
                   required minLength={8} />
               </div>
               {createError && <p className={styles.saveError}>{createError}</p>}
               <div className={styles.modalFooter}>
-                <button type="button" className={styles.cancelBtn} onClick={closeAddModal}>Cancel</button>
+                <button type="button" className={styles.cancelBtn} onClick={closeAddModal}>{t.settings.cancel}</button>
                 <button type="submit" disabled={creating} className={styles.saveBtn}>
-                  {creating ? "Creating…" : "Add Member"}
+                  {creating ? t.settings.creating : t.settings.addMemberTitle}
                 </button>
               </div>
             </form>

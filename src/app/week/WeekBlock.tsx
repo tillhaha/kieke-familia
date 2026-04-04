@@ -337,7 +337,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
           disabled={generating}
         >
           <ShoppingCart size={13} strokeWidth={2} />
-          {generating ? "Adding…" : "Add to shopping list"}
+          {generating ? t.weekBlock.adding : t.weekBlock.addToShoppingList}
         </button>
       )}
       <div className={styles.tableWrapper}>
@@ -412,7 +412,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             autoFocus
                             className={styles.recipeSearchInput}
                             value={recipeSearch!.query}
-                            placeholder="Search meals…"
+                            placeholder={t.weekBlock.searchMeals}
                             onChange={(e) =>
                               setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
                             }
@@ -568,7 +568,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
               className={`${styles.mobileViewBtn} ${mobileView === v ? styles.mobileViewBtnActive : ""}`}
               onClick={() => setMobileView(v)}
             >
-              {v === "day" ? "Day" : v === "3day" ? "3 Days" : "Week"}
+              {v === "day" ? t.weekBlock.dayView : v === "3day" ? t.weekBlock.threeDayView : t.weekBlock.weekView}
             </button>
           ))}
         </div>
@@ -623,7 +623,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                               autoFocus
                               className={styles.recipeSearchInput}
                               value={recipeSearch!.query}
-                              placeholder="Search meals…"
+                              placeholder={t.weekBlock.searchMeals}
                               onChange={(e) =>
                                 setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
                               }
@@ -879,7 +879,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
           <div className={styles.mobileModalBackdrop} onClick={() => setMobilePillDetail(null)}>
             <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
               <p className={styles.mobileModalFieldValue}>{mobilePillDetail}</p>
-              <button className={styles.mobileModalClose} onClick={() => setMobilePillDetail(null)}>Close</button>
+              <button className={styles.mobileModalClose} onClick={() => setMobilePillDetail(null)}>{t.weekBlock.close}</button>
             </div>
           </div>
         )}
@@ -915,7 +915,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       <div className={styles.mobileModalFieldValue}>{value}</div>
                       {linkedMealId && (
                         <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
-                          <ExternalLink size={11} /> View recipe
+                          <ExternalLink size={11} /> {t.weekBlock.viewRecipe}
                         </a>
                       )}
                     </div>
@@ -926,7 +926,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     <span className={styles.mobileModalFieldLabel}>Emilia</span>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
                       <Baby size={14} strokeWidth={2} className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona} />
-                      <span className={styles.mobileModalFieldValue}>{custodyEntry.location === "WITH_US" ? "With us" : "With Mona"}</span>
+                      <span className={styles.mobileModalFieldValue}>{custodyEntry.location === "WITH_US" ? t.weekBlock.withUs : t.weekBlock.withMona}</span>
                     </div>
                   </div>
                 )}
@@ -941,7 +941,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     ))}
                   </div>
                 )}
-                <button className={styles.mobileModalClose} onClick={() => setMobileDayDetail(null)}>Close</button>
+                <button className={styles.mobileModalClose} onClick={() => setMobileDayDetail(null)}>{t.weekBlock.close}</button>
               </div>
             </div>
           )

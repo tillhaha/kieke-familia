@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 import shopStyles from "../shopping/shopping.module.css"
 
@@ -9,6 +10,7 @@ type Category = { id: string; name: string; order: number }
 type BlacklistTerm = { id: string; term: string }
 
 export function ShoppingSection() {
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
   const [blacklist, setBlacklist] = useState<BlacklistTerm[]>([])
   const [loading, setLoading] = useState(true)
@@ -75,13 +77,13 @@ export function ShoppingSection() {
     await fetch(`/api/shopping/blacklist/${id}`, { method: "DELETE" })
   }
 
-  if (loading) return <p className={styles.spinner}>Loading…</p>
+  if (loading) return <p className={styles.spinner}>{t.settings.loading}</p>
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Shopping</h2>
+      <h2 className={styles.sectionTitle}>{t.settings.shopping}</h2>
 
-      <h3 className={styles.subTitle}>Categories</h3>
+      <h3 className={styles.subTitle}>{t.settings.categoriesTitle}</h3>
       <div className={shopStyles.manageList}>
         {categories.map((cat) => (
           <div key={cat.id} className={shopStyles.manageRow}>
@@ -94,14 +96,14 @@ export function ShoppingSection() {
                   onChange={(e) => setEditingCatName(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleRenameCategory(cat.id) }}
                 />
-                <button className={shopStyles.manageSaveBtn} onClick={() => handleRenameCategory(cat.id)}>Save</button>
-                <button className={shopStyles.manageDeleteBtn} aria-label="Cancel" onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
+                <button className={shopStyles.manageSaveBtn} onClick={() => handleRenameCategory(cat.id)}>{t.settings.save}</button>
+                <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.cancel} onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
               </>
             ) : (
               <>
                 <span className={shopStyles.manageRowName}>{cat.name}</span>
-                <button className={shopStyles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name) }}>Rename</button>
-                <button className={shopStyles.manageDeleteBtn} aria-label="Delete" onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
+                <button className={shopStyles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name) }}>{t.settings.rename}</button>
+                <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.remove} onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
               </>
             )}
           </div>
@@ -110,33 +112,33 @@ export function ShoppingSection() {
       <div className={shopStyles.manageAddRow}>
         <input
           className={shopStyles.manageInput}
-          placeholder="New category…"
+          placeholder={t.settings.newCategoryPlaceholder}
           value={newCatName}
           onChange={(e) => setNewCatName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleAddCategory() }}
         />
-        <button className={shopStyles.manageSaveBtn} onClick={handleAddCategory}>Add</button>
+        <button className={shopStyles.manageSaveBtn} onClick={handleAddCategory}>{t.settings.add}</button>
       </div>
 
-      <h3 className={styles.subTitle}>Blacklist</h3>
-      <p className={styles.sectionDesc}>Terms excluded from auto-suggestions.</p>
+      <h3 className={styles.subTitle}>{t.settings.blacklistTitle}</h3>
+      <p className={styles.sectionDesc}>{t.settings.blacklistDesc}</p>
       <div className={shopStyles.manageList}>
         {blacklist.map((entry) => (
           <div key={entry.id} className={shopStyles.manageRow}>
             <span className={shopStyles.manageRowName}>{entry.term}</span>
-            <button className={shopStyles.manageDeleteBtn} aria-label="Remove" onClick={() => handleDeleteBlacklist(entry.id)}><X size={13} /></button>
+            <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.remove} onClick={() => handleDeleteBlacklist(entry.id)}><X size={13} /></button>
           </div>
         ))}
       </div>
       <div className={shopStyles.manageAddRow}>
         <input
           className={shopStyles.manageInput}
-          placeholder="New term…"
+          placeholder={t.settings.newTermPlaceholder}
           value={newBlacklistTerm}
           onChange={(e) => setNewBlacklistTerm(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleAddBlacklist() }}
         />
-        <button className={shopStyles.manageSaveBtn} onClick={handleAddBlacklist}>Add</button>
+        <button className={shopStyles.manageSaveBtn} onClick={handleAddBlacklist}>{t.settings.add}</button>
       </div>
     </div>
   )

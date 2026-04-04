@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Copy, Check } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
 
 type Step = "choose" | "create" | "join" | "created"
@@ -12,6 +13,7 @@ type Step = "choose" | "create" | "join" | "created"
 export default function OnboardingPage() {
   const { update } = useSession()
   const router = useRouter()
+  const { t } = useTranslation()
 
   const [step, setStep] = useState<Step>("choose")
   const [familyName, setFamilyName] = useState("")
@@ -49,7 +51,7 @@ export default function OnboardingPage() {
       await update({ familyId: data.family ? (data.family as Record<string, unknown>).id : undefined, role: "ADMIN" })
       setStep("created")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+      setError(err instanceof Error ? err.message : t.onboarding.errorGeneric)
     } finally {
       setLoading(false)
     }
@@ -67,13 +69,13 @@ export default function OnboardingPage() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.error === "Invalid join code" ? "That code doesn't match any family. Check for typos." : (data.error ?? "Something went wrong"))
+        setError(data.error === "Invalid join code" ? t.onboarding.errorInvalidCode : (data.error ?? t.onboarding.errorGeneric))
         return
       }
       await update({ familyId: data.family.id, role: "MEMBER" })
       router.push("/")
     } catch {
-      setError("Something went wrong. Please try again.")
+      setError(t.onboarding.errorGeneric)
     } finally {
       setLoading(false)
     }
@@ -92,16 +94,16 @@ export default function OnboardingPage() {
 
         {step === "choose" && (
           <>
-            <h1 className={styles.title}>Welcome to YourKieke</h1>
-            <p className={styles.subtitle}>Do you want to create a new family or join an existing one?</p>
+            <h1 className={styles.title}>{t.onboarding.welcomeTitle}</h1>
+            <p className={styles.subtitle}>{t.onboarding.welcomeSubtitle}</p>
             <div className={styles.choices}>
               <button className={styles.choiceBtn} onClick={() => setStep("create")}>
-                <span className={styles.choiceLabel}>Create a family</span>
-                <span className={styles.choiceDesc}>Set up a new family space and invite members</span>
+                <span className={styles.choiceLabel}>{t.onboarding.createFamilyLabel}</span>
+                <span className={styles.choiceDesc}>{t.onboarding.createFamilyDesc}</span>
               </button>
               <button className={styles.choiceBtn} onClick={() => setStep("join")}>
-                <span className={styles.choiceLabel}>Join a family</span>
-                <span className={styles.choiceDesc}>Enter a join code shared by a family member</span>
+                <span className={styles.choiceLabel}>{t.onboarding.joinFamilyLabel}</span>
+                <span className={styles.choiceDesc}>{t.onboarding.joinFamilyDesc}</span>
               </button>
             </div>
           </>
@@ -109,34 +111,34 @@ export default function OnboardingPage() {
 
         {step === "create" && (
           <>
-            <button className={styles.back} onClick={() => { setStep("choose"); setError("") }}>← Back</button>
-            <h1 className={styles.title}>Create your family</h1>
-            <p className={styles.subtitle}>Give your family a name and set your home location.</p>
+            <button className={styles.back} onClick={() => { setStep("choose"); setError("") }}>{t.onboarding.back}</button>
+            <h1 className={styles.title}>{t.onboarding.createTitle}</h1>
+            <p className={styles.subtitle}>{t.onboarding.createSubtitle}</p>
             <form onSubmit={handleCreate} className={styles.form}>
               <div className={styles.field}>
-                <label className={styles.label}>Family name <span className={styles.optional}>(optional)</span></label>
+                <label className={styles.label}>{t.onboarding.familyNameLabel} <span className={styles.optional}>{t.onboarding.optional}</span></label>
                 <input
                   type="text"
                   className={styles.input}
-                  placeholder="e.g. The Smiths"
+                  placeholder={t.onboarding.familyNamePlaceholder}
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
                 />
               </div>
               <div className={styles.field}>
-                <label className={styles.label}>Home city <span className={styles.optional}>(optional)</span></label>
+                <label className={styles.label}>{t.onboarding.homeCityLabel} <span className={styles.optional}>{t.onboarding.optional}</span></label>
                 <input
                   type="text"
                   className={styles.input}
-                  placeholder="e.g. Berlin"
+                  placeholder={t.onboarding.cityPlaceholder}
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />
-                <p className={styles.hint}>Used for weather on the home screen.</p>
+                <p className={styles.hint}>{t.onboarding.cityHint}</p>
               </div>
               {error && <p className={styles.error}>{error}</p>}
               <button type="submit" disabled={loading} className={styles.primaryBtn}>
-                {loading ? "Creating…" : "Create family"}
+                {loading ? t.onboarding.creating : t.onboarding.createButton}
               </button>
             </form>
           </>
@@ -144,12 +146,12 @@ export default function OnboardingPage() {
 
         {step === "join" && (
           <>
-            <button className={styles.back} onClick={() => { setStep("choose"); setError("") }}>← Back</button>
-            <h1 className={styles.title}>Join a family</h1>
-            <p className={styles.subtitle}>Enter the 10-digit code shared with you by your family.</p>
+            <button className={styles.back} onClick={() => { setStep("choose"); setError("") }}>{t.onboarding.back}</button>
+            <h1 className={styles.title}>{t.onboarding.joinTitle}</h1>
+            <p className={styles.subtitle}>{t.onboarding.joinSubtitle}</p>
             <form onSubmit={handleJoin} className={styles.form}>
               <div className={styles.field}>
-                <label className={styles.label}>Join code</label>
+                <label className={styles.label}>{t.onboarding.joinCodeLabel}</label>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.codeInput}`}
@@ -163,7 +165,7 @@ export default function OnboardingPage() {
               </div>
               {error && <p className={styles.error}>{error}</p>}
               <button type="submit" disabled={loading || joinCode.length !== 10} className={styles.primaryBtn}>
-                {loading ? "Joining…" : "Join family"}
+                {loading ? t.onboarding.joining : t.onboarding.joinButton}
               </button>
             </form>
           </>
@@ -172,21 +174,17 @@ export default function OnboardingPage() {
         {step === "created" && (
           <>
             <div className={styles.successIcon}>✓</div>
-            <h1 className={styles.title}>{createdFamilyName} is ready</h1>
-            <p className={styles.subtitle}>
-              Share this code with your family members so they can join.
-            </p>
+            <h1 className={styles.title}>{createdFamilyName} {t.onboarding.isReady}</h1>
+            <p className={styles.subtitle}>{t.onboarding.shareCodeSubtitle}</p>
             <div className={styles.codeBlock}>
               <span className={styles.generatedCode}>{generatedCode}</span>
-              <button className={styles.copyBtn} onClick={copyCode} title="Copy code">
+              <button className={styles.copyBtn} onClick={copyCode} title={t.settings.copyCode}>
                 {copied ? <Check size={16} /> : <Copy size={16} />}
               </button>
             </div>
-            <p className={styles.codeHint}>
-              Anyone with this code can join your family. You can also find it later in Settings.
-            </p>
+            <p className={styles.codeHint}>{t.onboarding.codeHint}</p>
             <button className={styles.primaryBtn} onClick={() => router.push("/")}>
-              Go to home →
+              {t.onboarding.goHome}
             </button>
           </>
         )}

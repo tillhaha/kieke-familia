@@ -302,6 +302,7 @@ function CredentialsForm() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -315,7 +316,7 @@ function CredentialsForm() {
     })
     setLoading(false)
     if (result?.error) {
-      setError("Invalid username or password")
+      setError(t.home.invalidCredentials)
     } else if (result?.url) {
       window.location.href = result.url
     }
@@ -326,7 +327,7 @@ function CredentialsForm() {
       <div className={styles.credentialField}>
         <input
           type="text"
-          placeholder="Username"
+          placeholder={t.home.username}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className={styles.credentialInput}
@@ -337,7 +338,7 @@ function CredentialsForm() {
       <div className={styles.credentialField}>
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t.home.password}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={styles.credentialInput}
@@ -347,7 +348,7 @@ function CredentialsForm() {
       </div>
       {error && <p className={styles.credentialError}>{error}</p>}
       <button type="submit" disabled={loading} className={styles.signInBtn}>
-        {loading ? "Signing in…" : "Sign in"}
+        {loading ? t.home.signingIn : t.home.signIn}
       </button>
     </form>
   )

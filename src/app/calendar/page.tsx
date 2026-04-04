@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Plus, Baby, Link2 } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./calendar.module.css"
 import CustodyPopover from "./CustodyPopover"
 
@@ -20,7 +21,7 @@ type EventDetail = {
 type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WITH_MONA"; personName: string }
 type GoogleEvent = { id: string; summary?: string; start?: { date?: string; dateTime?: string }; end?: { date?: string; dateTime?: string }; calendarId?: string; calendarName?: string }
 
-function googleEventTooltip(e: GoogleEvent): string {
+function googleEventTooltip(e: GoogleEvent, allDayLabel: string): string {
   const parts: string[] = []
   if (e.start?.dateTime) {
     const fmt = (d: Date) => d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -28,7 +29,7 @@ function googleEventTooltip(e: GoogleEvent): string {
     const end = e.end?.dateTime ? new Date(e.end.dateTime) : null
     parts.push(end ? `${fmt(start)} – ${fmt(end)}` : fmt(start))
   } else {
-    parts.push("All day")
+    parts.push(allDayLabel)
   }
   if (e.calendarName) parts.push(e.calendarName)
   return parts.join(" · ")
@@ -95,6 +96,7 @@ function CustodyPill({
 
 export default function CalendarPage() {
   const { data: session, status } = useSession()
+  const { t } = useTranslation()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<{
     googleEvents: GoogleEvent[]
@@ -210,7 +212,7 @@ export default function CalendarPage() {
   const nextMonth = () => { setOpenCustodyId(null); setCurrentDate(new Date(year, month + 1, 1)) }
   const prevMonth = () => { setOpenCustodyId(null); setCurrentDate(new Date(year, month - 1, 1)) }
 
-  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] // kept as keys for layout; days are locale-agnostic abbreviations
 
   const getEventsForDay = (date: Date) => {
     const dStr = date.toDateString()
@@ -236,7 +238,7 @@ export default function CalendarPage() {
   }
 
   if (status === "loading") return null
-  if (status === "unauthenticated") return <div style={{ padding: "2rem" }}>Please sign in to view the calendar.</div>
+  if (status === "unauthenticated") return <div style={{ padding: "2rem" }}>{t.calendar.signInRequired}</div>
 
   return (
     <div className={styles.calendarContainer}>
@@ -261,7 +263,7 @@ export default function CalendarPage() {
               setModal("CUSTODY")
             }}
             className={styles.addBtn}
-            aria-label="Add custody schedule"
+            aria-label={t.calendar.custodyModalTitle}
           >
             <Plus size={16} />
           </button>
@@ -271,30 +273,30 @@ export default function CalendarPage() {
             <ChevronLeft size={16} />
           </button>
           <button onClick={() => setCurrentDate(new Date())} className={styles.todayBtn}>
-            Today
+            {t.calendar.today}
           </button>
           <button onClick={nextMonth} className={styles.navBtn} aria-label="Next month">
             <ChevronRight size={16} />
           </button>
-          {loading && <span className={styles.loadingIndicator}>Updating…</span>}
+          {loading && <span className={styles.loadingIndicator}>{t.calendar.updating}</span>}
         </div>
       </header>
 
       {/* Filters */}
       <div className={styles.filterBar}>
-        <span className={styles.filterLabel}>Show:</span>
+        <span className={styles.filterLabel}>{t.calendar.showLabel}</span>
         <button
           className={`${styles.filterBtn} ${styles.filterCustody} ${showCustody ? styles.filterBtnActive : ""}`}
           onClick={() => setShowCustody((v) => !v)}
         >
           <Baby size={12} strokeWidth={2} />
-          Custody
+          {t.calendar.filterCustody}
         </button>
         <button
           className={`${styles.filterBtn} ${styles.filterGoogle} ${showGoogle ? styles.filterBtnActive : ""}`}
           onClick={() => setShowGoogle((v) => !v)}
         >
-          Google Calendars
+          {t.calendar.filterGoogle}
         </button>
         {events.importedEvents.length > 0 && (
           <button
@@ -302,7 +304,7 @@ export default function CalendarPage() {
             onClick={() => setShowImported((v) => !v)}
           >
             <Link2 size={12} strokeWidth={2} />
-            Imported
+            {t.calendar.filterImported}
           </button>
         )}
       </div>
@@ -310,19 +312,19 @@ export default function CalendarPage() {
       {/* No Calendars Prompt */}
       {events.calendarSyncCount === 0 && !loading && (
         <div className={styles.noCalendarsPrompt}>
-          No Google calendars selected.{" "}
+          {t.calendar.noCalendarsSelected}{" "}
           <Link href="/settings" className={styles.noCalendarsLink}>
-            Go to Settings →
+            {t.calendar.goToSettings}
           </Link>{" "}
-          to choose which calendars to sync.
+          {t.calendar.toChooseCalendars}
         </div>
       )}
 
       {/* Error banner */}
       {calendarError && (
         <div className={styles.errorBanner}>
-          <span>Could not load Google Calendar events: {calendarError}</span>
-          <button onClick={fetchEvents} className={styles.retryBtn}>Retry</button>
+          <span>{t.calendar.couldNotLoad} {calendarError}</span>
+          <button onClick={fetchEvents} className={styles.retryBtn}>{t.calendar.retry}</button>
         </div>
       )}
 
@@ -378,8 +380,8 @@ export default function CalendarPage() {
                 <div
                   key={idx}
                   className={`${styles.eventItem} ${styles.googleEvent}`}
-                  data-tooltip={googleEventTooltip(e)}
-                  onClick={() => setEventDetail({ summary: e.summary ?? "", timeLabel: googleEventTooltip(e), calendarName: e.calendarName ?? undefined })}
+                  data-tooltip={googleEventTooltip(e, t.calendar.allDay)}
+                  onClick={() => setEventDetail({ summary: e.summary ?? "", timeLabel: googleEventTooltip(e, t.calendar.allDay), calendarName: e.calendarName ?? undefined })}
                 >
                   <span>{e.summary}</span>
                 </div>
@@ -390,8 +392,8 @@ export default function CalendarPage() {
                   key={idx}
                   className={`${styles.eventItem} ${styles.importedEvent}`}
                   style={isDark ? { borderLeft: `3px solid ${e.calendarColor}` } : { backgroundColor: e.calendarColor }}
-                  data-tooltip={`${e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${e.calendarName ? " · " + e.calendarName : ""}`}
-                  onClick={() => setEventDetail({ summary: e.summary, timeLabel: e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), calendarName: e.calendarName, color: e.calendarColor })}
+                  data-tooltip={`${e.allDay ? t.calendar.allDay : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${e.calendarName ? " · " + e.calendarName : ""}`}
+                  onClick={() => setEventDetail({ summary: e.summary, timeLabel: e.allDay ? t.calendar.allDay : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), calendarName: e.calendarName, color: e.calendarColor })}
                 >
                   <Link2 size={10} strokeWidth={2} />
                   <span>{e.summary}</span>
@@ -415,7 +417,7 @@ export default function CalendarPage() {
             {eventDetail.calendarName && (
               <div className={styles.eventModalMeta}>{eventDetail.calendarName}</div>
             )}
-            <button className={styles.eventModalClose} onClick={() => setEventDetail(null)}>Close</button>
+            <button className={styles.eventModalClose} onClick={() => setEventDetail(null)}>{t.calendar.close}</button>
           </div>
         </div>
       )}
@@ -454,10 +456,10 @@ export default function CalendarPage() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2>Add Custody Schedule</h2>
+            <h2>{t.calendar.custodyModalTitle}</h2>
 
             <div className={styles.formGroup}>
-              <label htmlFor="cStart">First night</label>
+              <label htmlFor="cStart">{t.calendar.firstNight}</label>
               <input
                 id="cStart"
                 type="date"
@@ -468,7 +470,7 @@ export default function CalendarPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label>Emilia sleeps at</label>
+              <label>{t.calendar.sleepsAt}</label>
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
                   type="button"
@@ -485,7 +487,7 @@ export default function CalendarPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  With us
+                  {t.calendar.withUs}
                 </button>
                 <button
                   type="button"
@@ -502,14 +504,14 @@ export default function CalendarPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  Elsewhere
+                  {t.calendar.elsewhere}
                 </button>
               </div>
             </div>
 
             <div className={styles.formGroup}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <label style={{ marginBottom: 0 }}>Recurring</label>
+                <label style={{ marginBottom: 0 }}>{t.calendar.recurring}</label>
                 <button
                   type="button"
                   onClick={() => setCRecurring(!cRecurring)}
@@ -523,7 +525,7 @@ export default function CalendarPage() {
                     position: "relative",
                     transition: "background 150ms",
                   }}
-                  aria-label="Toggle recurring"
+                  aria-label={t.calendar.recurring}
                 >
                   <span style={{
                     position: "absolute",
@@ -540,14 +542,14 @@ export default function CalendarPage() {
               </div>
               {cRecurring && (
                 <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
-                  Alternating weeks · switches on Sunday
+                  {t.calendar.alternatingWeeks}
                 </p>
               )}
             </div>
 
             {cRecurring && (
               <div className={styles.formGroup}>
-                <label htmlFor="cUntil">Until</label>
+                <label htmlFor="cUntil">{t.calendar.until}</label>
                 <input
                   id="cUntil"
                   type="date"
@@ -557,7 +559,7 @@ export default function CalendarPage() {
                 />
                 {cStart && cUntil && (
                   <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
-                    Creates ~{Math.round((new Date(cUntil).getTime() - new Date(cStart).getTime()) / (7 * 24 * 60 * 60 * 1000))} weeks of schedule entries
+                    {t.calendar.weeksOfSchedulePrefix}{Math.round((new Date(cUntil).getTime() - new Date(cStart).getTime()) / (7 * 24 * 60 * 60 * 1000))}{t.calendar.weeksOfScheduleSuffix}
                   </p>
                 )}
               </div>
@@ -565,17 +567,17 @@ export default function CalendarPage() {
 
             {cConflictPending && (
               <p className={styles.modalError} style={{ background: "var(--warning-soft, #fff8e1)", borderColor: "var(--warning, #f59e0b)", color: "var(--warning-text, #92400e)" }}>
-                There are already entries for these dates. Submit again to overwrite them.
+                {t.calendar.conflictWarning}
               </p>
             )}
             {modalError && <p className={styles.modalError}>{modalError}</p>}
 
             <div className={styles.modalActions}>
               <button type="button" className={styles.cancelBtn} onClick={closeModal}>
-                Cancel
+                {t.calendar.cancel}
               </button>
               <button type="submit" className={cConflictPending ? styles.deleteBtnConfirm : styles.saveBtn}>
-                {cConflictPending ? "Overwrite" : "Save Schedule"}
+                {cConflictPending ? t.calendar.overwrite : t.calendar.saveSchedule}
               </button>
             </div>
           </form>

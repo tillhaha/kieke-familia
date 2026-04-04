@@ -2,9 +2,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 
 export function LocationSection() {
+  const { t } = useTranslation()
   const [city, setCity] = useState("")
   const [initialCity, setInitialCity] = useState("")
   const [loading, setLoading] = useState(true)
@@ -38,31 +40,29 @@ export function LocationSection() {
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
-      setError("Failed to save.")
+      setError(t.settings.failedSave)
     } finally {
       setSaving(false)
     }
   }
 
-  if (loading) return <p className={styles.spinner}>Loading…</p>
+  if (loading) return <p className={styles.spinner}>{t.settings.loading}</p>
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Location</h2>
-      <p className={styles.sectionDesc}>
-        Your home city is used to show weather on the home screen.
-      </p>
+      <h2 className={styles.sectionTitle}>{t.settings.location}</h2>
+      <p className={styles.sectionDesc}>{t.settings.locationDesc}</p>
 
       <div className={styles.fieldGroup}>
         <label className={styles.fieldLabel} htmlFor="city-input">
-          Home city
+          {t.settings.homeCityLabel}
         </label>
         <input
           id="city-input"
           className={styles.fieldInput}
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="e.g. Berlin"
+          placeholder={t.settings.homeCityPlaceholder}
         />
       </div>
 
@@ -73,7 +73,7 @@ export function LocationSection() {
         onClick={handleSave}
         disabled={saving || city.trim() === initialCity.trim()}
       >
-        {saving ? "Saving…" : saved ? "Saved!" : "Save"}
+        {saving ? t.settings.saving : saved ? t.settings.saved : t.settings.save}
       </button>
     </div>
   )

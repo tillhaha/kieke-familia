@@ -3,10 +3,12 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 
 export function ProfileSection() {
   const { data: session, update } = useSession()
+  const { t } = useTranslation()
   const currentName = session?.user?.name ?? ""
 
   const [name, setName] = useState(currentName)
@@ -25,12 +27,12 @@ export function ProfileSection() {
         body: JSON.stringify({ name: name.trim() || null }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error ?? "Failed to save."); return }
+      if (!res.ok) { setError(data.error ?? t.settings.failedSave); return }
       await update({ name: data.user.name })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
-      setError("Failed to save.")
+      setError(t.settings.failedSave)
     } finally {
       setSaving(false)
     }
@@ -38,17 +40,17 @@ export function ProfileSection() {
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Profile</h2>
-      <p className={styles.sectionDesc}>Your display name shown in the app.</p>
+      <h2 className={styles.sectionTitle}>{t.settings.profile}</h2>
+      <p className={styles.sectionDesc}>{t.settings.profileDesc}</p>
 
       <div className={styles.fieldGroup}>
-        <label htmlFor="profile-name" className={styles.fieldLabel}>Name</label>
+        <label htmlFor="profile-name" className={styles.fieldLabel}>{t.settings.profileNameLabel}</label>
         <input
           id="profile-name"
           className={styles.fieldInput}
           value={name}
           onChange={(e) => { setName(e.target.value); setSaved(false) }}
-          placeholder="Your name"
+          placeholder={t.settings.profileNamePlaceholder}
           onKeyDown={(e) => { if (e.key === "Enter") handleSave() }}
         />
       </div>
@@ -60,7 +62,7 @@ export function ProfileSection() {
         onClick={handleSave}
         disabled={saving || name.trim() === currentName}
       >
-        {saving ? "Saving…" : saved ? "Saved!" : "Save"}
+        {saving ? t.settings.saving : saved ? t.settings.saved : t.settings.save}
       </button>
     </div>
   )

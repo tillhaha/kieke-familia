@@ -240,15 +240,15 @@ export default function TasksPage() {
           className={`${styles.filterToggle} ${showDone ? styles.filterToggleActive : ""}`}
           onClick={handleShowDoneToggle}
         >
-          Show completed
+          {t.tasks.showCompleted}
         </button>
       </div>
 
       {!hasAnyOpen && !showDone && (
-        <p className={styles.empty}>No open tasks.</p>
+        <p className={styles.empty}>{t.tasks.noOpenTasks}</p>
       )}
       {!hasAnyOpen && showDone && doneTasks.length === 0 && (
-        <p className={styles.empty}>No tasks yet. Create one to get started.</p>
+        <p className={styles.empty}>{t.tasks.noTasksYet}</p>
       )}
 
       <Section label={t.tasks.overdue} tasks={overdue} isOverdue today={today} setModalTask={setModalTask} toggleDone={toggleDone} />
@@ -257,7 +257,7 @@ export default function TasksPage() {
 
       {showDone && doneTasks.length > 0 && (
         <div className={styles.section}>
-          <div className={styles.sectionLabel}>Done</div>
+          <div className={styles.sectionLabel}>{t.tasks.done}</div>
           <div className={styles.taskList}>
             {doneTasks.map((t) => (
               <TaskRow key={t.id} task={t} today={today} setModalTask={setModalTask} toggleDone={toggleDone} />

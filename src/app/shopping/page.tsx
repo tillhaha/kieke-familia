@@ -4,6 +4,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Plus, X } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 
 type Category = { id: string; name: string; order: number }
@@ -11,6 +12,7 @@ type ShoppingItem = { id: string; name: string; quantity: string | null; categor
 
 export default function ShoppingPage() {
   const { status } = useSession()
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -18,7 +20,6 @@ export default function ShoppingPage() {
   // Add form
   const [qty, setQty] = useState("")
   const [name, setName] = useState("")
-  // categoryId is the user's explicit selection; "" means "use memory suggestion or none"
   const [categoryId, setCategoryId] = useState("")
   const [addError, setAddError] = useState<string | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
@@ -39,7 +40,6 @@ export default function ShoppingPage() {
     }).finally(() => setLoading(false))
   }, [status])
 
-  // Memory lookup: item name → categoryId (derived, no setState needed)
   const memory = useMemo(() => {
     const m: Record<string, string> = {}
     for (const item of items) {
@@ -48,7 +48,6 @@ export default function ShoppingPage() {
     return m
   }, [items])
 
-  // Effective category: user's explicit pick, or memory suggestion for current name
   const effectiveCategoryId = useMemo(() => {
     if (categoryId) return categoryId
     const key = name.trim().toLowerCase()
@@ -86,13 +85,13 @@ export default function ShoppingPage() {
       const data = await res.json()
       if (!res.ok) {
         setItems((prev) => prev.filter((i) => i.id !== optimisticItem.id))
-        setAddError(data.error ?? "Failed to add item")
+        setAddError(data.error ?? t.shopping.failedToAdd)
         return
       }
       setItems((prev) => prev.map((i) => (i.id === optimisticItem.id ? data : i)))
     } catch {
       setItems((prev) => prev.filter((i) => i.id !== optimisticItem.id))
-      setAddError("Failed to add item")
+      setAddError(t.shopping.failedToAdd)
     }
   }
 
@@ -151,7 +150,6 @@ export default function ShoppingPage() {
     }
   }
 
-  // Group items by category
   const grouped = (() => {
     const catMap = new Map<string | null, ShoppingItem[]>()
     for (const item of items) {
@@ -174,21 +172,20 @@ export default function ShoppingPage() {
   return (
     <div className={styles.container}>
       <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Shopping List</h1>
+        <h1 className={styles.pageTitle}>{t.shopping.title}</h1>
       </div>
 
-      {/* Add form */}
       <form className={styles.addForm} onSubmit={handleAdd}>
         <input
           className={styles.qtyInput}
-          placeholder="Qty"
+          placeholder={t.shopping.qty}
           value={qty}
           onChange={(e) => setQty(e.target.value)}
         />
         <input
           ref={nameInputRef}
           className={styles.nameInput}
-          placeholder="Add item…"
+          placeholder={t.shopping.addItemPlaceholder}
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoComplete="off"
@@ -198,26 +195,25 @@ export default function ShoppingPage() {
           value={effectiveCategoryId}
           onChange={(e) => setCategoryId(e.target.value)}
         >
-          <option value="">Category…</option>
+          <option value="">{t.shopping.categoryPlaceholder}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
         <button type="submit" className={styles.addBtn} disabled={!name.trim()}>
           <Plus size={14} strokeWidth={2.5} />
-          Add
+          {t.shopping.add}
         </button>
       </form>
       {addError && <p className={styles.addError}>{addError}</p>}
 
-      {/* Item list */}
       {items.length === 0 ? (
-        <p className={styles.emptyState}>No items yet. Add something above.</p>
+        <p className={styles.emptyState}>{t.shopping.noItems}</p>
       ) : (
         <div className={styles.list}>
           {grouped.map(({ category, items: groupItems }) => (
             <div key={category?.id ?? "uncategorized"} className={styles.group}>
-              <div className={styles.groupLabel}>{category?.name ?? "Other"}</div>
+              <div className={styles.groupLabel}>{category?.name ?? t.shopping.other}</div>
               <div className={styles.groupItems}>
                 {groupItems.map((item) => (
                   <div key={item.id} className={styles.item}>
@@ -236,7 +232,7 @@ export default function ShoppingPage() {
                         onBlur={() => setEditingCategoryFor(null)}
                         onChange={(e) => handleCategoryChange(item.id, e.target.value)}
                       >
-                        <option value="">Other</option>
+                        <option value="">{t.shopping.other}</option>
                         {categories.map((c) => (
                           <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
@@ -245,15 +241,15 @@ export default function ShoppingPage() {
                       <button
                         className={styles.categoryPill}
                         onClick={() => setEditingCategoryFor(item.id)}
-                        title="Change category"
+                        title={t.shopping.changeCategory}
                       >
-                        {item.category?.name ?? "Other"}
+                        {item.category?.name ?? t.shopping.other}
                       </button>
                     )}
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleDelete(item.id)}
-                      aria-label="Remove item"
+                      aria-label={t.shopping.removeItem}
                     >
                       <X size={14} strokeWidth={2} />
                     </button>
@@ -265,14 +261,13 @@ export default function ShoppingPage() {
         </div>
       )}
 
-      {/* Footer */}
       <div className={styles.footer}>
         <button
           className={styles.clearBtn}
           onClick={handleClearList}
           disabled={clearing || items.length === 0}
         >
-          Clear list
+          {t.shopping.clearList}
         </button>
       </div>
     </div>

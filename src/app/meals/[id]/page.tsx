@@ -6,10 +6,10 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { ChevronLeft, ImagePlus, Pencil, Trash2 } from "lucide-react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
 type MealType = "Meal" | "Snack" | "Drink" | "Baked"
-
 type Diet = "Vegetarian" | "Meat" | "Fish"
 
 type Meal = {
@@ -41,11 +41,11 @@ function autoResize(el: HTMLTextAreaElement) {
 export default function MealDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+  const { t } = useTranslation()
   const [meal, setMeal] = useState<Meal | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
-  // Editing state
   const [name, setName] = useState("")
   const [servings, setServings] = useState("")
   const [mealType, setMealType] = useState<MealType | "">("Meal")
@@ -54,8 +54,8 @@ export default function MealDetailPage() {
   const [thirtyMinute, setThirtyMinute] = useState(false)
   const [editingField, setEditingField] = useState<EditingField>(null)
   const [draftNotes, setDraftNotes] = useState("")
-  const [draftIngredients, setDraftIngredients] = useState("") // one per line
-  const [draftSteps, setDraftSteps] = useState("")             // one per line
+  const [draftIngredients, setDraftIngredients] = useState("")
+  const [draftSteps, setDraftSteps] = useState("")
   const [draftSource, setDraftSource] = useState("")
 
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -203,13 +203,13 @@ export default function MealDetailPage() {
   }
 
   if (loading) return null
-  if (notFound) return <div className={styles.detailContainer}><p>Recipe not found.</p></div>
+  if (notFound) return <div className={styles.detailContainer}><p>{t.meals.notFound}</p></div>
   if (!meal) return null
 
   return (
     <div className={styles.detailContainer}>
       <Link href="/meals" className={styles.backLink}>
-        <ChevronLeft size={14} /> Recipes
+        <ChevronLeft size={14} /> {t.meals.backLink}
       </Link>
 
       <div className={styles.detailHeader}>
@@ -224,11 +224,10 @@ export default function MealDetailPage() {
           onClick={handleDelete}
           disabled={deleting}
         >
-          {deleting ? "Deleting…" : confirmDelete ? "Sure? Click to confirm" : "Delete"}
+          {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
         </button>
       </div>
 
-      {/* Image */}
       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
       <div className={styles.imageBlock}>
         {meal.imageUrl ? (
@@ -237,53 +236,52 @@ export default function MealDetailPage() {
             <img src={meal.imageUrl} alt={meal.name} className={styles.recipeImage} />
             <div className={styles.imageActions}>
               <button className={styles.imageActionBtn} onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
-                <Pencil size={11} /> Change
+                <Pencil size={11} /> {t.meals.change}
               </button>
               <button className={styles.imageActionBtn} onClick={handleImageRemove} disabled={imageUploading}>
-                <Trash2 size={11} /> Remove
+                <Trash2 size={11} /> {t.meals.remove}
               </button>
             </div>
           </>
         ) : (
           <div className={styles.imagePlaceholder} onClick={() => fileInputRef.current?.click()}>
             <ImagePlus size={22} strokeWidth={1.5} />
-            <span className={styles.imagePlaceholderText}>{imageUploading ? "Uploading…" : "Add a photo"}</span>
+            <span className={styles.imagePlaceholderText}>{imageUploading ? t.meals.uploading : t.meals.addPhoto}</span>
           </div>
         )}
       </div>
 
-      {/* Type + Diet + Servings + Tags row */}
       <div className={styles.metaRow}>
         <div className={styles.metaField}>
-          <span className={styles.metaLabel}>Type</span>
+          <span className={styles.metaLabel}>{t.meals.typeLabel}</span>
           <select
             className={styles.typeSelect}
             value={mealType}
             onChange={(e) => handleMealTypeChange(e.target.value as MealType | "")}
           >
             <option value="" disabled> </option>
-            <option value="Meal">Meal</option>
-            <option value="Snack">Snack</option>
-            <option value="Drink">Drink</option>
-            <option value="Baked">Baked</option>
+            <option value="Meal">{t.meals.typeMeal}</option>
+            <option value="Snack">{t.meals.typeSnack}</option>
+            <option value="Drink">{t.meals.typeDrink}</option>
+            <option value="Baked">{t.meals.typeBaked}</option>
           </select>
         </div>
 
         <div className={styles.metaField}>
-          <span className={styles.metaLabel}>Diet</span>
+          <span className={styles.metaLabel}>{t.meals.dietLabel}</span>
           <select
             className={styles.typeSelect}
             value={diet}
             onChange={(e) => handleDietChange(e.target.value as Diet)}
           >
-            <option value="Meat">Meat</option>
-            <option value="Fish">Fish</option>
-            <option value="Vegetarian">Vegetarian</option>
+            <option value="Meat">{t.meals.dietMeat}</option>
+            <option value="Fish">{t.meals.dietFish}</option>
+            <option value="Vegetarian">{t.meals.dietVegetarian}</option>
           </select>
         </div>
 
         <div className={styles.metaField}>
-          <span className={styles.metaLabel}>Servings</span>
+          <span className={styles.metaLabel}>{t.meals.servingsLabel}</span>
           <input
             type="text"
             inputMode="numeric"
@@ -295,26 +293,17 @@ export default function MealDetailPage() {
         </div>
 
         <label className={styles.toggle}>
-          <input
-            type="checkbox"
-            checked={officeFriendly}
-            onChange={(e) => handleToggle("officeFriendly", e.target.checked)}
-          />
-          <span>Office</span>
+          <input type="checkbox" checked={officeFriendly} onChange={(e) => handleToggle("officeFriendly", e.target.checked)} />
+          <span>{t.meals.officeLabel}</span>
         </label>
         <label className={styles.toggle}>
-          <input
-            type="checkbox"
-            checked={thirtyMinute}
-            onChange={(e) => handleToggle("thirtyMinute", e.target.checked)}
-          />
-          <span>Quick</span>
+          <input type="checkbox" checked={thirtyMinute} onChange={(e) => handleToggle("thirtyMinute", e.target.checked)} />
+          <span>{t.meals.quickLabel}</span>
         </label>
       </div>
 
-      {/* Notes */}
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>Notes</span>
+        <span className={styles.fieldLabel}>{t.meals.notesLabel}</span>
         {editingField === "notes" ? (
           <textarea
             autoFocus
@@ -328,15 +317,14 @@ export default function MealDetailPage() {
           <div className={styles.editableField} onClick={() => setEditingField("notes")}>
             {draftNotes
               ? <div className={styles.markdown}><ReactMarkdown>{draftNotes}</ReactMarkdown></div>
-              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>Click to add notes…</span>
+              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.notesEmptyPrompt}</span>
             }
           </div>
         )}
       </div>
 
-      {/* Source */}
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>Source</span>
+        <span className={styles.fieldLabel}>{t.meals.sourceLabel}</span>
         {editingField === "source" ? (
           <input
             autoFocus
@@ -345,7 +333,7 @@ export default function MealDetailPage() {
             onChange={(e) => setDraftSource(e.target.value)}
             onBlur={handleSourceBlur}
             onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur() }}
-            placeholder="URL or book / person name"
+            placeholder={t.meals.sourcePlaceholder}
           />
         ) : (
           <div className={styles.editableField} onClick={() => setEditingField("source")}>
@@ -353,15 +341,14 @@ export default function MealDetailPage() {
               ? isUrl(draftSource)
                 ? <a href={draftSource} target="_blank" rel="noopener noreferrer" className={styles.sourceLink} onClick={(e) => e.stopPropagation()}>{draftSource}</a>
                 : <span>{draftSource}</span>
-              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>Click to add source…</span>
+              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.sourceEmptyPrompt}</span>
             }
           </div>
         )}
       </div>
 
-      {/* Ingredients */}
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>Ingredients</span>
+        <span className={styles.fieldLabel}>{t.meals.ingredientsLabel}</span>
         {editingField === "ingredients" ? (
           <textarea
             autoFocus
@@ -380,15 +367,14 @@ export default function MealDetailPage() {
                     <li key={i}><ReactMarkdown>{item}</ReactMarkdown></li>
                   ))}
                 </ul>
-              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>Click to add ingredients…</span>
+              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.ingredientsEmptyPrompt}</span>
             }
           </div>
         )}
       </div>
 
-      {/* Steps */}
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>Preparation Steps</span>
+        <span className={styles.fieldLabel}>{t.meals.preparationSteps}</span>
         {editingField === "steps" ? (
           <textarea
             autoFocus
@@ -407,7 +393,7 @@ export default function MealDetailPage() {
                     <li key={i}><ReactMarkdown>{step}</ReactMarkdown></li>
                   ))}
                 </ol>
-              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>Click to add steps…</span>
+              : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.stepsEmptyPrompt}</span>
             }
           </div>
         )}

@@ -2,6 +2,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 
 type GoogleCalendar = { id: string; name: string; color: string | null }
@@ -9,6 +10,7 @@ type SelectedCalendar = { calendarId: string; name: string; color: string | null
 type ImportedCalendar = { id: string; url: string; name: string; color: string; createdAt: string }
 
 export function GoogleSection() {
+  const { t } = useTranslation()
   const [available, setAvailable] = useState<GoogleCalendar[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
@@ -18,7 +20,6 @@ export function GoogleSection() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Imported calendars state
   const [imported, setImported] = useState<ImportedCalendar[]>([])
   const [newUrl, setNewUrl] = useState("")
   const [newName, setNewName] = useState("")
@@ -69,14 +70,10 @@ export function GoogleSection() {
     setLoading(false)
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   useEffect(() => {
-    return () => {
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
-    }
+    return () => { if (savedTimerRef.current) clearTimeout(savedTimerRef.current) }
   }, [])
 
   const handleToggle = (calendarId: string) => {
@@ -162,41 +159,34 @@ export function GoogleSection() {
   }
 
   const saveBtnLabel =
-    saveState === "saving" ? "Saving…" : saveState === "saved" ? "Saved" : "Save"
+    saveState === "saving" ? t.settings.saving : saveState === "saved" ? t.settings.saved : t.settings.save
   const saveDisabled = loading || saveState === "saving" || !!availableError
 
-  if (loading) return <p className={styles.spinner}>Loading calendars…</p>
+  if (loading) return <p className={styles.spinner}>{t.settings.loadingCalendars}</p>
 
   return (
     <div className={styles.section}>
-      <h2 className={styles.sectionTitle}>Google Calendar</h2>
-      <p className={styles.sectionDesc}>
-        Choose which of your Google Calendars to sync with YourKieke.
-      </p>
+      <h2 className={styles.sectionTitle}>{t.settings.googleCalendar}</h2>
+      <p className={styles.sectionDesc}>{t.settings.googleCalendarDesc}</p>
 
       {availableError && (
         <div className={styles.errorBox}>
           <span>{availableError}</span>
-          <button onClick={fetchData} className={styles.retryBtn}>
-            Retry
-          </button>
+          <button onClick={fetchData} className={styles.retryBtn}>{t.settings.retry}</button>
         </div>
       )}
 
       {selectedError && <div className={styles.errorBox}>{selectedError}</div>}
 
       {!availableError && available.length === 0 && (
-        <p className={styles.emptyMsg}>No Google calendars found in your account.</p>
+        <p className={styles.emptyMsg}>{t.settings.noGoogleCalendars}</p>
       )}
 
       {!availableError && available.length > 0 && (
         <div className={styles.calendarList}>
           {available.map((cal) => (
             <label key={cal.id} className={styles.calendarRow}>
-              <span
-                className={styles.colorDot}
-                style={{ backgroundColor: cal.color ?? "#94A3B8" }}
-              />
+              <span className={styles.colorDot} style={{ backgroundColor: cal.color ?? "#94A3B8" }} />
               <span className={styles.calendarName}>{cal.name}</span>
               <input
                 type="checkbox"
@@ -211,38 +201,30 @@ export function GoogleSection() {
 
       {!availableError && available.length > 0 && (
         <>
-          {saveError && <p className={styles.saveError}>Failed to save. Please try again.</p>}
+          {saveError && <p className={styles.saveError}>{t.settings.failedSaveRetry}</p>}
           <button onClick={handleSave} disabled={saveDisabled} className={styles.saveBtn}>
             {saveBtnLabel}
           </button>
         </>
       )}
 
-      {/* Imported calendars sub-section */}
       <div className={styles.importedSection}>
-        <h3 className={styles.importedTitle}>Imported Calendars (iCal)</h3>
-        <p className={styles.sectionDesc}>
-          Add any calendar via its .ics URL — Google Calendar, Outlook, public feeds, etc.
-        </p>
+        <h3 className={styles.importedTitle}>{t.settings.importedCalendarsTitle}</h3>
+        <p className={styles.sectionDesc}>{t.settings.importedCalendarsDesc}</p>
 
         {imported.length > 0 && (
           <div className={styles.calendarList}>
             {imported.map((cal) => (
               <div key={cal.id} className={styles.calendarRow}>
-                <span
-                  className={styles.colorDot}
-                  style={{ backgroundColor: cal.color }}
-                />
+                <span className={styles.colorDot} style={{ backgroundColor: cal.color }} />
                 <span className={styles.calendarName}>{cal.name}</span>
-                <span className={styles.importedUrlText} title={cal.url}>
-                  {cal.url}
-                </span>
+                <span className={styles.importedUrlText} title={cal.url}>{cal.url}</span>
                 <button
                   className={confirmDeleteId === cal.id ? styles.confirmDeleteBtn : styles.deleteBtn}
                   disabled={deletingImportedId === cal.id}
                   onClick={() => handleDeleteImported(cal.id)}
                 >
-                  {confirmDeleteId === cal.id ? "Confirm?" : deletingImportedId === cal.id ? "…" : "Remove"}
+                  {confirmDeleteId === cal.id ? t.settings.confirmQuestion : deletingImportedId === cal.id ? "…" : t.settings.remove}
                 </button>
               </div>
             ))}
@@ -250,14 +232,14 @@ export function GoogleSection() {
         )}
 
         {imported.length === 0 && (
-          <p className={styles.emptyMsg}>No imported calendars yet.</p>
+          <p className={styles.emptyMsg}>{t.settings.noImportedCalendars}</p>
         )}
 
         <form onSubmit={handleAddImported} className={styles.importedForm}>
           <input
             type="text"
             className={styles.fieldInput}
-            placeholder="Calendar name"
+            placeholder={t.settings.calendarNamePlaceholder}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             required
@@ -272,7 +254,7 @@ export function GoogleSection() {
           />
           <div className={styles.importedFormRow}>
             <label className={styles.importedColorLabel}>
-              Color
+              {t.settings.colorLabel}
               <input
                 type="color"
                 value={newColor}
@@ -285,7 +267,7 @@ export function GoogleSection() {
               className={styles.saveBtn}
               disabled={addState === "adding"}
             >
-              {addState === "adding" ? "Adding…" : "Add calendar"}
+              {addState === "adding" ? t.settings.adding : t.settings.addCalendar}
             </button>
           </div>
           {addState === "error" && addError && (

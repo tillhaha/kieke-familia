@@ -2,6 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
 
 type Member = { id: string; name: string | null }
@@ -25,6 +26,7 @@ type Props = {
 
 export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
   const isEdit = !!task
+  const { t } = useTranslation()
   const [name, setName] = useState(task?.name ?? "")
   const [description, setDescription] = useState(task?.description ?? "")
   const [dueDate, setDueDate] = useState(task?.dueDate ?? "")
@@ -50,26 +52,26 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
   }
 
   async function handleSave() {
-    if (!name.trim()) { setError("Name is required"); return }
-    if (!dueDate) { setError("Due date is required"); return }
+    if (!name.trim()) { setError(t.taskModal.nameRequired); return }
+    if (!dueDate) { setError(t.taskModal.dueDateRequired); return }
     setSaving(true)
     setError("")
     try {
       await onSave({ name: name.trim(), description: description.trim(), dueDate, assigneeIds })
     } catch (e: any) {
-      setError(e?.message ?? "Failed to save")
+      setError(e?.message ?? t.taskModal.failedSave)
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete() {
-    if (!onDelete || !confirm("Delete this task?")) return
+    if (!onDelete || !confirm(t.taskModal.deleteConfirm)) return
     setDeleting(true)
     try {
       await onDelete()
     } catch {
-      setError("Failed to delete")
+      setError(t.taskModal.failedDelete)
       setDeleting(false)
     }
   }
@@ -77,31 +79,31 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
   return (
     <div className={styles.modalOverlay} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div className={styles.modal}>
-        <h2 className={styles.modalTitle}>{isEdit ? "Edit task" : "New task"}</h2>
+        <h2 className={styles.modalTitle}>{isEdit ? t.taskModal.editTitle : t.taskModal.newTitle}</h2>
 
         <div className={styles.field}>
-          <label className={styles.label}>Name *</label>
+          <label className={styles.label}>{t.taskModal.nameLabel}</label>
           <input
             className={styles.input}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Task name"
+            placeholder={t.taskModal.namePlaceholder}
             autoFocus
           />
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Description</label>
+          <label className={styles.label}>{t.taskModal.descriptionLabel}</label>
           <textarea
             className={styles.textarea}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Optional details…"
+            placeholder={t.taskModal.descriptionPlaceholder}
           />
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Due date *</label>
+          <label className={styles.label}>{t.taskModal.dueDateLabel}</label>
           <input
             type="date"
             className={styles.input}
@@ -111,7 +113,7 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Assignees</label>
+          <label className={styles.label}>{t.taskModal.assigneesLabel}</label>
           <div className={styles.assigneeList}>
             {members.map((m) => (
               <button
@@ -131,12 +133,12 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
         <div className={styles.modalFooter}>
           {isEdit && onDelete && (
             <button className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+              {deleting ? t.taskModal.deleting : t.taskModal.delete}
             </button>
           )}
-          <button className={styles.cancelBtn} onClick={onClose}>Cancel</button>
+          <button className={styles.cancelBtn} onClick={onClose}>{t.taskModal.cancel}</button>
           <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>
-            {saving ? "Saving…" : "Save"}
+            {saving ? t.taskModal.saving : t.taskModal.save}
           </button>
         </div>
       </div>

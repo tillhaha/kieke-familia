@@ -5,13 +5,14 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
-import { WeekBlock, WeekData } from "./WeekBlock"
+import { WeekBlock, WeekData, CalendarEvent } from "./WeekBlock"
 import styles from "./week.module.css"
 
 export default function WeekPage() {
   const { status } = useSession()
   const router = useRouter()
   const [weeks, setWeeks] = useState<WeekData[]>([])
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [planning, setPlanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -23,7 +24,29 @@ export default function WeekPage() {
         if (!r.ok) throw new Error()
         return r.json()
       })
-      .then((data) => setWeeks(data.weeks ?? []))
+      .then((data) => {
+        const loaded: WeekData[] = data.weeks ?? []
+        setWeeks(loaded)
+        if (loaded.length === 0) return
+        const timeMin = `${loaded[loaded.length - 1].startDate}T00:00:00Z`
+        const timeMax = `${loaded[0].endDate}T23:59:59Z`
+        fetch(`/api/calendar/events?timeMin=${timeMin}&timeMax=${timeMax}`)
+          .then((r) => r.json())
+          .then((d) => {
+            const events: CalendarEvent[] = []
+            for (const e of (d.googleEvents ?? [])) {
+              const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
+              if (!date || !e.summary) continue
+              events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, allDay: !!e.start?.date, calendarName: e.calendarName ?? null, color: null })
+            }
+            for (const e of (d.importedEvents ?? [])) {
+              const date = e.allDay ? e.start : e.start.slice(0, 10)
+              events.push({ id: e.id, summary: e.summary, date, allDay: e.allDay, calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+            }
+            setCalendarEvents(events)
+          })
+          .catch(() => {})
+      })
       .catch(() => setError("Failed to load weeks."))
       .finally(() => setLoading(false))
   }, [status])
@@ -120,6 +143,9 @@ export default function WeekPage() {
                 handleDayUpdate(week.startDate, date, field, value)
               }
               onGenerateShopping={handleGenerateShopping}
+              calendarEvents={calendarEvents.filter(
+                (e) => e.date >= week.startDate && e.date <= week.endDate
+              )}
             />
           ))}
         </div>

@@ -121,6 +121,15 @@ export default function CalendarPage() {
 
   // Custody popover + modal form state
   const [eventDetail, setEventDetail] = useState<EventDetail | null>(null)
+  const [isDark, setIsDark] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)")
+    setIsDark(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsDark(e.matches)
+    mq.addEventListener("change", handler)
+    return () => mq.removeEventListener("change", handler)
+  }, [])
+
   const [openCustodyId, setOpenCustodyId] = useState<string | null>(null)
   const [cStart, setCStart] = useState("")
   const [cStartsWith, setCStartsWith] = useState<"WITH_US" | "WITH_MONA">("WITH_US")
@@ -380,7 +389,7 @@ export default function CalendarPage() {
                 <div
                   key={idx}
                   className={`${styles.eventItem} ${styles.importedEvent}`}
-                  style={{ backgroundColor: e.calendarColor }}
+                  style={isDark ? { borderLeft: `3px solid ${e.calendarColor}` } : { backgroundColor: e.calendarColor }}
                   data-tooltip={`${e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${e.calendarName ? " · " + e.calendarName : ""}`}
                   onClick={() => setEventDetail({ summary: e.summary, timeLabel: e.allDay ? "All day" : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), calendarName: e.calendarName, color: e.calendarColor })}
                 >

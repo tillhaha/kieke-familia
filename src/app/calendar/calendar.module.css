@@ -438,8 +438,8 @@
     color: #c8a850;
   }
   .importedEvent {
-    background: #182838;
-    color: #a8c0d8;
+    background: #1e2e3a;
+    color: #c8dce8;
   }
 }
 
@@ -670,10 +670,12 @@
 
 @media (prefers-color-scheme: dark) {
   .custodyHomeEvent {
-    background: #102030;
+    background: #1a4860;
+    color: #a8d8f0;
   }
   .custodyMonaEvent {
-    background: #280a28;
+    background: #501a58;
+    color: #e0a8f0;
   }
 }
 

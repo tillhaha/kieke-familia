@@ -44,7 +44,11 @@ export async function fetchAndParseIcal(
 
       if (!start) continue
 
-      const allDay = start.datetype === "date"
+      const isMidnightUtc = (d: Date) =>
+        d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0
+      const allDay =
+        start.datetype === "date" ||
+        (isMidnightUtc(start) && isMidnightUtc(end))
 
       // Filter to the requested window
       const startMs = start.getTime()

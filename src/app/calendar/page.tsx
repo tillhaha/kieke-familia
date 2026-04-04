@@ -207,7 +207,7 @@ export default function CalendarPage() {
     const custody = events.custodyEntries.filter((c) => c.date === dateStr)
 
     const imported = events.importedEvents.filter((e) => {
-      if (e.allDay) return e.start === dateStr
+      if (e.allDay) return e.start <= dateStr && e.end > dateStr
       return new Date(e.start).toDateString() === dStr
     })
 

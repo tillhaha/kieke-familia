@@ -92,11 +92,11 @@ export default function Home() {
         for (const e of (d.googleEvents ?? [])) {
           const date = e.start?.date ?? e.start?.dateTime?.slice(0, 10)
           if (!date || !e.summary) continue
-          events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, allDay: !!e.start?.date, startTime: e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) : null, calendarName: e.calendarName ?? null, color: null })
+          events.push({ id: e.id ?? `g-${Math.random()}`, summary: e.summary, date, endDate: e.end?.date ?? e.end?.dateTime?.slice(0, 10) ?? date, allDay: !!e.start?.date, startTime: e.start?.dateTime ? new Date(e.start.dateTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) : null, calendarName: e.calendarName ?? null, color: null })
         }
         for (const e of (d.importedEvents ?? [])) {
-          const date = e.allDay ? e.start : e.start.slice(0, 10)
-          events.push({ id: e.id, summary: e.summary, date, allDay: e.allDay, startTime: e.allDay ? null : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }), calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
+          const date = e.start.slice(0, 10)
+          events.push({ id: e.id, summary: e.summary, date, endDate: e.end.slice(0, 10), allDay: e.allDay, startTime: e.allDay ? null : new Date(e.start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }), calendarName: e.calendarName ?? null, color: e.calendarColor ?? null })
         }
         setCalendarEvents(events)
       })

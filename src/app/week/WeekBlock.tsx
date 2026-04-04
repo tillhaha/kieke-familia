@@ -36,7 +36,8 @@ export type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WI
 export type CalendarEvent = {
   id: string
   summary: string
-  date: string // YYYY-MM-DD
+  date: string    // YYYY-MM-DD start date
+  endDate: string // YYYY-MM-DD exclusive end (Google/iCal convention: day-after for all-day)
   allDay: boolean
   startTime?: string | null // "HH:MM" for timed events, null for all-day
   calendarName?: string | null
@@ -498,7 +499,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   <tr>
                     <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>Events</td>
                     {week.days.map((day) => {
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
                       return (
                         <td key={day.date} className={`${styles.cell} ${styles.eventsCell}`}>
                           {dayEvents.map((e) => (
@@ -700,7 +701,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 {field === "note" && calendarEvents && (
                   <div className={styles.mobileRowGroup}>
                     {getMobileDays().map((day) => {
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
                       return (
                         <div key={day.date} className={styles.mobileDayField}>
                           <span className={styles.mobileDayFieldLabel}>Events</span>
@@ -814,7 +815,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     <div className={styles.mobileWeekTableLabel}><Zap size={11} strokeWidth={2} /></div>
                     {week.days.map((day) => {
                       const isToday = day.date === todayDateStr
-                      const dayEvents = calendarEvents.filter((e) => e.date === day.date)
+                      const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
                       return (
                         <div
                           key={day.date}

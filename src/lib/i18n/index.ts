@@ -139,6 +139,15 @@ export type Translations = {
     sourceEmptyPrompt: string
     ingredientsEmptyPrompt: string
     stepsEmptyPrompt: string
+    batchImport: string
+    batchHint: string
+    batchPlaceholder: string
+    batchItemDetected: string
+    batchItemsDetected: string
+    importAll: string
+    batchImporting: string
+    batchDoneAll: string
+    batchDoneMixed: string
   }
   taskModal: {
     editTitle: string
@@ -435,6 +444,15 @@ const en: Translations = {
     sourceEmptyPrompt: "Click to add source…",
     ingredientsEmptyPrompt: "Click to add ingredients…",
     stepsEmptyPrompt: "Click to add steps…",
+    batchImport: "Batch import",
+    batchHint: "One URL per line, or separate recipe texts with ---",
+    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/soup\n---\nBanana Bread\n\nIngredients:\n3 ripe bananas…",
+    batchItemDetected: "1 item detected",
+    batchItemsDetected: "{n} items detected",
+    importAll: "Import all",
+    batchImporting: "Importing… {current} / {total}",
+    batchDoneAll: "All {total} imported",
+    batchDoneMixed: "{imported} imported, {failed} failed",
   },
   taskModal: {
     editTitle: "Edit task",
@@ -731,6 +749,15 @@ const es: Translations = {
     sourceEmptyPrompt: "Haz clic para añadir fuente…",
     ingredientsEmptyPrompt: "Haz clic para añadir ingredientes…",
     stepsEmptyPrompt: "Haz clic para añadir pasos…",
+    batchImport: "Importación masiva",
+    batchHint: "Una URL por línea, o separa recetas completas con ---",
+    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/sopa\n---\nPan de plátano\n\nIngredientes:\n3 plátanos maduros…",
+    batchItemDetected: "1 elemento detectado",
+    batchItemsDetected: "{n} elementos detectados",
+    importAll: "Importar todo",
+    batchImporting: "Importando… {current} / {total}",
+    batchDoneAll: "{total} importados",
+    batchDoneMixed: "{imported} importados, {failed} fallidos",
   },
   taskModal: {
     editTitle: "Editar tarea",
@@ -1027,6 +1054,15 @@ const de: Translations = {
     sourceEmptyPrompt: "Klicken um Quelle hinzuzufügen…",
     ingredientsEmptyPrompt: "Klicken um Zutaten hinzuzufügen…",
     stepsEmptyPrompt: "Klicken um Schritte hinzuzufügen…",
+    batchImport: "Stapelimport",
+    batchHint: "Eine URL pro Zeile oder Rezepte mit --- trennen",
+    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/suppe\n---\nBananenbrot\n\nZutaten:\n3 reife Bananen…",
+    batchItemDetected: "1 Element erkannt",
+    batchItemsDetected: "{n} Elemente erkannt",
+    importAll: "Alle importieren",
+    batchImporting: "Importiere… {current} / {total}",
+    batchDoneAll: "Alle {total} importiert",
+    batchDoneMixed: "{imported} importiert, {failed} fehlgeschlagen",
   },
   taskModal: {
     editTitle: "Aufgabe bearbeiten",

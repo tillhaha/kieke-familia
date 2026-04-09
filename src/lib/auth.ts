@@ -52,12 +52,30 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id
         token.familyId = (user as unknown as Record<string, unknown>).familyId
         token.role = (user as unknown as Record<string, unknown>).role
         token.name = user.name
+      }
+      // Persist fresh Google tokens on every sign-in (PrismaAdapter does not update them on re-auth)
+      if (account?.provider === 'google' && account.providerAccountId) {
+        const data: Record<string, unknown> = {}
+        if (account.access_token) data.access_token = account.access_token
+        if (account.refresh_token) data.refresh_token = account.refresh_token
+        if (account.expires_at) data.expires_at = account.expires_at
+        if (Object.keys(data).length > 0) {
+          await prisma.account.update({
+            where: {
+              provider_providerAccountId: {
+                provider: 'google',
+                providerAccountId: account.providerAccountId,
+              },
+            },
+            data,
+          }).catch((err) => console.error('Failed to update Google tokens on sign-in:', err))
+        }
       }
       if (trigger === "update") {
         if (session?.name !== undefined) token.name = session.name

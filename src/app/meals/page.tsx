@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Plus, Search } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
+import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
 
 type MealSummary = {
@@ -29,6 +30,7 @@ export default function MealsPage() {
   const [filterOffice, setFilterOffice] = useState(false)
   const [filterThirty, setFilterThirty] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [batchOpen, setBatchOpen] = useState(false)
 
   const fetchMeals = useCallback((q: string) => {
     const params = new URLSearchParams()
@@ -74,10 +76,19 @@ export default function MealsPage() {
     <div className={styles.container}>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{t.meals.title}</h1>
-        <Link href="/meals/new" className={styles.newBtn}>
-          <Plus size={14} strokeWidth={2.5} />
-          {t.meals.newRecipe}
-        </Link>
+        <div className={styles.pageHeaderActions}>
+          <button
+            type="button"
+            className={styles.batchBtn}
+            onClick={() => setBatchOpen(true)}
+          >
+            {t.meals.batchImport}
+          </button>
+          <Link href="/meals/new" className={styles.newBtn}>
+            <Plus size={14} strokeWidth={2.5} />
+            {t.meals.newRecipe}
+          </Link>
+        </div>
       </div>
 
       {/* Search + Filters */}
@@ -157,6 +168,16 @@ export default function MealsPage() {
             </Link>
           ))}
         </div>
+      )}
+
+      {batchOpen && (
+        <BatchImportModal
+          onClose={() => setBatchOpen(false)}
+          onRefresh={() => {
+            setLoading(true)
+            fetchMeals(query).finally(() => setLoading(false))
+          }}
+        />
       )}
     </div>
   )

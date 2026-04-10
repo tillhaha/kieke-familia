@@ -323,6 +323,35 @@ tr:last-child .cell {
 }
 
 
+/* Location (note) row — event-chip style bullets */
+.cellPreviewNote ul {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.1rem;
+}
+
+.cellPreviewNote ul li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.cellPreviewNote ul li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--secondary);
+}
+
 .cellPreview ol {
   margin: 0.125rem 0;
   padding-left: 1.125rem;

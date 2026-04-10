@@ -480,7 +480,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       ) : (
                         /* Preview mode */
                         <div
-                          className={`${styles.cellPreview} ${readOnly ? styles.cellPreviewReadOnly : ""}`}
+                          className={`${styles.cellPreview} ${readOnly ? styles.cellPreviewReadOnly : ""} ${field === "note" ? styles.cellPreviewNote : ""}`}
                           onClick={() => { if (!isDisabled) setFocusedKey(key) }}
                         >
                           {value && (

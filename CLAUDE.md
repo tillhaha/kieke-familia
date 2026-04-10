@@ -49,6 +49,7 @@ Key relationships:
 - `Family` → `Meal` (recipe library)
 - `Family` → `Task` → `TaskAssignee` (task management; assignees are family members)
 - `User` → `CalendarSync` (selected Google Calendar IDs per user)
+- `User` → `ImportedCalendar` (iCal feed URLs)
 - `User` → `WorkLocation`, `Activity`, `Travel`
 - `Family` → `Birthday`, `CustodySchedule`
 
@@ -75,6 +76,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 - `TaskModal` (`src/app/tasks/TaskModal.tsx`) — shared create/edit modal; exports `TaskData` type; used on both `/tasks` page and the homepage tasks widget
 - `Providers` (`src/components/Providers.tsx`) — wraps `SessionProvider`
 - `Navbar` (`src/components/Navbar.tsx`) — client component, shows nav only when authenticated; mobile: slide-in drawer triggered by hamburger, closes on backdrop click
+- `BatchImportModal` (`src/app/meals/BatchImportModal.tsx`) — modal for bulk-importing recipes from URLs or pasted text; reuses `/api/meals/parse` + `POST /api/meals` sequentially; progress tracked via local mirror array (not a separate counter) to avoid stale-closure issues
 
 ### API routes
 All under `src/app/api/`:
@@ -83,7 +85,8 @@ All under `src/app/api/`:
 - `meals/` — GET/POST (recipe library)
 - `meals/[id]/` — GET/PATCH/DELETE
 - `meals/parse/` — POST (Anthropic API: recipe text → structured fields)
-- `calendar/events/` — GET (fetches Google Calendar events for selected calendars)
+- `calendar/events/` — GET (fetches Google Calendar + iCal imported events; merges birthdays, travel, custody)
+- `calendar/imported/` — GET/POST; `[id]/` — PATCH/DELETE (iCal feed management)
 - `calendar/birthdays/` — GET/POST; `[id]/` — PATCH/DELETE
 - `calendar/travel/` — GET/POST; `[id]/` — PATCH/DELETE
 - `calendar/custody/` — GET/POST; `[id]/` — PATCH/DELETE
@@ -103,10 +106,16 @@ All under `src/app/api/`:
 - `weather/` — GET (weather for family city)
 - `auth/[...nextauth]/` — NextAuth handler
 
+### i18n
+All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defines the full shape; three locale objects (`en`, `de`, `es`) implement it. `useTranslation()` from `src/lib/i18n/LanguageContext.tsx` returns `{ t, language, setLanguage }`. When adding new strings, update the type definition **and** all three locale objects.
+
 ### Google Calendar integration
 `src/lib/google/calendar.ts` provides:
 - `getGoogleCalendarClient(userId)` — builds an OAuth2 client from the stored account tokens
 - `listEventsFromCalendars(userId, calendarIds, timeMin, timeMax)` — fetches events from multiple calendars in parallel, deduplicates by event ID
+
+### iCal / imported calendars
+`src/lib/ical.ts` — `fetchAndParseIcal(url, calendarId, name, color, timeMin, timeMax)` fetches an iCal URL (normalising `webcal://` → `https://`) and returns `ImportedEvent[]`. Recurring events are expanded via `expandRecurringEvent` from `node-ical`. Imported calendars are stored in the `ImportedCalendar` table (`User` → `ImportedCalendar`). Managed via `calendar/imported/` API routes; events are fetched alongside Google events in `calendar/events/`.
 
 ### Styling
 CSS Modules per page/component. Global styles in `src/app/globals.css`. Fonts: Geist Sans + Geist Mono via `next/font/google`.

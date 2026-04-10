@@ -60,6 +60,7 @@ export default function BatchImportModal({ onClose, onRefresh }: Props) {
     setSummary(null)
 
     const headers = { "Content-Type": "application/json" }
+    const finalResults: ItemStatus[] = batch.map(() => ({ status: "pending" }))
 
     for (let i = 0; i < batch.length; i++) {
       const item = batch[i]
@@ -74,6 +75,7 @@ export default function BatchImportModal({ onClose, onRefresh }: Props) {
       if (!parseRes.ok) {
         const errMsg = parseData.error ?? parseRes.statusText
         const label = item.slice(0, 60) + " — " + errMsg
+        finalResults[i] = { status: "fail", label }
         setResults((prev) =>
           prev.map((r, idx) => (idx === i ? { status: "fail", label } : r))
         )
@@ -90,12 +92,14 @@ export default function BatchImportModal({ onClose, onRefresh }: Props) {
       if (!saveRes.ok) {
         const errMsg = saveData.error ?? saveRes.statusText
         const label = item.slice(0, 60) + " — " + errMsg
+        finalResults[i] = { status: "fail", label }
         setResults((prev) =>
           prev.map((r, idx) => (idx === i ? { status: "fail", label } : r))
         )
         continue
       }
 
+      finalResults[i] = { status: "success", name: parseData.recipe.name }
       setResults((prev) =>
         prev.map((r, idx) =>
           idx === i ? { status: "success", name: parseData.recipe.name } : r
@@ -103,27 +107,19 @@ export default function BatchImportModal({ onClose, onRefresh }: Props) {
       )
     }
 
+    const failedInputs = batch.filter((_, i) => finalResults[i]?.status === "fail")
+    const importedCount = batch.length - failedInputs.length
+
     setImporting(false)
-
-    // Read final results snapshot to compute summary and repopulate textarea
-    setResults((finalResults) => {
-      const failedInputs = batch.filter((_, i) => finalResults[i]?.status === "fail")
-      const importedCount = batch.length - failedInputs.length
-
-      if (importedCount > 0) onRefresh()
-
-      const newSummary =
-        failedInputs.length === 0
-          ? t.meals.batchDoneAll.replace("{total}", String(batch.length))
-          : t.meals.batchDoneMixed
-              .replace("{imported}", String(importedCount))
-              .replace("{failed}", String(failedInputs.length))
-
-      setSummary(newSummary)
-      setText(failedInputs.length > 0 ? failedInputs.join("\n---\n") : "")
-
-      return finalResults
-    })
+    if (importedCount > 0) onRefresh()
+    setSummary(
+      failedInputs.length === 0
+        ? t.meals.batchDoneAll.replace("{total}", String(batch.length))
+        : t.meals.batchDoneMixed
+            .replace("{imported}", String(importedCount))
+            .replace("{failed}", String(failedInputs.length))
+    )
+    setText(failedInputs.length > 0 ? failedInputs.join("\n---\n") : "")
   }
 
   const statusText = (r: ItemStatus) => {

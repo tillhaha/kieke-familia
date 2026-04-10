@@ -1,0 +1,6 @@
+{"type":"server-started","port":58082,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:58082","screen_dir":"/Users/till/Development/familia/.superpowers/brainstorm/83476-1775748621"}
+{"type":"screen-added","file":"/Users/till/Development/familia/.superpowers/brainstorm/83476-1775748621/approaches.html"}
+{"source":"user-event","type":"click","text":"A\n    \n      Textarea + progress bar\n      One big textarea. URLs go one-per-line. Full recipe texts are separated by ---. Hit \"Import All\" — items parse and save sequentially with a live counter. Done.\n      \n        ProsFewest clicksEasy to paste a bulk list of URLsNo new page needed\n        ConsNo review before savingErrors require re-running failures","choice":"a","id":null,"timestamp":1775748706407}
+{"type":"screen-added","file":"/Users/till/Development/familia/.superpowers/brainstorm/83476-1775748621/batch-modal.html"}
+{"type":"screen-added","file":"/Users/till/Development/familia/.superpowers/brainstorm/83476-1775748621/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}

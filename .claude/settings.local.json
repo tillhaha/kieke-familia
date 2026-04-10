@@ -22,7 +22,9 @@
       "Bash(npm install:*)",
       "Bash(git push:*)",
       "Bash(bash /Users/till/Development/familia/.claude/skills/brainstorming/scripts/start-server.sh --project-dir /Users/till/Development/familia 2>&1)",
-      "Bash(ls node_modules/node-ical/*.d.ts)"
+      "Bash(ls node_modules/node-ical/*.d.ts)",
+      "Bash(bash:*)",
+      "Bash(npx next:*)"
     ]
   }
 }

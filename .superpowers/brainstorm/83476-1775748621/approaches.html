@@ -1,0 +1,40 @@
+<h2>Batch Import — which approach?</h2>
+<p class="subtitle">All three reuse the existing <code>/api/meals/parse</code> + <code>/api/meals</code> endpoints. Pick the flow that fits your needs.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Textarea + progress bar</h3>
+      <p>One big textarea. URLs go one-per-line. Full recipe texts are separated by <code>---</code>. Hit "Import All" — items parse and save sequentially with a live counter. Done.</p>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Fewest clicks</li><li>Easy to paste a bulk list of URLs</li><li>No new page needed</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>No review before saving</li><li>Errors require re-running failures</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Parse → review queue</h3>
+      <p>Paste URLs / recipe texts (same format as A), then click "Parse All". Items parse in the background and appear as review cards showing name + type + diet. Accept or skip each one, then "Save accepted".</p>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Catch parse mistakes before saving</li><li>Skip duplicates or bad results</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Extra step before anything is saved</li><li>More UI to build</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Multi-slot (add rows)</h3>
+      <p>A list of rows — each row has a text input (URL or short text) with an expand button for long recipe pastes. Add/remove rows freely. Parse individually or all at once.</p>
+      <div class="pros-cons" style="margin-top:10px">
+        <div class="pros"><h4>Pros</h4><ul><li>Fine-grained control per item</li><li>Easier to mix URLs and text</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Most work to build</li><li>More clicks for large batches</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

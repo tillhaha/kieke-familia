@@ -148,6 +148,10 @@ export type Translations = {
     batchImporting: string
     batchDoneAll: string
     batchDoneMixed: string
+    batchTabText: string
+    batchTabScreenshots: string
+    batchDropzoneHint: string
+    batchScreenshotImport: string
   }
   taskModal: {
     editTitle: string
@@ -453,6 +457,10 @@ const en: Translations = {
     batchImporting: "Importing… {current} / {total}",
     batchDoneAll: "All {total} imported",
     batchDoneMixed: "{imported} imported, {failed} failed",
+    batchTabText: "Text / URL",
+    batchTabScreenshots: "Screenshots",
+    batchDropzoneHint: "Drop images here or click to choose",
+    batchScreenshotImport: "Import recipe",
   },
   taskModal: {
     editTitle: "Edit task",
@@ -758,6 +766,10 @@ const es: Translations = {
     batchImporting: "Importando… {current} / {total}",
     batchDoneAll: "{total} importados",
     batchDoneMixed: "{imported} importados, {failed} fallidos",
+    batchTabText: "Texto / URL",
+    batchTabScreenshots: "Capturas",
+    batchDropzoneHint: "Suelta imágenes aquí o haz clic",
+    batchScreenshotImport: "Importar receta",
   },
   taskModal: {
     editTitle: "Editar tarea",
@@ -1063,6 +1075,10 @@ const de: Translations = {
     batchImporting: "Importiere… {current} / {total}",
     batchDoneAll: "Alle {total} importiert",
     batchDoneMixed: "{imported} importiert, {failed} fehlgeschlagen",
+    batchTabText: "Text / URL",
+    batchTabScreenshots: "Screenshots",
+    batchDropzoneHint: "Bilder hier ablegen oder klicken",
+    batchScreenshotImport: "Rezept importieren",
   },
   taskModal: {
     editTitle: "Aufgabe bearbeiten",

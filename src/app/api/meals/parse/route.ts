@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import Anthropic from "@anthropic-ai/sdk"
+import type { ImageBlockParam, TextBlockParam } from "@anthropic-ai/sdk/resources/messages/messages"
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
 
@@ -75,25 +76,54 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
   }
 
-  const { text } = body as Record<string, unknown>
-  if (typeof text !== "string" || !text.trim()) {
-    return NextResponse.json({ error: "text is required" }, { status: 400 })
+  const raw = body as Record<string, unknown>
+  const hasImages = Array.isArray(raw.images) && (raw.images as unknown[]).length > 0
+  const hasText = typeof raw.text === "string" && (raw.text as string).trim()
+
+  if (!hasImages && !hasText) {
+    return NextResponse.json({ error: "text or images required" }, { status: 400 })
   }
 
-  let content = text.trim()
   let imageUrl: string | null = null
   let source: string | null = null
 
-  if (isUrl(content)) {
-    source = content
-    try {
-      const page = await fetchPage(content)
-      content = page.text
-      imageUrl = page.imageUrl
-    } catch (err) {
-      console.error("[parse] URL fetch failed:", err)
-      return NextResponse.json({ error: "Could not fetch that URL." }, { status: 422 })
+  // Build the Claude message content
+  type ContentBlock = TextBlockParam | ImageBlockParam
+
+  let messageContent: string | ContentBlock[]
+
+  if (hasImages) {
+    const SUPPORTED_MEDIA_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const
+    type SupportedMediaType = (typeof SUPPORTED_MEDIA_TYPES)[number]
+    const isSupportedMediaType = (s: string): s is SupportedMediaType =>
+      (SUPPORTED_MEDIA_TYPES as readonly string[]).includes(s)
+
+    const imageBlocks: ContentBlock[] = (raw.images as string[]).map((dataUrl) => {
+      const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/)
+      const rawMediaType = match?.[1] ?? "image/jpeg"
+      const media_type: SupportedMediaType = isSupportedMediaType(rawMediaType) ? rawMediaType : "image/jpeg"
+      const data = match?.[2] ?? dataUrl
+      return { type: "image", source: { type: "base64", media_type, data } } satisfies ImageBlockParam
+    })
+    imageBlocks.push({
+      type: "text",
+      text: "Extract the recipe from these screenshot(s). If multiple images show different parts of the same recipe (e.g. ingredients on one page, steps on another), combine them into one recipe.",
+    })
+    messageContent = imageBlocks
+  } else {
+    let content = (raw.text as string).trim()
+    if (isUrl(content)) {
+      source = content
+      try {
+        const page = await fetchPage(content)
+        content = page.text
+        imageUrl = page.imageUrl
+      } catch (err) {
+        console.error("[parse] URL fetch failed:", err)
+        return NextResponse.json({ error: "Could not fetch that URL." }, { status: 422 })
+      }
     }
+    messageContent = content
   }
 
   try {
@@ -115,7 +145,7 @@ Rules:
 - ingredients: each ingredient as a separate string, preserving quantities and units
 - steps: each step as a separate instruction string, without numbering. Where an ingredient is used in a step, append the exact quantity in parentheses at the end of that step — e.g. "Add the flour and mix until smooth (250g flour)". This avoids the reader having to scroll back to the ingredients list.
 - notes: any tips, storage info, variations, or other info that doesn't fit above (null if none)`,
-      messages: [{ role: "user", content }],
+      messages: [{ role: "user", content: messageContent }],
     })
 
     if (!response.parsed_output) {

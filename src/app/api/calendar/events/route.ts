@@ -69,10 +69,12 @@ export async function GET(request: Request) {
       date: c.date.toISOString().split("T")[0],
     }))
 
-    const importedCalendars = await prisma.importedCalendar.findMany({
-      where: { userId },
-      select: { id: true, url: true, name: true, color: true },
-    })
+    const importedCalendars = familyId
+      ? await prisma.importedCalendar.findMany({
+          where: { familyId },
+          select: { id: true, url: true, name: true, color: true },
+        })
+      : []
 
     const importedEventsNested = await Promise.all(
       importedCalendars.map((cal) =>

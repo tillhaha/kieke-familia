@@ -86,6 +86,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody, importedEvents })
   } catch (error: unknown) {
     console.error("Calendar fetch error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    const msg = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: `Internal server error: ${msg}` }, { status: 500 })
   }
 }

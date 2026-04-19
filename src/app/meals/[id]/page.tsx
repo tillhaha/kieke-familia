@@ -388,11 +388,7 @@ export default function MealDetailPage() {
         ) : (
           <div className={styles.editableField} onClick={() => setEditingField("steps")}>
             {meal.steps.length > 0
-              ? <ol className={styles.markdown} style={{ paddingLeft: "1.25rem" }}>
-                  {meal.steps.map((step, i) => (
-                    <li key={i}><ReactMarkdown>{step}</ReactMarkdown></li>
-                  ))}
-                </ol>
+              ? <ReactMarkdown className={styles.markdown}>{meal.steps.join("\n")}</ReactMarkdown>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.stepsEmptyPrompt}</span>
             }
           </div>

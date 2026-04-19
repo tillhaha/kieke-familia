@@ -388,7 +388,7 @@ export default function MealDetailPage() {
         ) : (
           <div className={styles.editableField} onClick={() => setEditingField("steps")}>
             {meal.steps.length > 0
-              ? <ReactMarkdown className={styles.markdown}>{meal.steps.join("\n")}</ReactMarkdown>
+              ? <div className={styles.markdown}><ReactMarkdown>{meal.steps.join("\n")}</ReactMarkdown></div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.stepsEmptyPrompt}</span>
             }
           </div>

@@ -213,6 +213,12 @@ tr:last-child .cell {
   color: #c0392b;
 }
 
+@media (prefers-color-scheme: dark) {
+  .cellError {
+    background: #2d1414;
+    color: #e07070;
+  }
+}
 
 .cellInput {
   display: block;
@@ -293,6 +299,12 @@ tr:last-child .cell {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
+@media (prefers-color-scheme: dark) {
+  .pillTooltip {
+    background: #d4ead8;
+    color: #0f1a13;
+  }
+}
 
 .cellPreview ul li {
   display: inline-block;
@@ -458,8 +470,12 @@ tr:last-child .cell {
 }
 
 .emiliaIconHome { color: #1d4ed8; }
-.emiliaIconMona { color: #9ca3af; }
+.emiliaIconMona { color: #9d174d; }
 
+@media (prefers-color-scheme: dark) {
+  .emiliaIconHome { color: #93c5fd; }
+  .emiliaIconMona { color: #f9a8d4; }
+}
 
 /* ── Calendar events row ─────────────────────────────── */
 

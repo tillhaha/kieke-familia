@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Lora } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
@@ -15,12 +15,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${lora.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
           <div className="appShell">
             <Navbar />

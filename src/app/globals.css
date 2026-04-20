@@ -1,21 +1,36 @@
 /* src/app/globals.css */
 
 :root {
-  color-scheme: light;
-  --background: #faf8f4;
-  --foreground: #1c1a17;
-  --primary: #1e3a2f;
-  --primary-hover: #162d24;
-  --secondary: #7a8a7e;
-  --border: #e2dcd4;
+  --background: #f8faf8;
+  --foreground: #1a2e22;
+  --primary: #2d6a4f;
+  --primary-hover: #245a42;
+  --secondary: #5a8a6a;
+  --border: #d8e8dc;
   --surface: #ffffff;
-  --surface-hover: #f4f0ea;
-  --accent-soft: #edf4f0;
-  --accent-border: #c4d8cc;
-  --radius: 10px;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.10);
-  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
+  --surface-hover: #eef6f1;
+  --accent-soft: #e8f4ee;
+  --accent-border: #c0ddc8;
+  --radius: 8px;
+  --shadow-sm: 0 1px 3px rgba(45, 106, 79, 0.08);
+  --shadow-md: 0 4px 16px rgba(45, 106, 79, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1a13;
+    --foreground: #d4ead8;
+    --primary: #52b788;
+    --primary-hover: #3d9e70;
+    --secondary: #3d6a4a;
+    --border: #1e3328;
+    --surface: #142010;
+    --surface-hover: #1e3328;
+    --accent-soft: #1e3328;
+    --accent-border: #2d5040;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
 }
 
 * {
@@ -44,12 +59,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-h1, h2 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  letter-spacing: -0.01em;
 }
 
 .appShell {

@@ -170,6 +170,12 @@
   color: #d4604a;
 }
 
+@media (prefers-color-scheme: dark) {
+  .sectionLabel.overdue,
+  .taskMeta.overdue {
+    color: #e08060;
+  }
+}
 
 .taskDone .taskName {
   text-decoration: line-through;

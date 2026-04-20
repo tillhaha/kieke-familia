@@ -214,6 +214,16 @@
   margin-bottom: 1rem;
 }
 
+@media (prefers-color-scheme: dark) {
+  .errorBox {
+    background: #2d0a0a;
+    border-color: #c0392b;
+    color: #e07070;
+  }
+  .saveError {
+    color: #e07070;
+  }
+}
 
 .retryBtn {
   flex-shrink: 0;
@@ -595,3 +605,10 @@
   cursor: pointer;
 }
 
+@media (prefers-color-scheme: dark) {
+  .deleteBtn:hover,
+  .confirmDeleteBtn {
+    border-color: #e07070;
+    color: #e07070;
+  }
+}

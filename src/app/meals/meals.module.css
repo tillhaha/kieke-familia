@@ -321,6 +321,11 @@
 
 .deleteBtnConfirm:hover { background: #fbd5d5; }
 
+@media (prefers-color-scheme: dark) {
+  .deleteBtn:hover { background: #2d0a0a; color: #e07070; border-color: #e07070; }
+  .deleteBtnConfirm { background: #2d0a0a; border-color: #e07070; color: #e07070; }
+  .deleteBtnConfirm:hover { background: #3d1010; }
+}
 
 /* ── Field sections ──────────────────────────────────── */
 
@@ -520,8 +525,7 @@
 .markdown h1 { font-size: 1.25rem; }
 .markdown h2 { font-size: 1.0625rem; }
 .markdown h3 { font-size: 0.9375rem; }
-.markdown ul { margin: 0.25rem 0; padding-left: 1.25rem; }
-.markdown ol { margin: 0.25rem 0; padding-left: 2rem; }
+.markdown ul, .markdown ol { margin: 0.25rem 0; padding-left: 1.25rem; }
 .markdown li { margin: 0.15rem 0; }
 .markdown code {
   font-family: monospace;
@@ -609,6 +613,11 @@
   color: #c0392b;
 }
 
+@media (prefers-color-scheme: dark) {
+  .errorMsg {
+    color: #e07070;
+  }
+}
 
 /* ── Recipe image ────────────────────────────────────── */
 
@@ -833,6 +842,11 @@
   color: #c0392b;
 }
 
+@media (prefers-color-scheme: dark) {
+  .parseError {
+    color: #e07070;
+  }
+}
 
 /* ── Page header actions (wraps New Recipe + Batch import) ── */
 

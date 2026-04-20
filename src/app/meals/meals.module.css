@@ -343,6 +343,37 @@
   color: var(--secondary);
 }
 
+.fieldLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.fieldWandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border: none;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 150ms, background 150ms;
+  opacity: 0.6;
+}
+
+.fieldWandBtn:hover {
+  color: var(--primary);
+  background: var(--accent-soft);
+  opacity: 1;
+}
+
+.fieldWandBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .servingsRow {
   display: flex;
   align-items: center;

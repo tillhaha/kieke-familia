@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
-import { ChevronLeft, ImagePlus, Pencil, Trash2 } from "lucide-react"
+import { ChevronLeft, ImagePlus, Pencil, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
@@ -58,6 +58,7 @@ export default function MealDetailPage() {
   const [draftSteps, setDraftSteps] = useState("")
   const [draftSource, setDraftSource] = useState("")
 
+  const [reformattingSteps, setReformattingSteps] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
@@ -164,6 +165,24 @@ export default function MealDetailPage() {
       setMeal(updated)
       setDraftSteps((updated.steps as string[]).join("\n"))
     } catch { setDraftSteps((meal.steps as string[]).join("\n")) }
+  }
+
+  const handleReformatSteps = async () => {
+    if (!meal || meal.steps.length === 0 || reformattingSteps) return
+    setReformattingSteps(true)
+    try {
+      const res = await fetch("/api/meals/reformat-steps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ steps: meal.steps }),
+      })
+      if (!res.ok) return
+      const { steps } = await res.json()
+      const updated = await patch({ steps })
+      setDraftSteps((updated.steps as string[]).join("\n"))
+    } finally {
+      setReformattingSteps(false)
+    }
   }
 
   const handleDelete = async () => {
@@ -374,7 +393,20 @@ export default function MealDetailPage() {
       </div>
 
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>{t.meals.preparationSteps}</span>
+        <div className={styles.fieldLabelRow}>
+          <span className={styles.fieldLabel}>{t.meals.preparationSteps}</span>
+          {meal.steps.length > 0 && (
+            <button
+              type="button"
+              className={styles.fieldWandBtn}
+              onClick={handleReformatSteps}
+              disabled={reformattingSteps}
+              title="Format with AI"
+            >
+              <Wand2 size={13} strokeWidth={2} />
+            </button>
+          )}
+        </div>
         {editingField === "steps" ? (
           <textarea
             autoFocus

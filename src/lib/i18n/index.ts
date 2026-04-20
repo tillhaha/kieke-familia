@@ -270,6 +270,7 @@ export type Translations = {
     generating: string
     addCalendar: string
     adding: string
+    calendarImport: string
     importedCalendarsTitle: string
     importedCalendarsDesc: string
     noImportedCalendars: string
@@ -584,6 +585,7 @@ const en: Translations = {
     generating: "Generating…",
     addCalendar: "Add calendar",
     adding: "Adding…",
+    calendarImport: "Import",
     importedCalendarsTitle: "Imported Calendars (iCal)",
     importedCalendarsDesc: "Add any calendar via its .ics URL — Google Calendar, Outlook, public feeds, etc.",
     noImportedCalendars: "No imported calendars yet.",
@@ -898,6 +900,7 @@ const es: Translations = {
     generating: "Generando…",
     addCalendar: "Añadir calendario",
     adding: "Añadiendo…",
+    calendarImport: "Importar",
     importedCalendarsTitle: "Calendarios importados (iCal)",
     importedCalendarsDesc: "Añade cualquier calendario por su URL .ics.",
     noImportedCalendars: "Sin calendarios importados.",
@@ -1212,6 +1215,7 @@ const de: Translations = {
     generating: "Generiere…",
     addCalendar: "Kalender hinzufügen",
     adding: "Füge hinzu…",
+    calendarImport: "Import",
     importedCalendarsTitle: "Importierte Kalender (iCal)",
     importedCalendarsDesc: "Füge beliebige Kalender per .ics-URL hinzu.",
     noImportedCalendars: "Noch keine importierten Kalender.",

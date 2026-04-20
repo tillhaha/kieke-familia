@@ -3,8 +3,9 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { User, CalendarDays, MapPin, Home, ShoppingCart, Globe, Palette, ChevronRight, ArrowLeft } from "lucide-react"
-import { GoogleSection } from "./GoogleSection"
+import { User, CalendarDays, Download, Home, ShoppingCart, Globe, Palette, ChevronRight, ArrowLeft } from "lucide-react"
+import { GoogleCalendarSync } from "./GoogleCalendarSync"
+import { ImportedCalendarsSection } from "./ImportedCalendarsSection"
 import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
@@ -15,12 +16,11 @@ import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { useTheme } from "@/lib/theme/ThemeContext"
 import styles from "./settings.module.css"
 
-type Section = "profile" | "google" | "location" | "family" | "shopping" | "language" | "appearance"
+type Section = "profile" | "import" | "family" | "shopping" | "language" | "appearance"
 
 const SECTION_COLORS: Record<Section, string> = {
   profile:    "#3EC6C6",
-  google:     "#7C6FE0",
-  location:   "#E17055",
+  import:     "#7C6FE0",
   family:     "#F4A261",
   shopping:   "#45B88A",
   language:   "#5BA4F5",
@@ -43,13 +43,12 @@ export default function SettingsPage() {
   const langLabel = lang === "de" ? "Deutsch" : lang === "es" ? "Español" : "English"
 
   const sections: { id: Section; icon: React.ReactNode; label: string; status?: string }[] = [
-    { id: "profile",    icon: <User size={18} strokeWidth={1.75} />,         label: t.settings.profile,        status: session?.user?.name ?? undefined },
-    { id: "google",     icon: <CalendarDays size={18} strokeWidth={1.75} />, label: t.settings.googleCalendar },
-    { id: "location",   icon: <MapPin size={18} strokeWidth={1.75} />,       label: t.settings.location },
-    { id: "family",     icon: <Home size={18} strokeWidth={1.75} />,         label: t.settings.family },
+    { id: "profile",    icon: <User size={18} strokeWidth={1.75} />,     label: t.settings.profile,       status: session?.user?.name ?? undefined },
+    { id: "import",     icon: <Download size={18} strokeWidth={1.75} />, label: t.settings.calendarImport },
+    { id: "family",     icon: <Home size={18} strokeWidth={1.75} />,     label: t.settings.family },
     { id: "shopping",   icon: <ShoppingCart size={18} strokeWidth={1.75} />, label: t.settings.shopping },
-    { id: "language",   icon: <Globe size={18} strokeWidth={1.75} />,        label: t.settings.language,       status: langLabel },
-    { id: "appearance", icon: <Palette size={18} strokeWidth={1.75} />,      label: t.settings.appearance,     status: themeLabel },
+    { id: "language",   icon: <Globe size={18} strokeWidth={1.75} />,    label: t.settings.language,      status: langLabel },
+    { id: "appearance", icon: <Palette size={18} strokeWidth={1.75} />,  label: t.settings.appearance,    status: themeLabel },
   ]
 
   const handleMobileSelect = (section: Section) => {
@@ -102,10 +101,19 @@ export default function SettingsPage() {
 
         {/* Section content (hidden on mobile when showing index) */}
         <div className={mobileView === "index" ? styles.mobileContentHidden : ""}>
-          {activeSection === "profile"    && <ProfileSection />}
-          {activeSection === "google"     && <GoogleSection />}
-          {activeSection === "location"   && <LocationSection />}
-          {activeSection === "family"     && <UsersSection />}
+          {activeSection === "profile" && (
+            <>
+              <ProfileSection />
+              <GoogleCalendarSync />
+            </>
+          )}
+          {activeSection === "import"     && <ImportedCalendarsSection />}
+          {activeSection === "family" && (
+            <>
+              <UsersSection />
+              <LocationSection />
+            </>
+          )}
           {activeSection === "shopping"   && <ShoppingSection />}
           {activeSection === "language"   && <LanguageSection />}
           {activeSection === "appearance" && <AppearanceSection />}

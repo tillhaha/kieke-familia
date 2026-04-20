@@ -3,17 +3,18 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { User, CalendarDays, MapPin, Home, ShoppingCart, Globe } from "lucide-react"
+import { User, CalendarDays, MapPin, Home, ShoppingCart, Globe, Palette } from "lucide-react"
 import { GoogleSection } from "./GoogleSection"
 import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
 import { ShoppingSection } from "./ShoppingSection"
 import { LanguageSection } from "./LanguageSection"
+import { AppearanceSection } from "./AppearanceSection"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 
-type Section = "profile" | "google" | "location" | "family" | "shopping" | "language"
+type Section = "profile" | "google" | "location" | "family" | "shopping" | "language" | "appearance"
 
 export default function SettingsPage() {
   const { status } = useSession()
@@ -68,6 +69,13 @@ export default function SettingsPage() {
           <Globe size={15} />
           {t.settings.language}
         </button>
+        <button
+          className={`${styles.sectionBtn} ${activeSection === "appearance" ? styles.active : ""}`}
+          onClick={() => setActiveSection("appearance")}
+        >
+          <Palette size={15} />
+          {t.settings.appearance}
+        </button>
       </aside>
 
       <div className={styles.content}>
@@ -77,6 +85,7 @@ export default function SettingsPage() {
         {activeSection === "family" && <UsersSection />}
         {activeSection === "shopping" && <ShoppingSection />}
         {activeSection === "language" && <LanguageSection />}
+        {activeSection === "appearance" && <AppearanceSection />}
       </div>
     </div>
   )

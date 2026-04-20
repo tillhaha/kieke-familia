@@ -214,16 +214,17 @@
   margin-bottom: 1rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .errorBox {
+
+  :global([data-theme="dark"]) .errorBox {
     background: #2d0a0a;
     border-color: #c0392b;
     color: #e07070;
   }
-  .saveError {
+
+  :global([data-theme="dark"]) .saveError {
     color: #e07070;
   }
-}
+
 
 .retryBtn {
   flex-shrink: 0;
@@ -605,10 +606,46 @@
   cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark) {
-  .deleteBtn:hover,
-  .confirmDeleteBtn {
+
+  :global([data-theme="dark"]) .deleteBtn:hover,
+:global([data-theme="dark"]) .confirmDeleteBtn {
     border-color: #e07070;
     color: #e07070;
   }
+
+
+/* ── Appearance (theme toggle) ───────────────────────────── */
+
+.themeRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.themeBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms, background 150ms;
+}
+
+.themeBtn:hover {
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.themeBtnActive {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+  font-weight: 600;
 }

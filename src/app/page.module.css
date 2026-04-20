@@ -209,11 +209,11 @@
   margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .credentialError {
+
+  :global([data-theme="dark"]) .credentialError {
     color: #e07070;
   }
-}
+
 
 /* Tasks widget */
 .tasksWidget {
@@ -311,11 +311,11 @@
   text-decoration: underline;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tasksWidgetMeta.overdue {
+
+  :global([data-theme="dark"]) .tasksWidgetMeta.overdue {
     color: #e08060;
   }
-}
+
 
 /* Week navigation */
 .weekNav {

@@ -246,6 +246,11 @@ export type Translations = {
     family: string
     shopping: string
     language: string
+    appearance: string
+    appearanceDesc: string
+    themeLight: string
+    themeDark: string
+    themeSystem: string
     profileDesc: string
     profileNameLabel: string
     profileNamePlaceholder: string
@@ -555,6 +560,11 @@ const en: Translations = {
     family: "Family",
     shopping: "Shopping",
     language: "Language",
+    appearance: "Appearance",
+    appearanceDesc: "Choose how the app looks.",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
     profileDesc: "Your display name shown in the app.",
     profileNameLabel: "Name",
     profileNamePlaceholder: "Your name",
@@ -864,6 +874,11 @@ const es: Translations = {
     family: "Familia",
     shopping: "Compras",
     language: "Idioma",
+    appearance: "Apariencia",
+    appearanceDesc: "Elige cómo se ve la app.",
+    themeLight: "Claro",
+    themeDark: "Oscuro",
+    themeSystem: "Sistema",
     profileDesc: "Tu nombre visible en la app.",
     profileNameLabel: "Nombre",
     profileNamePlaceholder: "Tu nombre",
@@ -1173,6 +1188,11 @@ const de: Translations = {
     family: "Familie",
     shopping: "Einkauf",
     language: "Sprache",
+    appearance: "Erscheinungsbild",
+    appearanceDesc: "Wähle aus, wie die App aussieht.",
+    themeLight: "Hell",
+    themeDark: "Dunkel",
+    themeSystem: "System",
     profileDesc: "Dein Anzeigename in der App.",
     profileNameLabel: "Name",
     profileNamePlaceholder: "Dein Name",

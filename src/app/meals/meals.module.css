@@ -321,11 +321,13 @@
 
 .deleteBtnConfirm:hover { background: #fbd5d5; }
 
-@media (prefers-color-scheme: dark) {
-  .deleteBtn:hover { background: #2d0a0a; color: #e07070; border-color: #e07070; }
-  .deleteBtnConfirm { background: #2d0a0a; border-color: #e07070; color: #e07070; }
-  .deleteBtnConfirm:hover { background: #3d1010; }
-}
+
+  :global([data-theme="dark"]) .deleteBtn:hover { background: #2d0a0a; color: #e07070; border-color: #e07070; }
+
+  :global([data-theme="dark"]) .deleteBtnConfirm { background: #2d0a0a; border-color: #e07070; color: #e07070; }
+
+  :global([data-theme="dark"]) .deleteBtnConfirm:hover { background: #3d1010; }
+
 
 /* ── Field sections ──────────────────────────────────── */
 
@@ -613,11 +615,11 @@
   color: #c0392b;
 }
 
-@media (prefers-color-scheme: dark) {
-  .errorMsg {
+
+  :global([data-theme="dark"]) .errorMsg {
     color: #e07070;
   }
-}
+
 
 /* ── Recipe image ────────────────────────────────────── */
 
@@ -842,11 +844,11 @@
   color: #c0392b;
 }
 
-@media (prefers-color-scheme: dark) {
-  .parseError {
+
+  :global([data-theme="dark"]) .parseError {
     color: #e07070;
   }
-}
+
 
 /* ── Page header actions (wraps New Recipe + Batch import) ── */
 

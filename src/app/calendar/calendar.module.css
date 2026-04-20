@@ -205,33 +205,37 @@
   border-color: #90a8c0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filterBirthday.filterBtnActive {
+
+  :global([data-theme="dark"]) .filterBirthday.filterBtnActive {
     background: #3a1025;
     color: #d49aad;
     border-color: #7a3050;
   }
-  .filterTravel.filterBtnActive {
+
+  :global([data-theme="dark"]) .filterTravel.filterBtnActive {
     background: #3a2808;
     color: #c8a850;
     border-color: #7a5820;
   }
-  .filterCustody.filterBtnActive {
+
+  :global([data-theme="dark"]) .filterCustody.filterBtnActive {
     background: #102030;
     color: #7ab0c8;
     border-color: #204858;
   }
-  .filterGoogle.filterBtnActive {
+
+  :global([data-theme="dark"]) .filterGoogle.filterBtnActive {
     background: #1a3028;
     color: #7abf90;
     border-color: #2a5840;
   }
-  .filterImported.filterBtnActive {
+
+  :global([data-theme="dark"]) .filterImported.filterBtnActive {
     background: #182838;
     color: #a8c0d8;
     border-color: #304858;
   }
-}
+
 
 /* ── Error Banner ────────────────────────────────────────── */
 
@@ -248,13 +252,13 @@
   font-size: 0.875rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .errorBanner {
+
+  :global([data-theme="dark"]) .errorBanner {
     background: #2d0a0a;
     border-color: #c0392b;
     color: #e07070;
   }
-}
+
 
 .retryBtn {
   flex-shrink: 0;
@@ -424,24 +428,27 @@
   color: #1a2a3a;
 }
 
-@media (prefers-color-scheme: dark) {
-  .googleEvent {
+
+  :global([data-theme="dark"]) .googleEvent {
     background: #1a3028;
     color: #7abf90;
   }
-  .birthdayEvent {
+
+  :global([data-theme="dark"]) .birthdayEvent {
     background: #3a1025;
     color: #d49aad;
   }
-  .travelEvent {
+
+  :global([data-theme="dark"]) .travelEvent {
     background: #3a2808;
     color: #c8a850;
   }
-  .importedEvent {
+
+  :global([data-theme="dark"]) .importedEvent {
     background: #1e2e3a;
     color: #c8dce8;
   }
-}
+
 
 /* ── Modal ───────────────────────────────────────────────── */
 
@@ -615,24 +622,27 @@
   margin: 0.75rem 0 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .deleteBtn:hover {
+
+  :global([data-theme="dark"]) .deleteBtn:hover {
     background: #2d0a0a;
     color: #e07070;
     border-color: #e07070;
   }
-  .deleteBtnConfirm {
+
+  :global([data-theme="dark"]) .deleteBtnConfirm {
     background: #2d0a0a;
     border-color: #e07070;
     color: #e07070;
   }
-  .deleteBtnConfirm:hover {
+
+  :global([data-theme="dark"]) .deleteBtnConfirm:hover {
     background: #3d1010;
   }
-  .modalError {
+
+  :global([data-theme="dark"]) .modalError {
     color: #e07070;
   }
-}
+
 
 /* ── Span continuations (Option A: negative-margin bars) ─── */
 
@@ -668,16 +678,17 @@
   color: var(--foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  .custodyHomeEvent {
+
+  :global([data-theme="dark"]) .custodyHomeEvent {
     background: #1a4860;
     color: #a8d8f0;
   }
-  .custodyMonaEvent {
+
+  :global([data-theme="dark"]) .custodyMonaEvent {
     background: #501a58;
     color: #e0a8f0;
   }
-}
+
 
 /* Popover (portal — fixed position, appended to document.body) */
 .custodyPopover {
@@ -739,17 +750,19 @@
   background: #e8d5e8;
 }
 
-@media (prefers-color-scheme: dark) {
-  .custodyPopoverBtnActive.custodyHomeEvent {
+
+  :global([data-theme="dark"]) .custodyPopoverBtnActive.custodyHomeEvent {
     background: #102030;
   }
-  .custodyPopoverBtnActive.custodyMonaEvent {
+
+  :global([data-theme="dark"]) .custodyPopoverBtnActive.custodyMonaEvent {
     background: #280a28;
   }
-  .custodyPopoverError {
+
+  :global([data-theme="dark"]) .custodyPopoverError {
     color: #e07070;
   }
-}
+
 
 .custodyPopoverError {
   font-size: 11px;
@@ -757,11 +770,11 @@
   margin-top: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .custodyPopoverError {
+
+  :global([data-theme="dark"]) .custodyPopoverError {
     color: #e07070;
   }
-}
+
 
 /* ── Tablet ──────────────────────────────────────────── */
 

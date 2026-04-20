@@ -344,17 +344,19 @@
 
 .manageDeleteBtn:hover { opacity: 1; }
 
-@media (prefers-color-scheme: dark) {
-  .categoryPill {
+
+  :global([data-theme="dark"]) .categoryPill {
     background: rgba(255,255,255,0.04);
   }
-  .addError {
+
+  :global([data-theme="dark"]) .addError {
     color: #e07070;
   }
-  .clearBtn {
+
+  :global([data-theme="dark"]) .clearBtn {
     color: #e07070;
   }
-}
+
 
 /* ── Mobile ──────────────────────────────────────────── */
 

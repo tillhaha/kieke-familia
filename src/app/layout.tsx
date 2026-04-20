@@ -2,6 +2,7 @@
 
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { Navbar } from "@/components/Navbar";
@@ -34,6 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Script src="/theme-init.js" strategy="beforeInteractive" />
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
           <div className="appShell">

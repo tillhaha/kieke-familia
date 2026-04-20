@@ -38,6 +38,8 @@
   flex-shrink: 0;
 }
 
+/* ── Desktop nav links ───────────────────────────────── */
+
 .navLinks {
   display: flex;
   align-items: center;
@@ -69,18 +71,7 @@
   font-weight: 600;
 }
 
-.navLinkDisabled {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 4px 11px;
-  border-radius: 20px;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--secondary);
-  opacity: 0.4;
-  cursor: default;
-}
+/* ── Desktop user section ────────────────────────────── */
 
 .userSection {
   position: relative;
@@ -164,27 +155,11 @@
   background: #fdecea;
 }
 
-
-  :global([data-theme="dark"]) .dropdownItemDanger:hover {
-    background: #2d0a0a;
-  }
-
-
-.backdrop {
-  display: none;
+:global([data-theme="dark"]) .dropdownItemDanger:hover {
+  background: #2d0a0a;
 }
 
-/* ── Mobile-only drawer extras (hidden on desktop) ── */
-
-.drawerExtras {
-  display: none;
-}
-
-.drawerItem {
-  display: none;
-}
-
-/* ── Mobile: hamburger menu ─────────────────────────── */
+/* ── Hamburger button (hidden on desktop) ────────────── */
 
 .hamburger {
   display: none;
@@ -205,115 +180,172 @@
   background: var(--surface-hover);
 }
 
+/* ── Mobile full-screen overlay (hidden on desktop) ──── */
+
+.mobileMenu {
+  display: none;
+}
+
+/* ── Mobile ──────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
+  }
+
+  .navLinks {
+    display: none;
   }
 
   .userSection {
     display: none;
   }
 
-  /* Slide-in drawer from the left */
-  .navLinks {
+  /* Full-screen overlay */
+  .mobileMenu {
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: min(280px, 85vw);
+    inset: 0;
     background: var(--background);
-    border-right: 1px solid var(--border);
-    box-shadow: var(--shadow-md);
-    padding: 4.5rem 0 0;
-    z-index: 200;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    overflow-y: auto;
-    gap: 0;
+    z-index: 300;
   }
 
-  .navLinks.navLinksOpen {
-    transform: translateX(0);
-  }
-
-  .navLinks .navLink {
-    padding: 0.875rem 1.5rem;
-    min-height: 48px;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    font-size: 1rem;
-    justify-content: flex-start;
-  }
-
-  .navLinks .navLink.active {
-    background: transparent;
-    color: var(--primary);
-    font-weight: 700;
-    border-left: 3px solid var(--primary);
-    padding-left: calc(1.5rem - 3px);
-  }
-
-  /* Drawer extras: Settings + Sign Out */
-  .drawerExtras {
-    display: flex;
-    flex-direction: column;
-    margin-top: auto;
-    border-top: 2px solid var(--border);
-  }
-
-  .drawerItem {
+  /* Header row: logo + close button */
+  .mobileMenuHeader {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    padding: 0.875rem 1.5rem;
-    min-height: 48px;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    background: transparent;
-    color: var(--secondary);
-    font-size: 1rem;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    text-decoration: none;
-    text-align: left;
-    width: 100%;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 1.25rem;
+    flex-shrink: 0;
   }
 
-  .drawerItem:last-child {
+  .mobileMenuClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 150ms;
+  }
+
+  .mobileMenuClose:hover {
+    background: var(--surface-hover);
+  }
+
+  /* Scrollable nav content */
+  .mobileMenuBody {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    overflow-y: auto;
+  }
+
+  /* Nav links grouped in a rounded card */
+  .mobileNavGroup {
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .mobileNavItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    color: var(--foreground);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobileNavItem:last-child {
     border-bottom: none;
   }
 
-  .drawerItemActive {
+  .mobileNavItemActive {
     color: var(--primary);
-    font-weight: 700;
-    border-left: 3px solid var(--primary);
-    padding-left: calc(1.5rem - 3px);
   }
 
-  .drawerItemDanger {
-    color: #c0392b;
+  /* Settings — standalone highlighted row */
+  .mobileSettingsRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--accent-soft);
+    color: var(--primary);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 12px;
   }
 
-  :global([data-theme="dark"]) .drawerItemDanger {
-    color: #e07070;
+  /* Profile + sign out pinned at bottom */
+  .mobileMenuProfile {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
   }
 
-  /* Backdrop */
-  .backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 199;
-    animation: backdropIn 0.2s ease;
+  .mobileProfileAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #8B5CF6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    flex-shrink: 0;
   }
 
-  @keyframes backdropIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+  .mobileProfileInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .mobileProfileName {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .mobileProfileSignOutLabel {
+    font-size: 0.8125rem;
+    color: var(--secondary);
+  }
+
+  .mobileSignOutBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: color 150ms;
+  }
+
+  .mobileSignOutBtn:hover {
+    color: var(--foreground);
   }
 }

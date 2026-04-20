@@ -164,11 +164,6 @@
   background: #fdecea;
 }
 
-@media (prefers-color-scheme: dark) {
-  .dropdownItemDanger:hover {
-    background: #2d0a0a;
-  }
-}
 
 .backdrop {
   display: none;

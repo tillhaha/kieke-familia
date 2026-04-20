@@ -222,11 +222,6 @@
   line-height: 1.5;
 }
 
-@media (prefers-color-scheme: dark) {
-  .error {
-    color: #e07070;
-  }
-}
 
 @media (max-width: 768px) {
   .card {

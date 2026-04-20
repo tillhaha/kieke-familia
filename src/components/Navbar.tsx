@@ -48,17 +48,6 @@ export function Navbar() {
         </Link>
 
         {session && (
-          <button
-            className={styles.hamburger}
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? "✕" : "☰"}
-          </button>
-        )}
-
-        {session && (
           <div className={`${styles.navLinks} ${menuOpen ? styles.navLinksOpen : ""}`}>
             {navLinks.map(({ href, label, icon: Icon }) => (
               <Link
@@ -70,6 +59,25 @@ export function Navbar() {
                 {label}
               </Link>
             ))}
+
+            {/* Mobile-only drawer extras */}
+            <div className={styles.drawerExtras}>
+              <Link
+                href="/settings"
+                className={`${styles.drawerItem} ${pathname === "/settings" ? styles.drawerItemActive : ""}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                <Settings size={16} strokeWidth={1.75} />
+                {t.nav.settings}
+              </Link>
+              <button
+                className={`${styles.drawerItem} ${styles.drawerItemDanger}`}
+                onClick={() => { setMenuOpen(false); signOut({ callbackUrl: "/" }) }}
+              >
+                <LogOut size={16} strokeWidth={1.75} />
+                {t.nav.signOut}
+              </button>
+            </div>
           </div>
         )}
 
@@ -107,6 +115,18 @@ export function Navbar() {
               </div>
             )}
           </div>
+        )}
+
+        {/* Hamburger — after userSection so it's rightmost on mobile */}
+        {session && (
+          <button
+            className={styles.hamburger}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
         )}
       </nav>
 

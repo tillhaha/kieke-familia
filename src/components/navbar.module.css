@@ -174,6 +174,16 @@
   display: none;
 }
 
+/* ── Mobile-only drawer extras (hidden on desktop) ── */
+
+.drawerExtras {
+  display: none;
+}
+
+.drawerItem {
+  display: none;
+}
+
 /* ── Mobile: hamburger menu ─────────────────────────── */
 
 .hamburger {
@@ -200,6 +210,10 @@
     display: flex;
   }
 
+  .userSection {
+    display: none;
+  }
+
   /* Slide-in drawer from the left */
   .navLinks {
     display: flex;
@@ -212,7 +226,7 @@
     background: var(--background);
     border-right: 1px solid var(--border);
     box-shadow: var(--shadow-md);
-    padding: 4.5rem 0 1.5rem;
+    padding: 4.5rem 0 0;
     z-index: 200;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
@@ -233,16 +247,59 @@
     justify-content: flex-start;
   }
 
-  .navLinks .navLink:last-child {
-    border-bottom: none;
-  }
-
   .navLinks .navLink.active {
     background: transparent;
     color: var(--primary);
     font-weight: 700;
     border-left: 3px solid var(--primary);
-    padding-left: calc(1.5rem - 3px); /* compensate for border width */
+    padding-left: calc(1.5rem - 3px);
+  }
+
+  /* Drawer extras: Settings + Sign Out */
+  .drawerExtras {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    border-top: 2px solid var(--border);
+  }
+
+  .drawerItem {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.875rem 1.5rem;
+    min-height: 48px;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: left;
+    width: 100%;
+  }
+
+  .drawerItem:last-child {
+    border-bottom: none;
+  }
+
+  .drawerItemActive {
+    color: var(--primary);
+    font-weight: 700;
+    border-left: 3px solid var(--primary);
+    padding-left: calc(1.5rem - 3px);
+  }
+
+  .drawerItemDanger {
+    color: #c0392b;
+  }
+
+  :global([data-theme="dark"]) .drawerItemDanger {
+    color: #e07070;
   }
 
   /* Backdrop */

@@ -143,7 +143,7 @@ Rules:
 - officeFriendly ("Office"): true only if the dish doesn't need reheating, has no strong smell, and can be eaten cold
 - thirtyMinute ("Quick"): true only if total prep + cook time is ≤ 30 minutes
 - ingredients: each ingredient as a separate string, preserving quantities and units
-- steps: each step as a separate instruction string, without numbering. Where an ingredient is used in a step, append the exact quantity in parentheses at the end of that step — e.g. "Add the flour and mix until smooth (250g flour)". This avoids the reader having to scroll back to the ingredients list.
+- steps: each step or group header as a separate array item. Number every instruction step (e.g. "1. Boil the water (1L water)"). Where a recipe has distinct phases (e.g. dough + filling + assembly, or marinade + cook + sauce), insert a bold group header as its own item before that phase's steps — e.g. "**Make the dough**". Only add group headers when the recipe genuinely has multiple distinct phases; omit them for simple single-phase recipes. Where an ingredient is used in a step, append the exact quantity in parentheses at the end of that step — e.g. "1. Add the flour and mix until smooth (250g flour)". This avoids the reader having to scroll back to the ingredients list.
 - notes: any tips, storage info, variations, or other info that doesn't fit above (null if none)`,
       messages: [{ role: "user", content: messageContent }],
     })

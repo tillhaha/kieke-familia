@@ -376,6 +376,11 @@
   }
 }
 
+/* Hide mobile-only elements on desktop — must come before the
+   @media block so the media query can override with display:block */
+.mobileIndex    { display: none; }
+.mobileBackBtn  { display: none; }
+
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -698,11 +703,6 @@
     color: #e07070;
   }
 
-
-/* ── Mobile-only elements (hidden on desktop) ───────────── */
-
-.mobileIndex    { display: none; }
-.mobileBackBtn  { display: none; }
 
 /* ── Appearance (theme toggle) ───────────────────────────── */
 

@@ -381,11 +381,11 @@ export default function MealDetailPage() {
         ) : (
           <div className={styles.editableField} onClick={() => setEditingField("ingredients")}>
             {meal.ingredients.length > 0
-              ? <ul className={styles.markdown} style={{ paddingLeft: "1.25rem" }}>
+              ? <div className={styles.ingredientsList}>
                   {meal.ingredients.map((item, i) => (
-                    <li key={i}><ReactMarkdown>{item}</ReactMarkdown></li>
+                    <div key={i} className={styles.ingredientRow}><ReactMarkdown>{item}</ReactMarkdown></div>
                   ))}
-                </ul>
+                </div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.ingredientsEmptyPrompt}</span>
             }
           </div>

@@ -513,6 +513,20 @@
   min-height: 80px;
 }
 
+/* ── Ingredients list ────────────────────────────────── */
+
+.ingredientsList { display: flex; flex-direction: column; gap: 0.15rem; }
+.ingredientRow p { margin: 0; }
+.ingredientRow strong { font-weight: 600; }
+.ingredientRow em { font-style: italic; }
+.ingredientRow code {
+  font-family: monospace;
+  font-size: 0.8125rem;
+  background: var(--surface);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
 /* ── Markdown content ────────────────────────────────── */
 
 .markdown p { margin: 0 0 0.5rem; }

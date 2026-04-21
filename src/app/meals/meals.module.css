@@ -517,6 +517,7 @@
 
 .ingredientsList { display: flex; flex-direction: column; gap: 0.15rem; }
 .ingredientRow p { margin: 0; }
+.ingredientRow ul, .ingredientRow ol { padding-left: 0; margin: 0; list-style-position: inside; }
 .ingredientRow strong { font-weight: 600; }
 .ingredientRow em { font-style: italic; }
 .ingredientRow code {

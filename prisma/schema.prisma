@@ -193,6 +193,7 @@ model Meal {
   servings       Int      @default(2)
   officeFriendly Boolean  @default(false)
   thirtyMinute   Boolean  @default(false)
+  favorite       Boolean  @default(false)
   ingredients    String[]
   steps          String[]
   imageUrl       String?

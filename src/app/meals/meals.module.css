@@ -53,10 +53,6 @@
 .listItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  color: var(--foreground);
   border-bottom: 1px solid var(--border);
   transition: background-color 150ms;
 }
@@ -69,6 +65,18 @@
   background: var(--surface);
 }
 
+.listItemLink {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--foreground);
+  min-width: 0;
+}
+
 .listItemName {
   font-size: 0.9375rem;
   font-weight: 500;
@@ -78,6 +86,31 @@
   font-size: 0.8125rem;
   color: var(--secondary);
   flex-shrink: 0;
+}
+
+.starBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 150ms;
+  padding: 0;
+}
+
+.starBtn:hover {
+  color: #f59e0b;
+}
+
+.starBtnActive {
+  color: #f59e0b;
 }
 
 .grid {
@@ -283,6 +316,38 @@
 
 .titleInput:focus {
   border-bottom: 2px solid var(--primary);
+}
+
+.detailHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.detailStarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--secondary);
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  padding: 0;
+}
+
+.detailStarBtn:hover {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.detailStarBtnActive {
+  color: #f59e0b;
+  border-color: #f59e0b;
 }
 
 .deleteBtn {

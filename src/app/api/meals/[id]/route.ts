@@ -52,7 +52,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 })
   }
 
-  const { name, mealType, diet, notes, servings, officeFriendly, thirtyMinute, ingredients, steps, imageUrl, source } = body as Record<string, unknown>
+  const { name, mealType, diet, notes, servings, officeFriendly, thirtyMinute, favorite, ingredients, steps, imageUrl, source } = body as Record<string, unknown>
   const updates: Prisma.MealUpdateInput = {}
 
   if (name !== undefined) {
@@ -72,6 +72,7 @@ export async function PATCH(request: Request, { params }: Params) {
   }
   if (officeFriendly !== undefined) updates.officeFriendly = officeFriendly === true
   if (thirtyMinute !== undefined) updates.thirtyMinute = thirtyMinute === true
+  if (favorite !== undefined) updates.favorite = favorite === true
   if (ingredients !== undefined) updates.ingredients = Array.isArray(ingredients) ? ingredients.filter((i): i is string => typeof i === "string") : meal.ingredients
   if (steps !== undefined) updates.steps = Array.isArray(steps) ? steps.filter((s): s is string => typeof s === "string") : meal.steps
   if (imageUrl !== undefined) updates.imageUrl = typeof imageUrl === "string" && imageUrl.trim() ? imageUrl.trim() : null

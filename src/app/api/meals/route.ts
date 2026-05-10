@@ -19,6 +19,7 @@ export async function GET(request: Request) {
   const diet = searchParams.get("diet") ?? ""
   const officeFriendly = searchParams.get("officeFriendly")
   const thirtyMinute = searchParams.get("thirtyMinute")
+  const favorite = searchParams.get("favorite")
 
   try {
     const meals = await prisma.meal.findMany({
@@ -32,9 +33,10 @@ export async function GET(request: Request) {
         ...(DIETS.includes(diet as any) ? { diet: diet as any } : {}),
         ...(officeFriendly === "true" ? { officeFriendly: true } : {}),
         ...(thirtyMinute === "true" ? { thirtyMinute: true } : {}),
+        ...(favorite === "true" ? { favorite: true } : {}),
       },
       orderBy: { name: "asc" },
-      select: { id: true, name: true, mealType: true, diet: true, officeFriendly: true, thirtyMinute: true },
+      select: { id: true, name: true, mealType: true, diet: true, officeFriendly: true, thirtyMinute: true, favorite: true },
     })
 
     return NextResponse.json({ meals })

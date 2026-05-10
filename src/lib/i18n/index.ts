@@ -104,6 +104,7 @@ export type Translations = {
     dietVegetarian: string
     officeFilter: string
     quickFilter: string
+    favoritesFilter: string
     noRecipesMatch: string
     noRecipesYet: string
     aiImport: string
@@ -419,6 +420,7 @@ const en: Translations = {
     dietVegetarian: "Vegetarian",
     officeFilter: "Office",
     quickFilter: "30min",
+    favoritesFilter: "★ Favourites",
     noRecipesMatch: "No recipes match filters.",
     noRecipesYet: "No recipes yet. Add your first recipe.",
     aiImport: "AI Import",
@@ -734,6 +736,7 @@ const es: Translations = {
     dietVegetarian: "Vegetariano",
     officeFilter: "Oficina",
     quickFilter: "30min",
+    favoritesFilter: "★ Favoritos",
     noRecipesMatch: "No hay recetas que coincidan.",
     noRecipesYet: "Sin recetas aún. Añade tu primera receta.",
     aiImport: "Importar con IA",
@@ -1049,6 +1052,7 @@ const de: Translations = {
     dietVegetarian: "Vegetarisch",
     officeFilter: "Büro",
     quickFilter: "30min",
+    favoritesFilter: "★ Favoriten",
     noRecipesMatch: "Keine Rezepte entsprechen den Filtern.",
     noRecipesYet: "Noch keine Rezepte. Füge dein erstes Rezept hinzu.",
     aiImport: "KI-Import",

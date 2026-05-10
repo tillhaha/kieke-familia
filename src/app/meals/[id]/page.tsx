@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
-import { ChevronLeft, ImagePlus, Pencil, Trash2, Wand2 } from "lucide-react"
+import { ChevronLeft, ImagePlus, Pencil, Star, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
@@ -21,6 +21,7 @@ type Meal = {
   servings: number
   officeFriendly: boolean
   thirtyMinute: boolean
+  favorite: boolean
   ingredients: string[]
   steps: string[]
   imageUrl: string | null
@@ -52,6 +53,7 @@ export default function MealDetailPage() {
   const [diet, setDiet] = useState<Diet>("Meat")
   const [officeFriendly, setOfficeFriendly] = useState(false)
   const [thirtyMinute, setThirtyMinute] = useState(false)
+  const [favorite, setFavorite] = useState(false)
   const [editingField, setEditingField] = useState<EditingField>(null)
   const [draftNotes, setDraftNotes] = useState("")
   const [draftIngredients, setDraftIngredients] = useState("")
@@ -76,6 +78,7 @@ export default function MealDetailPage() {
         setDiet(d.meal.diet)
         setOfficeFriendly(d.meal.officeFriendly)
         setThirtyMinute(d.meal.thirtyMinute)
+        setFavorite(d.meal.favorite)
         setDraftNotes(d.meal.notes ?? "")
         setDraftIngredients((d.meal.ingredients as string[]).join("\n"))
         setDraftSteps((d.meal.steps as string[]).join("\n"))
@@ -118,6 +121,12 @@ export default function MealDetailPage() {
   const handleDietChange = async (value: Diet) => {
     setDiet(value)
     try { await patch({ diet: value }) } catch { setDiet(meal!.diet) }
+  }
+
+  const handleFavoriteToggle = async () => {
+    const next = !favorite
+    setFavorite(next)
+    try { await patch({ favorite: next }) } catch { setFavorite(!next) }
   }
 
   const handleToggle = async (field: "officeFriendly" | "thirtyMinute", value: boolean) => {
@@ -238,13 +247,22 @@ export default function MealDetailPage() {
           onChange={(e) => setName(e.target.value)}
           onBlur={handleNameBlur}
         />
-        <button
-          className={confirmDelete ? styles.deleteBtnConfirm : styles.deleteBtn}
-          onClick={handleDelete}
-          disabled={deleting}
-        >
-          {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
-        </button>
+        <div className={styles.detailHeaderActions}>
+          <button
+            className={`${styles.detailStarBtn} ${favorite ? styles.detailStarBtnActive : ""}`}
+            onClick={handleFavoriteToggle}
+            title={favorite ? "Remove from favourites" : "Add to favourites"}
+          >
+            <Star size={18} fill={favorite ? "currentColor" : "none"} strokeWidth={1.5} />
+          </button>
+          <button
+            className={confirmDelete ? styles.deleteBtnConfirm : styles.deleteBtn}
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
+          </button>
+        </div>
       </div>
 
       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />

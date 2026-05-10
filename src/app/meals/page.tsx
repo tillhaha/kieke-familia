@@ -4,7 +4,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
-import { Plus, Search } from "lucide-react"
+import { Plus, Search, Star } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
@@ -16,6 +16,7 @@ type MealSummary = {
   diet: string
   officeFriendly: boolean
   thirtyMinute: boolean
+  favorite: boolean
 }
 
 export default function MealsPage() {
@@ -29,6 +30,7 @@ export default function MealsPage() {
   const [filterDiet, setFilterDiet] = useState("")
   const [filterOffice, setFilterOffice] = useState(false)
   const [filterThirty, setFilterThirty] = useState(false)
+  const [filterFavorite, setFilterFavorite] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
 
@@ -39,10 +41,24 @@ export default function MealsPage() {
     if (filterDiet) params.set("diet", filterDiet)
     if (filterOffice) params.set("officeFriendly", "true")
     if (filterThirty) params.set("thirtyMinute", "true")
+    if (filterFavorite) params.set("favorite", "true")
     return fetch(`/api/meals?${params}`)
       .then((r) => r.json())
       .then((d) => setMeals(d.meals ?? []))
-  }, [filterMealType, filterDiet, filterOffice, filterThirty])
+  }, [filterMealType, filterDiet, filterOffice, filterThirty, filterFavorite])
+
+  const toggleFavorite = async (id: string, current: boolean) => {
+    setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: !current } : m))
+    try {
+      await fetch(`/api/meals/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ favorite: !current }),
+      })
+    } catch {
+      setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: current } : m))
+    }
+  }
 
   // Re-fetch when filters change (immediately)
   useEffect(() => {
@@ -68,7 +84,7 @@ export default function MealsPage() {
     return diet
   }
 
-  const hasFilters = query || filterMealType || filterDiet || filterOffice || filterThirty
+  const hasFilters = query || filterMealType || filterDiet || filterOffice || filterThirty || filterFavorite
 
   if (status === "loading") return null
 
@@ -141,10 +157,17 @@ export default function MealsPage() {
           {t.meals.quickFilter}
         </button>
 
+        <button
+          className={`${styles.filterToggle} ${filterFavorite ? styles.filterToggleActive : ""}`}
+          onClick={() => setFilterFavorite((v) => !v)}
+        >
+          {t.meals.favoritesFilter}
+        </button>
+
         {hasFilters && (
           <button
             className={styles.filterClear}
-            onClick={() => { setQuery(""); setFilterMealType(""); setFilterDiet(""); setFilterOffice(false); setFilterThirty(false) }}
+            onClick={() => { setQuery(""); setFilterMealType(""); setFilterDiet(""); setFilterOffice(false); setFilterThirty(false); setFilterFavorite(false) }}
           >
             Clear
           </button>
@@ -157,15 +180,24 @@ export default function MealsPage() {
       ) : (
         <div className={styles.list}>
           {meals.map((meal) => (
-            <Link key={meal.id} href={`/meals/${meal.id}`} className={styles.listItem}>
-              <span className={styles.listItemName}>{meal.name}</span>
-              <span className={styles.listItemMeta}>
-                {meal.mealType}
-                {" · "}{dietLabel(meal.diet)}
-                {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
-                {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
-              </span>
-            </Link>
+            <div key={meal.id} className={styles.listItem}>
+              <Link href={`/meals/${meal.id}`} className={styles.listItemLink}>
+                <span className={styles.listItemName}>{meal.name}</span>
+                <span className={styles.listItemMeta}>
+                  {meal.mealType}
+                  {" · "}{dietLabel(meal.diet)}
+                  {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
+                  {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
+                </span>
+              </Link>
+              <button
+                className={`${styles.starBtn} ${meal.favorite ? styles.starBtnActive : ""}`}
+                onClick={() => toggleFavorite(meal.id, meal.favorite)}
+                title={meal.favorite ? "Remove from favourites" : "Add to favourites"}
+              >
+                <Star size={14} fill={meal.favorite ? "currentColor" : "none"} strokeWidth={1.5} />
+              </button>
+            </div>
           ))}
         </div>
       )}

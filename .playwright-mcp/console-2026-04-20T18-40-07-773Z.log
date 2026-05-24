@@ -1,0 +1,20 @@
+[    3380ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3381ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3382ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3382ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3383ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3384ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3406ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3473ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3507ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3511ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3513ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3515ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3516ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3517ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3518ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3519ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3613ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    3613ms] [LOG] User was not authenticated @ https://cdn.shopify.com/oxygen-v2/36104/38321/80578/3376782/build/_shared/chunk-6DS547G6.js:458
+[    4158ms] [LOG] [GORGIAS-CHAT] Loading chat 01HJ6DRKH1S2XVSDQTSP6X2KW4... @ https://config.gorgias.chat/gorgias-chat-bundle-loader.js?applicationId=01HJ6DRKH1S2XVSDQTSP6X2KW4:0
+[   10309ms] [WARNING] Specifying 'overflow: visible' on img, video and canvas tags may cause them to produce visual content outside of the element bounds. See https://github.com/WICG/view-transitions/blob/main/debugging_overflow_on_images.md for details. @ https://assets.gorgias.chat/build/static/js/848.4fa0f014de17ea32.js:741

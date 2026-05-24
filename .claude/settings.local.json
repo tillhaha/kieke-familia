@@ -24,7 +24,26 @@
       "Bash(bash /Users/till/Development/familia/.claude/skills/brainstorming/scripts/start-server.sh --project-dir /Users/till/Development/familia 2>&1)",
       "Bash(ls node_modules/node-ical/*.d.ts)",
       "Bash(bash:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(code-review-graph build:*)",
+      "Bash(npx eslint *)",
+      "Bash(git -C /Users/till/Development/familia add src/app/meals/BatchImportModal.tsx)",
+      "Bash(git -C /Users/till/Development/familia commit -m ' *)",
+      "mcp__code-review-graph__semantic_search_nodes_tool",
+      "mcp__code-review-graph__query_graph_tool",
+      "Bash(curl -s http://localhost:3000/api/calendar/events)",
+      "Bash(kill %1)",
+      "Bash(git revert *)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_evaluate",
+      "Bash(node *)",
+      "mcp__playwright__browser_resize"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "code-review-graph"
+  ]
 }

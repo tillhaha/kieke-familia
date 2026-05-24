@@ -158,10 +158,11 @@ export default function MealsPage() {
         </button>
 
         <button
-          className={`${styles.filterToggle} ${filterFavorite ? styles.filterToggleActive : ""}`}
+          className={`${styles.filterToggle} ${styles.filterToggleStar} ${filterFavorite ? styles.filterToggleActive : ""}`}
           onClick={() => setFilterFavorite((v) => !v)}
+          title={t.meals.favoritesFilter}
         >
-          {t.meals.favoritesFilter}
+          <Star size={13} fill={filterFavorite ? "currentColor" : "none"} strokeWidth={1.5} />
         </button>
 
         {hasFilters && (

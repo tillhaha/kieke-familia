@@ -1,0 +1,1268 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - heading "Enjoy your first three recipes for FREE" [level=3] [ref=e7]
+      - generic [ref=e8]:
+        - separator [ref=e9]
+        - generic [ref=e10]: or
+      - generic [ref=e11]:
+        - link "Become a member" [ref=e12] [cursor=pointer]:
+          - /url: /membership/
+        - text: for unlimited access to thousands of delicious plant-based recipes
+      - generic [ref=e13]:
+        - link "Try free for 7 days" [ref=e14] [cursor=pointer]:
+          - /url: /membership/#plan
+          - button "Try free for 7 days" [ref=e15]
+        - link "Learn More" [ref=e16] [cursor=pointer]:
+          - /url: /membership/
+          - button "Learn More" [ref=e17]
+      - generic [ref=e18]:
+        - text: Already a member?
+        - link "Sign in" [ref=e19] [cursor=pointer]:
+          - /url: /login/
+    - button [ref=e21] [cursor=pointer]:
+      - img [ref=e22]
+  - banner [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e26]: Redirect me to the Europe store
+      - generic [ref=e27]:
+        - button "Continue" [ref=e28] [cursor=pointer]
+        - button "Cancel" [ref=e29] [cursor=pointer]
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic:
+          - generic [ref=e32]:
+            - generic:
+              - link [ref=e33] [cursor=pointer]:
+                - /url: /cart/
+                - img [ref=e34]
+              - img "Deliciously Ella"
+              - button [ref=e57] [cursor=pointer]:
+                - img [ref=e58]
+            - generic [ref=e60]:
+              - img [ref=e61]
+              - textbox "What would you like to search today?" [ref=e64]
+          - heading "Shop" [level=3]
+          - generic [ref=e65]:
+            - link "Products":
+              - /url: /collections/shop-all/
+              - button "Products" [ref=e66] [cursor=pointer]
+            - link "Membership":
+              - /url: /membership/
+              - button "Membership" [ref=e67] [cursor=pointer]
+          - generic [ref=e68]:
+            - button "recipes":
+              - generic [ref=e69] [cursor=pointer]: recipes
+              - img
+            - generic:
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - button [ref=e73] [cursor=pointer]:
+                    - img [ref=e74]
+                  - heading "recipes" [level=4] [ref=e76]
+                - button [ref=e77] [cursor=pointer]:
+                  - img [ref=e78]
+              - generic [ref=e80]:
+                - button "view recipes":
+                  - paragraph [ref=e83] [cursor=pointer]: view recipes
+                  - img
+                - separator [ref=e85]
+              - generic [ref=e86]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "Collections":
+                        - paragraph [ref=e87] [cursor=pointer]: Collections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Breakfast":
+                        - paragraph [ref=e89] [cursor=pointer]: Breakfast
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Mains":
+                        - paragraph [ref=e91] [cursor=pointer]: Mains
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Sides":
+                        - paragraph [ref=e93] [cursor=pointer]: Sides
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Sweets":
+                        - paragraph [ref=e95] [cursor=pointer]: Sweets
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Drinks":
+                        - paragraph [ref=e97] [cursor=pointer]: Drinks
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Kids":
+                        - paragraph [ref=e99] [cursor=pointer]: Kids
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "meal plans":
+                        - paragraph [ref=e101] [cursor=pointer]: meal plans
+                        - img
+              - generic [ref=e103]:
+                - generic: Recipes of the Day
+                - generic:
+                  - generic [ref=e106]:
+                    - generic [ref=e107]:
+                      - img "15-Minute Pasta" [ref=e108]
+                      - generic [ref=e109]:
+                        - img [ref=e111]
+                        - text: Member Recipe
+                    - generic [ref=e114]:
+                      - generic [ref=e115]:
+                        - generic [ref=e116]:
+                          - paragraph
+                          - generic [ref=e117]:
+                            - img [ref=e118]
+                            - generic [ref=e120]: "4.8"
+                        - button [ref=e121] [cursor=pointer]:
+                          - img [ref=e122]
+                      - generic [ref=e126]: 15-Minute...
+                      - generic [ref=e127]:
+                        - img [ref=e129]
+                        - text: Ready in 15 mins
+                  - generic [ref=e133]:
+                    - generic [ref=e134]:
+                      - img "Sautéed Sesame & Aubergine Noodle Bowl" [ref=e135]
+                      - generic [ref=e136]:
+                        - img [ref=e138]
+                        - text: Member Recipe
+                    - generic [ref=e141]:
+                      - generic [ref=e142]:
+                        - generic [ref=e143]:
+                          - paragraph
+                          - generic [ref=e144]:
+                            - img [ref=e145]
+                            - generic [ref=e147]: "4.8"
+                        - button [ref=e148] [cursor=pointer]:
+                          - img [ref=e149]
+                      - generic [ref=e153]: Sautéed Sesame...
+                      - generic [ref=e154]:
+                        - img [ref=e156]
+                        - text: Ready in 15 mins
+            - button "wellness":
+              - generic [ref=e158] [cursor=pointer]: wellness
+              - img
+            - generic:
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - button [ref=e162] [cursor=pointer]:
+                    - img [ref=e163]
+                  - heading "wellness" [level=4] [ref=e165]
+                - button [ref=e166] [cursor=pointer]:
+                  - img [ref=e167]
+              - generic [ref=e169]:
+                - button "view wellness":
+                  - paragraph [ref=e172] [cursor=pointer]: view wellness
+                  - img
+                - separator [ref=e174]
+              - generic [ref=e175]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "Selections":
+                        - paragraph [ref=e176] [cursor=pointer]: Selections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "movement":
+                        - paragraph [ref=e178] [cursor=pointer]: movement
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "mindfulness":
+                        - paragraph [ref=e180] [cursor=pointer]: mindfulness
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "sleep":
+                        - paragraph [ref=e182] [cursor=pointer]: sleep
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "kids":
+                        - paragraph [ref=e184] [cursor=pointer]: kids
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "wellness plans":
+                        - paragraph [ref=e186] [cursor=pointer]: wellness plans
+                        - img
+              - generic [ref=e188]:
+                - generic: Classes of the Day
+                - generic:
+                  - generic [ref=e191]:
+                    - generic [ref=e192]:
+                      - img "Energising Flow" [ref=e193]
+                      - button [ref=e194] [cursor=pointer]
+                    - generic [ref=e195]:
+                      - generic [ref=e196]:
+                        - generic [ref=e197]: 10 mins
+                        - button [ref=e198] [cursor=pointer]:
+                          - img [ref=e199]
+                      - generic [ref=e201]:
+                        - generic [ref=e203]: Energising Flow
+                        - paragraph [ref=e204]: With Chantal Di Donato
+                  - generic [ref=e207]:
+                    - generic [ref=e208]:
+                      - img "10 Minutes To Start Your Day" [ref=e209]
+                      - button [ref=e210] [cursor=pointer]
+                    - generic [ref=e211]:
+                      - generic [ref=e212]:
+                        - generic [ref=e213]: 10 mins
+                        - button [ref=e214] [cursor=pointer]:
+                          - img [ref=e215]
+                      - generic [ref=e217]:
+                        - generic [ref=e219]: 10 Minutes To Start Your Day
+                        - paragraph [ref=e220]: With Belinda Matwali
+            - button "shop":
+              - generic [ref=e221] [cursor=pointer]: shop
+              - img
+            - generic:
+              - generic [ref=e223]:
+                - generic [ref=e224]:
+                  - button [ref=e225] [cursor=pointer]:
+                    - img [ref=e226]
+                  - heading "shop" [level=4] [ref=e228]
+                - button [ref=e229] [cursor=pointer]:
+                  - img [ref=e230]
+              - generic [ref=e232]:
+                - button "view shop":
+                  - paragraph [ref=e235] [cursor=pointer]: view shop
+                  - img
+                - separator [ref=e237]
+              - generic [ref=e238]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "shop all":
+                        - paragraph [ref=e239] [cursor=pointer]: shop all
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Snacks Snacks":
+                        - generic:
+                          - generic:
+                            - img "Snacks" [ref=e241] [cursor=pointer]
+                            - paragraph [ref=e242] [cursor=pointer]: Snacks
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Breakfast Breakfast":
+                        - generic:
+                          - generic:
+                            - img "Breakfast" [ref=e244] [cursor=pointer]
+                            - paragraph [ref=e245] [cursor=pointer]: Breakfast
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Oat Bars Oat Bars":
+                        - generic:
+                          - generic:
+                            - img "Oat Bars" [ref=e247] [cursor=pointer]
+                            - paragraph [ref=e248] [cursor=pointer]: Oat Bars
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Gifting Gifting":
+                        - generic:
+                          - generic:
+                            - img "Gifting" [ref=e250] [cursor=pointer]
+                            - paragraph [ref=e251] [cursor=pointer]: Gifting
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Bundles Bundles":
+                        - generic:
+                          - generic:
+                            - img "Bundles" [ref=e253] [cursor=pointer]
+                            - paragraph [ref=e254] [cursor=pointer]: Bundles
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Kids Kids":
+                        - generic:
+                          - generic:
+                            - img "Kids" [ref=e256] [cursor=pointer]
+                            - paragraph [ref=e257] [cursor=pointer]: Kids
+              - generic:
+                - generic [ref=e258]:
+                  - heading "Overwhelmed by wellness advice?" [level=4]
+                  - paragraph: Recipes, movement, and rituals that match your energy, your day, and your goal.
+                  - link "Start Your 7 Day Free Trial" [ref=e259] [cursor=pointer]:
+                    - /url: /membership/
+                    - button "Start Your 7 Day Free Trial" [ref=e260]
+                  - generic:
+                    - generic [ref=e261]:
+                      - img [ref=e262]
+                      - paragraph [ref=e266]: 1.8 Million
+                      - generic [ref=e267]: downloads
+                    - generic [ref=e268]:
+                      - img [ref=e270]
+                      - generic [ref=e272]: 4.9 stars
+                      - generic [ref=e273]: 16.7K reviews
+                - generic [ref=e274]:
+                  - generic [ref=e275]:
+                    - img [ref=e276]
+                    - img [ref=e278]
+                    - img [ref=e280]
+                    - img [ref=e282]
+                    - img [ref=e284]
+                  - generic [ref=e286]: “Delete your other apps, this one has it all”
+                  - generic [ref=e287]: – Christina S
+            - button "Kids":
+              - generic [ref=e288] [cursor=pointer]: Kids
+              - img
+            - generic:
+              - generic [ref=e290]:
+                - generic [ref=e291]:
+                  - button [ref=e292] [cursor=pointer]:
+                    - img [ref=e293]
+                  - heading "Kids" [level=4] [ref=e295]
+                - button [ref=e296] [cursor=pointer]:
+                  - img [ref=e297]
+              - generic [ref=e299]:
+                - button "view Kids":
+                  - paragraph [ref=e302] [cursor=pointer]: view Kids
+                  - img
+                - separator [ref=e304]
+              - generic [ref=e305]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "recipes":
+                        - paragraph [ref=e306] [cursor=pointer]: recipes
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "wellness":
+                        - paragraph [ref=e308] [cursor=pointer]: wellness
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "shop":
+                        - paragraph [ref=e310] [cursor=pointer]: shop
+                        - img
+              - generic [ref=e312]:
+                - generic: Featured Contents of the Day
+                - generic:
+                  - generic [ref=e315]:
+                    - generic [ref=e316]:
+                      - generic [ref=e318]: Save 25%!
+                      - link "Ultimate Deliciously Ella Kids Bundle":
+                        - /url: /products/ultimate-deliciously-ella-kids-bundle/
+                        - img "Ultimate Deliciously Ella Kids Bundle" [ref=e319] [cursor=pointer]
+                    - generic [ref=e320]:
+                      - generic [ref=e323]: Merch
+                      - generic [ref=e324]:
+                        - heading "Ultimate Deliciously Ella Kids Bundle" [level=5] [ref=e325]:
+                          - link "Ultimate Deliciously Ella Kids Bundle" [ref=e326] [cursor=pointer]:
+                            - /url: /products/ultimate-deliciously-ella-kids-bundle/
+                            - generic [ref=e327]: Ultimate Deliciously Ella Kids Bundle
+                        - generic [ref=e328]:
+                          - generic [ref=e329]: £26.25
+                          - generic [ref=e330]: £35.00
+                      - button "Quick Add To Bag" [ref=e333] [cursor=pointer]
+                  - generic [ref=e336]:
+                    - generic [ref=e337]:
+                      - generic [ref=e339]: Save 25%!
+                      - link "Kids 'More Plants' Cosy Cotton Socks":
+                        - /url: /products/kids-more-plants-cosy-cotton-socks/
+                        - img "Kids 'More Plants' Cosy Cotton Socks" [ref=e340] [cursor=pointer]
+                    - generic [ref=e341]:
+                      - generic [ref=e344]: Merch
+                      - generic [ref=e345]:
+                        - heading "Kids 'More Plants' Cosy Cotton Socks" [level=5] [ref=e346]:
+                          - link "Kids 'More Plants' Cosy Cotton Socks" [ref=e347] [cursor=pointer]:
+                            - /url: /products/kids-more-plants-cosy-cotton-socks/
+                            - generic [ref=e348]: Kids 'More Plants' Cosy Cotton Socks
+                        - generic [ref=e349]:
+                          - generic [ref=e350]: £7.50
+                          - generic [ref=e351]: £10.00
+                      - button "Quick Add To Bag" [ref=e354] [cursor=pointer]
+            - button "blog":
+              - generic [ref=e355] [cursor=pointer]: blog
+              - img
+            - generic:
+              - generic [ref=e357]:
+                - generic [ref=e358]:
+                  - button [ref=e359] [cursor=pointer]:
+                    - img [ref=e360]
+                  - heading "blog" [level=4] [ref=e362]
+                - button [ref=e363] [cursor=pointer]:
+                  - img [ref=e364]
+              - generic [ref=e366]:
+                - button "view blog":
+                  - paragraph [ref=e369] [cursor=pointer]: view blog
+                  - img
+                - separator [ref=e371]
+              - generic [ref=e372]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "selections":
+                        - paragraph [ref=e373] [cursor=pointer]: selections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "categories":
+                        - paragraph [ref=e375] [cursor=pointer]: categories
+                        - img
+            - link "Membership":
+              - /url: /membership/
+              - generic [ref=e377] [cursor=pointer]: Membership
+            - link "Our Story":
+              - /url: /our-story/
+              - generic [ref=e378] [cursor=pointer]: Our Story
+          - separator
+          - generic [ref=e379]:
+            - generic:
+              - generic:
+                - generic:
+                  - button "My Hub":
+                    - generic [ref=e381] [cursor=pointer]:
+                      - img [ref=e383]
+                      - paragraph [ref=e385]: My Hub
+                    - img
+            - generic:
+              - link "log in":
+                - /url: /login/
+                - img [ref=e388] [cursor=pointer]
+                - paragraph [ref=e390] [cursor=pointer]: log in
+          - generic:
+            - generic [ref=e391]:
+              - heading "Overwhelmed by wellness advice?" [level=4]
+              - paragraph: Recipes, movement, and rituals that match your energy, your day, and your goal.
+              - link "Start Your 7 Day Free Trial" [ref=e392] [cursor=pointer]:
+                - /url: /membership/
+                - button "Start Your 7 Day Free Trial" [ref=e393]
+              - generic:
+                - generic [ref=e394]:
+                  - img [ref=e395]
+                  - paragraph [ref=e399]: 1.8 Million
+                  - generic [ref=e400]: downloads
+                - generic [ref=e401]:
+                  - img [ref=e403]
+                  - generic [ref=e405]: 4.9 stars
+                  - generic [ref=e406]: 16.7K reviews
+            - generic [ref=e407]:
+              - generic [ref=e408]:
+                - img [ref=e409]
+                - img [ref=e411]
+                - img [ref=e413]
+                - img [ref=e415]
+                - img [ref=e417]
+              - generic [ref=e419]: “Delete your other apps, this one has it all”
+              - generic [ref=e420]: – Christina S
+        - generic [ref=e421]:
+          - img [ref=e422]
+          - textbox "Search Everything" [ref=e425]
+      - link "Deliciously Ella" [ref=e426] [cursor=pointer]:
+        - /url: /
+        - img "Deliciously Ella" [ref=e427]
+      - link "membership" [ref=e450] [cursor=pointer]:
+        - /url: /membership/
+        - button "membership" [ref=e451]
+    - generic [ref=e452]:
+      - generic [ref=e453]:
+        - generic:
+          - generic [ref=e454]:
+            - generic:
+              - link [ref=e455] [cursor=pointer]:
+                - /url: /cart/
+                - img [ref=e456]
+              - img "Deliciously Ella"
+              - button [ref=e479] [cursor=pointer]:
+                - img [ref=e480]
+            - generic [ref=e482]:
+              - img [ref=e483]
+              - textbox "What would you like to search today?" [ref=e486]
+          - heading "Shop" [level=3]
+          - generic [ref=e487]:
+            - link "Products":
+              - /url: /collections/shop-all/
+              - button "Products" [ref=e488] [cursor=pointer]
+            - link "Membership":
+              - /url: /membership/
+              - button "Membership" [ref=e489] [cursor=pointer]
+          - generic [ref=e490]:
+            - button "recipes":
+              - generic [ref=e491] [cursor=pointer]: recipes
+              - img
+            - generic:
+              - generic [ref=e493]:
+                - generic [ref=e494]:
+                  - button [ref=e495] [cursor=pointer]:
+                    - img [ref=e496]
+                  - heading "recipes" [level=4] [ref=e498]
+                - button [ref=e499] [cursor=pointer]:
+                  - img [ref=e500]
+              - generic [ref=e502]:
+                - button "view recipes":
+                  - paragraph [ref=e505] [cursor=pointer]: view recipes
+                  - img
+                - separator [ref=e507]
+              - generic [ref=e508]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "Collections":
+                        - paragraph [ref=e509] [cursor=pointer]: Collections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Breakfast":
+                        - paragraph [ref=e511] [cursor=pointer]: Breakfast
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Mains":
+                        - paragraph [ref=e513] [cursor=pointer]: Mains
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Sides":
+                        - paragraph [ref=e515] [cursor=pointer]: Sides
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Sweets":
+                        - paragraph [ref=e517] [cursor=pointer]: Sweets
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Drinks":
+                        - paragraph [ref=e519] [cursor=pointer]: Drinks
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Kids":
+                        - paragraph [ref=e521] [cursor=pointer]: Kids
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "meal plans":
+                        - paragraph [ref=e523] [cursor=pointer]: meal plans
+                        - img
+              - generic [ref=e525]:
+                - generic: Recipes of the Day
+                - generic:
+                  - generic [ref=e528]:
+                    - generic [ref=e529]:
+                      - img "15-Minute Pasta" [ref=e530]
+                      - generic [ref=e531]:
+                        - img [ref=e533]
+                        - text: Member Recipe
+                    - generic [ref=e536]:
+                      - generic [ref=e537]:
+                        - generic [ref=e538]:
+                          - paragraph
+                          - generic [ref=e539]:
+                            - img [ref=e540]
+                            - generic [ref=e542]: "4.8"
+                        - button [ref=e543] [cursor=pointer]:
+                          - img [ref=e544]
+                      - generic [ref=e548]: 15-Minute...
+                      - generic [ref=e549]:
+                        - img [ref=e551]
+                        - text: Ready in 15 mins
+                  - generic [ref=e555]:
+                    - generic [ref=e556]:
+                      - img "Sautéed Sesame & Aubergine Noodle Bowl" [ref=e557]
+                      - generic [ref=e558]:
+                        - img [ref=e560]
+                        - text: Member Recipe
+                    - generic [ref=e563]:
+                      - generic [ref=e564]:
+                        - generic [ref=e565]:
+                          - paragraph
+                          - generic [ref=e566]:
+                            - img [ref=e567]
+                            - generic [ref=e569]: "4.8"
+                        - button [ref=e570] [cursor=pointer]:
+                          - img [ref=e571]
+                      - generic [ref=e575]: Sautéed Sesame...
+                      - generic [ref=e576]:
+                        - img [ref=e578]
+                        - text: Ready in 15 mins
+            - button "wellness":
+              - generic [ref=e580] [cursor=pointer]: wellness
+              - img
+            - generic:
+              - generic [ref=e582]:
+                - generic [ref=e583]:
+                  - button [ref=e584] [cursor=pointer]:
+                    - img [ref=e585]
+                  - heading "wellness" [level=4] [ref=e587]
+                - button [ref=e588] [cursor=pointer]:
+                  - img [ref=e589]
+              - generic [ref=e591]:
+                - button "view wellness":
+                  - paragraph [ref=e594] [cursor=pointer]: view wellness
+                  - img
+                - separator [ref=e596]
+              - generic [ref=e597]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "Selections":
+                        - paragraph [ref=e598] [cursor=pointer]: Selections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "movement":
+                        - paragraph [ref=e600] [cursor=pointer]: movement
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "mindfulness":
+                        - paragraph [ref=e602] [cursor=pointer]: mindfulness
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "sleep":
+                        - paragraph [ref=e604] [cursor=pointer]: sleep
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "kids":
+                        - paragraph [ref=e606] [cursor=pointer]: kids
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "wellness plans":
+                        - paragraph [ref=e608] [cursor=pointer]: wellness plans
+                        - img
+              - generic [ref=e610]:
+                - generic: Classes of the Day
+                - generic:
+                  - generic [ref=e613]:
+                    - generic [ref=e614]:
+                      - img "Energising Flow" [ref=e615]
+                      - button [ref=e616] [cursor=pointer]
+                    - generic [ref=e617]:
+                      - generic [ref=e618]:
+                        - generic [ref=e619]: 10 mins
+                        - button [ref=e620] [cursor=pointer]:
+                          - img [ref=e621]
+                      - generic [ref=e623]:
+                        - generic [ref=e625]: Energising Flow
+                        - paragraph [ref=e626]: With Chantal Di Donato
+                  - generic [ref=e629]:
+                    - generic [ref=e630]:
+                      - img "10 Minutes To Start Your Day" [ref=e631]
+                      - button [ref=e632] [cursor=pointer]
+                    - generic [ref=e633]:
+                      - generic [ref=e634]:
+                        - generic [ref=e635]: 10 mins
+                        - button [ref=e636] [cursor=pointer]:
+                          - img [ref=e637]
+                      - generic [ref=e639]:
+                        - generic [ref=e641]: 10 Minutes To Start Your Day
+                        - paragraph [ref=e642]: With Belinda Matwali
+            - button "shop":
+              - generic [ref=e643] [cursor=pointer]: shop
+              - img
+            - generic:
+              - generic [ref=e645]:
+                - generic [ref=e646]:
+                  - button [ref=e647] [cursor=pointer]:
+                    - img [ref=e648]
+                  - heading "shop" [level=4] [ref=e650]
+                - button [ref=e651] [cursor=pointer]:
+                  - img [ref=e652]
+              - generic [ref=e654]:
+                - button "view shop":
+                  - paragraph [ref=e657] [cursor=pointer]: view shop
+                  - img
+                - separator [ref=e659]
+              - generic [ref=e660]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "shop all":
+                        - paragraph [ref=e661] [cursor=pointer]: shop all
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Snacks Snacks":
+                        - generic:
+                          - generic:
+                            - img "Snacks" [ref=e663] [cursor=pointer]
+                            - paragraph [ref=e664] [cursor=pointer]: Snacks
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Breakfast Breakfast":
+                        - generic:
+                          - generic:
+                            - img "Breakfast" [ref=e666] [cursor=pointer]
+                            - paragraph [ref=e667] [cursor=pointer]: Breakfast
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Oat Bars Oat Bars":
+                        - generic:
+                          - generic:
+                            - img "Oat Bars" [ref=e669] [cursor=pointer]
+                            - paragraph [ref=e670] [cursor=pointer]: Oat Bars
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Gifting Gifting":
+                        - generic:
+                          - generic:
+                            - img "Gifting" [ref=e672] [cursor=pointer]
+                            - paragraph [ref=e673] [cursor=pointer]: Gifting
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Bundles Bundles":
+                        - generic:
+                          - generic:
+                            - img "Bundles" [ref=e675] [cursor=pointer]
+                            - paragraph [ref=e676] [cursor=pointer]: Bundles
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "Kids Kids":
+                        - generic:
+                          - generic:
+                            - img "Kids" [ref=e678] [cursor=pointer]
+                            - paragraph [ref=e679] [cursor=pointer]: Kids
+              - generic:
+                - generic [ref=e680]:
+                  - heading "Overwhelmed by wellness advice?" [level=4]
+                  - paragraph: Recipes, movement, and rituals that match your energy, your day, and your goal.
+                  - link "Start Your 7 Day Free Trial" [ref=e681] [cursor=pointer]:
+                    - /url: /membership/
+                    - button "Start Your 7 Day Free Trial" [ref=e682]
+                  - generic:
+                    - generic [ref=e683]:
+                      - img [ref=e684]
+                      - paragraph [ref=e688]: 1.8 Million
+                      - generic [ref=e689]: downloads
+                    - generic [ref=e690]:
+                      - img [ref=e692]
+                      - generic [ref=e694]: 4.9 stars
+                      - generic [ref=e695]: 16.7K reviews
+                - generic [ref=e696]:
+                  - generic [ref=e697]:
+                    - img [ref=e698]
+                    - img [ref=e700]
+                    - img [ref=e702]
+                    - img [ref=e704]
+                    - img [ref=e706]
+                  - generic [ref=e708]: “Delete your other apps, this one has it all”
+                  - generic [ref=e709]: – Christina S
+            - button "Kids":
+              - generic [ref=e710] [cursor=pointer]: Kids
+              - img
+            - generic:
+              - generic [ref=e712]:
+                - generic [ref=e713]:
+                  - button [ref=e714] [cursor=pointer]:
+                    - img [ref=e715]
+                  - heading "Kids" [level=4] [ref=e717]
+                - button [ref=e718] [cursor=pointer]:
+                  - img [ref=e719]
+              - generic [ref=e721]:
+                - button "view Kids":
+                  - paragraph [ref=e724] [cursor=pointer]: view Kids
+                  - img
+                - separator [ref=e726]
+              - generic [ref=e727]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "recipes":
+                        - paragraph [ref=e728] [cursor=pointer]: recipes
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "wellness":
+                        - paragraph [ref=e730] [cursor=pointer]: wellness
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "shop":
+                        - paragraph [ref=e732] [cursor=pointer]: shop
+                        - img
+              - generic [ref=e734]:
+                - generic: Featured Contents of the Day
+                - generic:
+                  - generic [ref=e737]:
+                    - generic [ref=e738]:
+                      - generic [ref=e740]: Save 25%!
+                      - link "Ultimate Deliciously Ella Kids Bundle":
+                        - /url: /products/ultimate-deliciously-ella-kids-bundle/
+                        - img "Ultimate Deliciously Ella Kids Bundle" [ref=e741] [cursor=pointer]
+                    - generic [ref=e742]:
+                      - generic [ref=e745]: Merch
+                      - generic [ref=e746]:
+                        - heading "Ultimate Deliciously Ella Kids Bundle" [level=5] [ref=e747]:
+                          - link "Ultimate Deliciously Ella Kids Bundle" [ref=e748] [cursor=pointer]:
+                            - /url: /products/ultimate-deliciously-ella-kids-bundle/
+                            - generic [ref=e749]: Ultimate Deliciously Ella Kids Bundle
+                        - generic [ref=e750]:
+                          - generic [ref=e751]: £26.25
+                          - generic [ref=e752]: £35.00
+                      - button "Quick Add To Bag" [ref=e755] [cursor=pointer]
+                  - generic [ref=e758]:
+                    - generic [ref=e759]:
+                      - generic [ref=e761]: Save 25%!
+                      - link "Kids 'More Plants' Cosy Cotton Socks":
+                        - /url: /products/kids-more-plants-cosy-cotton-socks/
+                        - img "Kids 'More Plants' Cosy Cotton Socks" [ref=e762] [cursor=pointer]
+                    - generic [ref=e763]:
+                      - generic [ref=e766]: Merch
+                      - generic [ref=e767]:
+                        - heading "Kids 'More Plants' Cosy Cotton Socks" [level=5] [ref=e768]:
+                          - link "Kids 'More Plants' Cosy Cotton Socks" [ref=e769] [cursor=pointer]:
+                            - /url: /products/kids-more-plants-cosy-cotton-socks/
+                            - generic [ref=e770]: Kids 'More Plants' Cosy Cotton Socks
+                        - generic [ref=e771]:
+                          - generic [ref=e772]: £7.50
+                          - generic [ref=e773]: £10.00
+                      - button "Quick Add To Bag" [ref=e776] [cursor=pointer]
+            - button "blog":
+              - generic [ref=e777] [cursor=pointer]: blog
+              - img
+            - generic:
+              - generic [ref=e779]:
+                - generic [ref=e780]:
+                  - button [ref=e781] [cursor=pointer]:
+                    - img [ref=e782]
+                  - heading "blog" [level=4] [ref=e784]
+                - button [ref=e785] [cursor=pointer]:
+                  - img [ref=e786]
+              - generic [ref=e788]:
+                - button "view blog":
+                  - paragraph [ref=e791] [cursor=pointer]: view blog
+                  - img
+                - separator [ref=e793]
+              - generic [ref=e794]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - button "selections":
+                        - paragraph [ref=e795] [cursor=pointer]: selections
+                        - img
+                  - separator
+                  - generic:
+                    - generic:
+                      - button "categories":
+                        - paragraph [ref=e797] [cursor=pointer]: categories
+                        - img
+            - link "Membership":
+              - /url: /membership/
+              - generic [ref=e799] [cursor=pointer]: Membership
+            - link "Our Story":
+              - /url: /our-story/
+              - generic [ref=e800] [cursor=pointer]: Our Story
+          - separator
+          - generic [ref=e801]:
+            - button "My Hub" [ref=e805] [cursor=pointer]:
+              - generic [ref=e807]:
+                - img [ref=e809]
+                - paragraph [ref=e811]: My Hub
+              - img [ref=e812]
+            - link "log in" [ref=e815] [cursor=pointer]:
+              - /url: /login/
+              - img [ref=e817]
+              - paragraph [ref=e819]: log in
+          - generic:
+            - generic [ref=e820]:
+              - heading "Overwhelmed by wellness advice?" [level=4]
+              - paragraph: Recipes, movement, and rituals that match your energy, your day, and your goal.
+              - link "Start Your 7 Day Free Trial" [ref=e821] [cursor=pointer]:
+                - /url: /membership/
+                - button "Start Your 7 Day Free Trial" [ref=e822]
+              - generic:
+                - generic [ref=e823]:
+                  - img [ref=e824]
+                  - paragraph [ref=e828]: 1.8 Million
+                  - generic [ref=e829]: downloads
+                - generic [ref=e830]:
+                  - img [ref=e832]
+                  - generic [ref=e834]: 4.9 stars
+                  - generic [ref=e835]: 16.7K reviews
+            - generic [ref=e836]:
+              - generic [ref=e837]:
+                - img [ref=e838]
+                - img [ref=e840]
+                - img [ref=e842]
+                - img [ref=e844]
+                - img [ref=e846]
+              - generic [ref=e848]: “Delete your other apps, this one has it all”
+              - generic [ref=e849]: – Christina S
+        - generic [ref=e851]:
+          - link "recipes" [ref=e852] [cursor=pointer]:
+            - /url: /category/recipes/
+            - paragraph [ref=e853]: recipes
+          - img [ref=e854] [cursor=pointer]
+        - generic [ref=e857]:
+          - link "wellness" [ref=e858] [cursor=pointer]:
+            - /url: /category/wellness/
+            - paragraph [ref=e859]: wellness
+          - img [ref=e860] [cursor=pointer]
+        - generic [ref=e863]:
+          - link "Shop" [ref=e864] [cursor=pointer]:
+            - /url: /collections/shop-all/
+            - paragraph [ref=e865]: Shop
+          - img [ref=e866] [cursor=pointer]
+        - generic [ref=e869]:
+          - link "kids" [ref=e870] [cursor=pointer]:
+            - /url: /kids/
+            - paragraph [ref=e871]: kids
+          - img [ref=e872] [cursor=pointer]
+        - link "membership" [ref=e875] [cursor=pointer]:
+          - /url: /membership/
+          - paragraph [ref=e876]: membership
+        - generic [ref=e878]:
+          - link "blog" [ref=e879] [cursor=pointer]:
+            - /url: /category/blog/
+            - paragraph [ref=e880]: blog
+          - img [ref=e881] [cursor=pointer]
+        - link "our story" [ref=e884] [cursor=pointer]:
+          - /url: /our-story/
+          - paragraph [ref=e885]: our story
+      - generic [ref=e886]:
+        - generic [ref=e887]:
+          - generic [ref=e888] [cursor=pointer]:
+            - img [ref=e890]
+            - paragraph [ref=e892]: my hub
+          - img [ref=e893] [cursor=pointer]
+        - link "log in" [ref=e896] [cursor=pointer]:
+          - /url: /login/
+          - img [ref=e898]
+          - paragraph [ref=e900]: log in
+        - generic [ref=e902] [cursor=pointer]:
+          - img [ref=e904]
+          - paragraph [ref=e906]: bag
+  - main [ref=e907]:
+    - generic [ref=e908]:
+      - generic [ref=e910]:
+        - generic [ref=e911]:
+          - navigation [ref=e912]:
+            - link "Recipes" [ref=e913] [cursor=pointer]:
+              - /url: /category/recipes/
+            - text: /
+            - link "Sweets" [ref=e914] [cursor=pointer]:
+              - /url: /collection/recipes/all-sweets/
+            - text: /
+          - generic [ref=e915]:
+            - button "Print this recipe" [ref=e916] [cursor=pointer]:
+              - img [ref=e917]
+              - generic [ref=e920]: Print this recipe
+            - button "Share this recipe" [ref=e921] [cursor=pointer]:
+              - img [ref=e922]
+              - generic [ref=e926]: Share this recipe
+            - button [ref=e927] [cursor=pointer]:
+              - img [ref=e928]
+        - generic [ref=e931]:
+          - generic [ref=e932]: Sweets
+          - heading "Chocolate & Tahini Sesame Bites" [level=1] [ref=e933]
+          - generic [ref=e934]: 29 September 2024
+          - generic [ref=e935]:
+            - generic [ref=e936]:
+              - img [ref=e937]
+              - img [ref=e939]
+              - img [ref=e941]
+              - img [ref=e943]
+              - img [ref=e945]
+            - generic [ref=e947]: (33)
+            - link "Rate Recipe" [ref=e948] [cursor=pointer]:
+              - /url: "#rate"
+          - generic [ref=e949]:
+            - generic [ref=e950]:
+              - text: Total Time
+              - text: 20 Mins
+            - generic [ref=e952]:
+              - text: Serves
+              - text: "10"
+        - generic [ref=e955]:
+          - button "Add to Meal Planner" [ref=e956] [cursor=pointer]:
+            - img [ref=e957]
+            - text: Add to Meal Planner
+          - button "Add to Tracker" [ref=e961] [cursor=pointer]:
+            - img [ref=e962]
+            - text: Add to Tracker
+          - button "Gift this recipe" [ref=e965] [cursor=pointer]:
+            - img [ref=e966]
+            - text: Gift this recipe
+      - heading "These moreish chocolate and tahini sesame bites are the perfect post-lunch, or post-dinner, hit of chocolate. They’re just the right balance of smooth, rich, sweet and crunchy, and packed with a delicious mix of toasted nuts and seeds." [level=4] [ref=e972]
+      - generic [ref=e973]:
+        - generic [ref=e974]:
+          - generic [ref=e975]:
+            - heading "Ingredients:" [level=3] [ref=e976]
+            - generic [ref=e977]:
+              - link "Become a Member" [ref=e978] [cursor=pointer]:
+                - /url: /membership/
+              - text: to see this content
+          - generic [ref=e979]:
+            - heading "Method:" [level=3] [ref=e980]
+            - generic [ref=e981]:
+              - link "Become a Member" [ref=e982] [cursor=pointer]:
+                - /url: /membership/
+              - text: to see this content
+        - generic [ref=e983]:
+          - heading "Ella’s Tips" [level=3] [ref=e984]
+          - heading "For a fruity note, try adding a handful of dried sour cherries or flame raisins." [level=4] [ref=e985]
+        - separator [ref=e986]
+        - generic [ref=e987]:
+          - heading "How would you rate this recipe?" [level=4] [ref=e988]
+          - generic [ref=e989]:
+            - button [ref=e990] [cursor=pointer]:
+              - img [ref=e991]
+            - button [ref=e993] [cursor=pointer]:
+              - img [ref=e994]
+            - button [ref=e996] [cursor=pointer]:
+              - img [ref=e997]
+            - button [ref=e999] [cursor=pointer]:
+              - img [ref=e1000]
+            - button [ref=e1002] [cursor=pointer]:
+              - img [ref=e1003]
+          - button "Submit Rating" [disabled]
+      - generic [ref=e1006]:
+        - heading "More recipes" [level=5] [ref=e1007]
+        - link "BREAKFAST" [ref=e1009] [cursor=pointer]:
+          - /url: /collection/recipes/all-breakfast/
+        - link "BRUNCH" [ref=e1011] [cursor=pointer]:
+          - /url: /collection/recipes/brunch/
+        - link "DINNER" [ref=e1013] [cursor=pointer]:
+          - /url: /collection/recipes/all-mains/
+        - link "SWEETS" [ref=e1015] [cursor=pointer]:
+          - /url: /collection/recipes/all-sweets/
+        - link "DRINKS" [ref=e1017] [cursor=pointer]:
+          - /url: /collection/recipes/all-drinks/
+        - link "ELLA'S PICKS" [ref=e1019] [cursor=pointer]:
+          - /url: /collection/recipes/ella's-picks/
+        - link "SMOOTHIES & JUICES" [ref=e1021] [cursor=pointer]:
+          - /url: /collection/recipes/smoothies-&-juices/
+      - generic [ref=e1023]:
+        - generic [ref=e1024]:
+          - heading "Love this? Try these..." [level=3] [ref=e1026]
+          - generic [ref=e1027]:
+            - button [disabled]:
+              - img
+            - button [ref=e1028] [cursor=pointer]:
+              - img [ref=e1029]
+        - generic [ref=e1031]:
+          - generic [ref=e1033]:
+            - generic [ref=e1034]:
+              - img "4-Ingredient Peanut Butter Bites" [ref=e1035]
+              - generic [ref=e1036]:
+                - img [ref=e1038]
+                - text: Member Recipe
+            - generic [ref=e1041]:
+              - generic [ref=e1042]:
+                - generic [ref=e1044]:
+                  - paragraph [ref=e1045]: Sweets
+                  - generic [ref=e1046]:
+                    - img [ref=e1047]
+                    - generic [ref=e1049]: "4.9"
+                - button [ref=e1050] [cursor=pointer]:
+                  - img [ref=e1051]
+              - generic [ref=e1055]: 4-Ingredient Peanut Butter Bites
+              - generic [ref=e1056]:
+                - img [ref=e1058]
+                - text: Ready in 15 mins
+          - generic [ref=e1061]:
+            - generic [ref=e1062]:
+              - img "Gooey Peanut Butter Cookie Dough Bites" [ref=e1063]
+              - generic [ref=e1064]:
+                - img [ref=e1066]
+                - text: Member Recipe
+            - generic [ref=e1069]:
+              - generic [ref=e1070]:
+                - generic [ref=e1072]:
+                  - paragraph [ref=e1073]: Sweets
+                  - generic [ref=e1074]:
+                    - img [ref=e1075]
+                    - generic [ref=e1077]: "4.3"
+                - button [ref=e1078] [cursor=pointer]:
+                  - img [ref=e1079]
+              - generic [ref=e1083]: Gooey Peanut Butter Cookie Dough Bites
+              - generic [ref=e1084]:
+                - img [ref=e1086]
+                - text: Ready in 140 mins
+          - generic [ref=e1089]:
+            - generic [ref=e1090]:
+              - img "Chocolate Fruit & Nut Bites" [ref=e1091]
+              - generic [ref=e1092]:
+                - img [ref=e1094]
+                - text: Member Recipe
+            - generic [ref=e1097]:
+              - generic [ref=e1098]:
+                - generic [ref=e1100]:
+                  - paragraph [ref=e1101]: Sweets
+                  - generic [ref=e1102]:
+                    - img [ref=e1103]
+                    - generic [ref=e1105]: "5.0"
+                - button [ref=e1106] [cursor=pointer]:
+                  - img [ref=e1107]
+              - generic [ref=e1111]: Chocolate Fruit & Nut Bites
+              - generic [ref=e1112]:
+                - img [ref=e1114]
+                - text: Ready in 135 mins
+          - generic [ref=e1117]:
+            - generic [ref=e1118]:
+              - img "Rocky Road" [ref=e1119]
+              - generic [ref=e1120]:
+                - img [ref=e1122]
+                - text: Member Recipe
+            - generic [ref=e1125]:
+              - generic [ref=e1126]:
+                - generic [ref=e1128]:
+                  - paragraph [ref=e1129]: Sweets
+                  - generic [ref=e1130]:
+                    - img [ref=e1131]
+                    - generic [ref=e1133]: "5.0"
+                - button [ref=e1134] [cursor=pointer]:
+                  - img [ref=e1135]
+              - generic [ref=e1139]: Rocky Road
+              - generic [ref=e1140]:
+                - img [ref=e1142]
+                - text: Ready in 80 mins
+      - generic [ref=e1145]:
+        - heading "Unlock thousands of delicious plant-based recipes" [level=2] [ref=e1146]
+        - heading "Become a Deliciously Ella member today" [level=4] [ref=e1147]
+        - link "Join Now" [ref=e1148] [cursor=pointer]:
+          - /url: /membership/
+          - button "Join Now" [ref=e1149]
+        - link "Learn more about membership" [ref=e1151] [cursor=pointer]:
+          - /url: /membership/
+  - contentinfo [ref=e1152]:
+    - generic [ref=e1153]:
+      - generic [ref=e1154]:
+        - generic [ref=e1155]:
+          - generic [ref=e1156]:
+            - heading "Subscribe to our newsletter" [level=3] [ref=e1157]
+            - paragraph [ref=e1158]: Simple tools for a healthier life delivered straight to your inbox every week.
+            - generic [ref=e1159]:
+              - generic [ref=e1160]:
+                - textbox "Enter email address" [ref=e1161]
+                - button "Sign Up" [ref=e1162] [cursor=pointer]
+              - paragraph [ref=e1164]:
+                - text: By signing up, you agree to receive emails from Deliciously Ella, part of Hero UK Foods Ltd, and accept their
+                - link "Web Terms of Use" [ref=e1165] [cursor=pointer]:
+                  - /url: /legal/
+                - text: and
+                - link "privacy and cookie policy" [ref=e1166] [cursor=pointer]:
+                  - /url: /legal/privacy-policy/
+                - text: .
+          - generic [ref=e1168]:
+            - link [ref=e1169] [cursor=pointer]:
+              - /url: https://www.instagram.com/deliciouslyella/
+              - img [ref=e1170]
+            - link [ref=e1172] [cursor=pointer]:
+              - /url: https://www.facebook.com/Deliciouslyella/
+              - img [ref=e1173]
+            - link [ref=e1175] [cursor=pointer]:
+              - /url: https://twitter.com/DeliciouslyElla
+              - img [ref=e1176]
+            - link [ref=e1178] [cursor=pointer]:
+              - /url: https://www.pinterest.co.uk/deliciouslyella/
+              - img [ref=e1179]
+            - link [ref=e1181] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCfJCAQHe4QIauovILB5oekA
+              - img [ref=e1182]
+        - generic [ref=e1185]:
+          - generic [ref=e1186]:
+            - heading "Explore" [level=5] [ref=e1187]
+            - generic [ref=e1188]:
+              - link "Recipes" [ref=e1189] [cursor=pointer]:
+                - /url: /category/recipes/
+              - link "Wellness" [ref=e1190] [cursor=pointer]:
+                - /url: /category/wellness/
+              - link "Shop" [ref=e1191] [cursor=pointer]:
+                - /url: /collections/shop-all/
+              - link "Blog" [ref=e1192] [cursor=pointer]:
+                - /url: /category/blog/
+              - link "Our Story" [ref=e1193] [cursor=pointer]:
+                - /url: /our-story/
+              - link "Mobile App" [ref=e1194] [cursor=pointer]:
+                - /url: /membership/#app
+          - generic [ref=e1195]:
+            - heading "Company" [level=5] [ref=e1196]
+            - generic [ref=e1197]:
+              - link "Membership" [ref=e1198] [cursor=pointer]:
+                - /url: /membership/
+              - link "Teams" [ref=e1199] [cursor=pointer]:
+                - /url: /teams/
+              - link "Careers" [ref=e1200] [cursor=pointer]:
+                - /url: https://deliciously-ella.jobs.personio.com/
+          - generic [ref=e1201]:
+            - heading "Customer Service" [level=5] [ref=e1202]
+            - generic [ref=e1203]:
+              - link "Contact Us" [ref=e1204] [cursor=pointer]:
+                - /url: /contact-us/
+              - link "Log in" [ref=e1205] [cursor=pointer]:
+                - /url: /login/
+              - link "Subscription Terms" [ref=e1206] [cursor=pointer]:
+                - /url: /legal/
+              - link "FAQs" [ref=e1207] [cursor=pointer]:
+                - /url: https://deliciouslyella.gorgias.help
+      - generic [ref=e1209]:
+        - generic [ref=e1210]:
+          - paragraph [ref=e1211]: © The Hero UK Ltd. All rights reserved.
+          - generic [ref=e1212]:
+            - link "Privacy & Cookie Policy" [ref=e1213] [cursor=pointer]:
+              - /url: /legal/privacy-policy
+            - link "Terms & Conditions" [ref=e1214] [cursor=pointer]:
+              - /url: /legal
+        - generic [ref=e1215]:
+          - paragraph [ref=e1216]: Registered in England & Wales. Company number 09680718. Registered office 250 Tottenham Court Road, London.
+          - paragraph [ref=e1217]: "Deliciously Ella US Inc. Registered in Delaware. File number 7504349. Vat number: GB580157934. Address: The Green House, 120–122 Commercial Road, Bournemouth, Dorset, BH2 5LT"
+  - text: ;
+  - region "Cookie banner" [active] [ref=e1218]:
+    - dialog "Privacy" [ref=e1219]:
+      - generic [ref=e1221]:
+        - generic [ref=e1224]:
+          - text: These aren’t the delicious plant-based cookies we love, but the type of cookies that make our website work the best for you. By clicking ‘accept all’ you agree to these cookies being stored on your device.
+          - link "More information about your privacy, opens in a new tab" [ref=e1225] [cursor=pointer]:
+            - /url: https://www.deliciouslyella.com/legal/privacy-policy/
+            - text: More Information
+        - generic [ref=e1227]:
+          - button "Cookies Settings" [ref=e1228] [cursor=pointer]
+          - button "Accept All Cookies" [ref=e1229] [cursor=pointer]

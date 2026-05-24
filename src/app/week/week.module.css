@@ -446,6 +446,16 @@ tr:last-child .cell {
   min-width: 0;
 }
 
+.inlineLink {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: inherit;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}
+
 .mealLink {
   flex-shrink: 0;
   display: flex;

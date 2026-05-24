@@ -78,8 +78,8 @@ const SECTION_ROWS: { section: string; rows: { field: Field; label: string; plac
   {
     section: "Meals",
     rows: [
-      { field: "lunch", label: "Lunch", placeholder: "Lunch… (type /recipe to search)" },
-      { field: "dinner", label: "Dinner", placeholder: "Dinner… (type /recipe to search)" },
+      { field: "lunch", label: "Lunch", placeholder: "Lunch… (type / to search recipes)" },
+      { field: "dinner", label: "Dinner", placeholder: "Dinner… (type / to search recipes)" },
     ],
   },
 ]
@@ -176,6 +176,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
   const [mobileDayDetail, setMobileDayDetail] = useState<string | null>(null)
   const [mobilePillDetail, setMobilePillDetail] = useState<string | null>(null)
 
+  const linkifyText = (text: string) =>
+    text.replace(/(?<!\]\()https?:\/\/[^\s)\]>]+/g, (url) => {
+      try { return `[${new URL(url).hostname.replace(/^www\./, "")}](${url})` } catch { return url }
+    })
+
   const pillComponents = {
     li: ({ children, ...props }: React.ComponentPropsWithoutRef<"li">) => {
       const text = typeof children === "string" ? children : Array.isArray(children) ? children.map((c) => (typeof c === "string" ? c : "")).join("") : ""
@@ -190,6 +195,17 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
         </li>
       )
     },
+    a: ({ href, children }: React.ComponentPropsWithoutRef<"a">) => (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={styles.inlineLink}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </a>
+    ),
   }
 
   const todayDateStr = (() => {
@@ -464,9 +480,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           disabled={isDisabled}
                           onChange={(e) => {
                             const v = e.target.value
-                            // Enter recipe search mode when /recipe is typed in meal fields
-                            if (isMealField && v.trimEnd().endsWith("/recipe")) {
-                              const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
+                            if (isMealField && v.trimEnd().endsWith("/")) {
+                              const textBeforeCommand = v.trimEnd().slice(0, -1)
                               setFocusedKey(null)
                               setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
                               return
@@ -489,7 +504,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                                 components={{
                                   ...pillComponents,
                                 }}
-                              >{value}</ReactMarkdown>
+                              >{linkifyText(value)}</ReactMarkdown>
                               {linkedMealId && (
                                 <a
                                   href={`/meals/${linkedMealId}`}
@@ -690,7 +705,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           >
                             {value ? (
                               <>
-                                <ReactMarkdown components={{ ...pillComponents }}>{value}</ReactMarkdown>
+                                <ReactMarkdown components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
                                 {linkedMealId && (
                                   <a
                                     href={`/meals/${linkedMealId}`}
@@ -879,8 +894,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           disabled={isDisabled}
                           onChange={(e) => {
                             const v = e.target.value
-                            if (isMealField && v.trimEnd().endsWith("/recipe")) {
-                              const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
+                            if (isMealField && v.trimEnd().endsWith("/")) {
+                              const textBeforeCommand = v.trimEnd().slice(0, -1)
                               setFocusedKey(null)
                               setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
                               return
@@ -892,12 +907,14 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           ref={(el) => { if (el) autoResize(el) }}
                         />
                       ) : (
-                        <span
+                        <div
                           className={styles.mobileWeekTableCellText}
                           onClick={() => { if (!isDisabled) setFocusedKey(key) }}
                         >
-                          {value || <span style={{ opacity: 0.3 }}>–</span>}
-                        </span>
+                          {value
+                            ? <ReactMarkdown components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
+                            : <span style={{ opacity: 0.3 }}>–</span>}
+                        </div>
                       )}
                     </div>
                   )

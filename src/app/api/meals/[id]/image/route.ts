@@ -49,7 +49,7 @@ export async function POST(request: Request, { params }: Params) {
     if (existsSync(oldPath)) await unlink(oldPath).catch(() => {})
   }
 
-  const filename = `${id}.${ext}`
+  const filename = `${id}-${Date.now()}.${ext}`
   const filepath = path.join(UPLOAD_DIR, filename)
   const buffer = Buffer.from(await file.arrayBuffer())
   await writeFile(filepath, buffer)

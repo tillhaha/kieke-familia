@@ -760,6 +760,12 @@
 
 .imageActionBtn:hover { background: rgba(0, 0, 0, 0.75); }
 
+.imageError {
+  font-size: 0.8rem;
+  color: var(--error, #e53e3e);
+  margin: 0.25rem 0 0;
+}
+
 .imagePlaceholder {
   display: flex;
   flex-direction: column;

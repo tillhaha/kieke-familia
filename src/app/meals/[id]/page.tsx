@@ -64,6 +64,7 @@ export default function MealDetailPage() {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [imageUploading, setImageUploading] = useState(false)
+  const [imageError, setImageError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -207,12 +208,16 @@ export default function MealDetailPage() {
     const file = e.target.files?.[0]
     if (!file) return
     setImageUploading(true)
+    setImageError(null)
     const form = new FormData()
     form.append("image", file)
     try {
       const res = await fetch(`/api/meals/${id}/image`, { method: "POST", body: form })
       const data = await res.json()
       if (res.ok) setMeal(data.meal)
+      else setImageError(data.error ?? "Upload failed")
+    } catch {
+      setImageError("Upload failed")
     } finally {
       setImageUploading(false)
       e.target.value = ""
@@ -270,7 +275,7 @@ export default function MealDetailPage() {
         {meal.imageUrl ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={meal.imageUrl} alt={meal.name} className={styles.recipeImage} />
+            <img key={meal.imageUrl} src={meal.imageUrl} alt={meal.name} className={styles.recipeImage} />
             <div className={styles.imageActions}>
               <button className={styles.imageActionBtn} onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
                 <Pencil size={11} /> {t.meals.change}
@@ -287,6 +292,7 @@ export default function MealDetailPage() {
           </div>
         )}
       </div>
+      {imageError && <p className={styles.imageError}>{imageError}</p>}
 
       <div className={styles.metaRow}>
         <div className={styles.metaField}>

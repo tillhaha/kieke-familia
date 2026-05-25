@@ -318,59 +318,83 @@ export default function MealDetailPage() {
       {imageError && <p className={styles.imageError}>{imageError}</p>}
 
       <div className={styles.metaRow}>
+        {/* Meal type */}
         <div className={styles.metaField}>
           <span className={styles.metaLabel}>{t.meals.typeLabel}</span>
-          <select
-            className={styles.typeSelect}
-            value={mealType}
-            onChange={(e) => handleMealTypeChange(e.target.value as MealType | "")}
-          >
-            <option value="" disabled> </option>
-            <option value="Meal">{t.meals.typeMeal}</option>
-            <option value="Snack">{t.meals.typeSnack}</option>
-            <option value="Drink">{t.meals.typeDrink}</option>
-            <option value="Baked">{t.meals.typeBaked}</option>
-          </select>
+          {isOwner ? (
+            <select
+              className={styles.typeSelect}
+              value={mealType}
+              onChange={(e) => handleMealTypeChange(e.target.value as MealType | "")}
+            >
+              <option value="" disabled> </option>
+              <option value="Meal">{t.meals.typeMeal}</option>
+              <option value="Snack">{t.meals.typeSnack}</option>
+              <option value="Drink">{t.meals.typeDrink}</option>
+              <option value="Baked">{t.meals.typeBaked}</option>
+            </select>
+          ) : (
+            <span className={styles.typeSelect}>{mealType}</span>
+          )}
         </div>
 
+        {/* Diet */}
         <div className={styles.metaField}>
           <span className={styles.metaLabel}>{t.meals.dietLabel}</span>
-          <select
-            className={styles.typeSelect}
-            value={diet}
-            onChange={(e) => handleDietChange(e.target.value as Diet)}
-          >
-            <option value="Meat">{t.meals.dietMeat}</option>
-            <option value="Fish">{t.meals.dietFish}</option>
-            <option value="Vegetarian">{t.meals.dietVegetarian}</option>
-          </select>
+          {isOwner ? (
+            <select
+              className={styles.typeSelect}
+              value={diet}
+              onChange={(e) => handleDietChange(e.target.value as Diet)}
+            >
+              <option value="Meat">{t.meals.dietMeat}</option>
+              <option value="Fish">{t.meals.dietFish}</option>
+              <option value="Vegetarian">{t.meals.dietVegetarian}</option>
+            </select>
+          ) : (
+            <span className={styles.typeSelect}>{diet}</span>
+          )}
         </div>
 
         <div className={styles.metaField}>
           <span className={styles.metaLabel}>{t.meals.servingsLabel}</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            className={styles.servingsInput}
-            value={servings}
-            onChange={(e) => setServings(e.target.value)}
-            onBlur={handleServingsBlur}
-          />
+          {isOwner ? (
+            <input
+              type="text"
+              inputMode="numeric"
+              className={styles.servingsInput}
+              value={servings}
+              onChange={(e) => setServings(e.target.value)}
+              onBlur={handleServingsBlur}
+            />
+          ) : (
+            <span className={styles.servingsInput}>{servings}</span>
+          )}
         </div>
 
         <label className={styles.toggle}>
-          <input type="checkbox" checked={officeFriendly} onChange={(e) => handleToggle("officeFriendly", e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={officeFriendly}
+            onChange={(e) => handleToggle("officeFriendly", e.target.checked)}
+            disabled={!isOwner}
+          />
           <span>{t.meals.officeLabel}</span>
         </label>
         <label className={styles.toggle}>
-          <input type="checkbox" checked={thirtyMinute} onChange={(e) => handleToggle("thirtyMinute", e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={thirtyMinute}
+            onChange={(e) => handleToggle("thirtyMinute", e.target.checked)}
+            disabled={!isOwner}
+          />
           <span>{t.meals.quickLabel}</span>
         </label>
       </div>
 
       <div className={styles.fieldSection}>
         <span className={styles.fieldLabel}>{t.meals.notesLabel}</span>
-        {editingField === "notes" ? (
+        {isOwner && editingField === "notes" ? (
           <textarea
             autoFocus
             className={styles.fieldTextarea}
@@ -380,7 +404,10 @@ export default function MealDetailPage() {
             ref={(el) => { if (el) autoResize(el) }}
           />
         ) : (
-          <div className={styles.editableField} onClick={() => setEditingField("notes")}>
+          <div
+            className={styles.editableField}
+            onClick={isOwner ? () => setEditingField("notes") : undefined}
+          >
             {draftNotes
               ? <div className={styles.markdown}><ReactMarkdown>{draftNotes}</ReactMarkdown></div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.notesEmptyPrompt}</span>
@@ -391,7 +418,7 @@ export default function MealDetailPage() {
 
       <div className={styles.fieldSection}>
         <span className={styles.fieldLabel}>{t.meals.sourceLabel}</span>
-        {editingField === "source" ? (
+        {isOwner && editingField === "source" ? (
           <input
             autoFocus
             className={styles.sourceInput}
@@ -402,7 +429,10 @@ export default function MealDetailPage() {
             placeholder={t.meals.sourcePlaceholder}
           />
         ) : (
-          <div className={styles.editableField} onClick={() => setEditingField("source")}>
+          <div
+            className={styles.editableField}
+            onClick={isOwner ? () => setEditingField("source") : undefined}
+          >
             {draftSource
               ? isUrl(draftSource)
                 ? <a href={draftSource} target="_blank" rel="noopener noreferrer" className={styles.sourceLink} onClick={(e) => e.stopPropagation()}>{draftSource}</a>
@@ -415,7 +445,7 @@ export default function MealDetailPage() {
 
       <div className={styles.fieldSection}>
         <span className={styles.fieldLabel}>{t.meals.ingredientsLabel}</span>
-        {editingField === "ingredients" ? (
+        {isOwner && editingField === "ingredients" ? (
           <textarea
             autoFocus
             className={styles.fieldTextarea}
@@ -426,7 +456,10 @@ export default function MealDetailPage() {
             ref={(el) => { if (el) autoResize(el) }}
           />
         ) : (
-          <div className={styles.editableField} onClick={() => setEditingField("ingredients")}>
+          <div
+            className={styles.editableField}
+            onClick={isOwner ? () => setEditingField("ingredients") : undefined}
+          >
             {meal.ingredients.length > 0
               ? <div className={styles.ingredientsList}>
                   {meal.ingredients.map((item, i) => (
@@ -442,7 +475,7 @@ export default function MealDetailPage() {
       <div className={styles.fieldSection}>
         <div className={styles.fieldLabelRow}>
           <span className={styles.fieldLabel}>{t.meals.preparationSteps}</span>
-          {meal.steps.length > 0 && (
+          {isOwner && meal.steps.length > 0 && (
             <button
               type="button"
               className={styles.fieldWandBtn}
@@ -454,7 +487,7 @@ export default function MealDetailPage() {
             </button>
           )}
         </div>
-        {editingField === "steps" ? (
+        {isOwner && editingField === "steps" ? (
           <textarea
             autoFocus
             className={styles.fieldTextarea}
@@ -465,7 +498,10 @@ export default function MealDetailPage() {
             ref={(el) => { if (el) autoResize(el) }}
           />
         ) : (
-          <div className={styles.editableField} onClick={() => setEditingField("steps")}>
+          <div
+            className={styles.editableField}
+            onClick={isOwner ? () => setEditingField("steps") : undefined}
+          >
             {meal.steps.length > 0
               ? <div className={styles.markdown}><ReactMarkdown>{meal.steps.join("\n\n")}</ReactMarkdown></div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.stepsEmptyPrompt}</span>

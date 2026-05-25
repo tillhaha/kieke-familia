@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import { ChevronLeft, ImagePlus, Pencil, Star, Trash2, Wand2 } from "lucide-react"
@@ -14,6 +15,7 @@ type Diet = "Vegetarian" | "Meat" | "Fish"
 
 type Meal = {
   id: string
+  familyId: string
   name: string
   mealType: MealType
   diet: Diet
@@ -66,6 +68,13 @@ export default function MealDetailPage() {
   const [imageUploading, setImageUploading] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const { data: session, status } = useSession()
+  const isOwner = status === "authenticated" && (session?.user as any)?.familyId === meal?.familyId
+
+  useEffect(() => {
+    if (!isOwner) setConfirmDelete(false)
+  }, [isOwner])
 
   useEffect(() => {
     fetch(`/api/meals/${id}`)

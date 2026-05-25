@@ -4,7 +4,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
-import { Plus, Search, Star } from "lucide-react"
+import { CheckSquare, Layers, Plus, Search, Square, Star } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
@@ -17,6 +17,19 @@ type MealSummary = {
   officeFriendly: boolean
   thirtyMinute: boolean
   favorite: boolean
+}
+
+type BulkEdits = {
+  mealType?: "Meal" | "Snack" | "Drink" | "Baked"
+  diet?: "Vegetarian" | "Fish" | "Meat"
+  officeFriendly?: boolean
+  thirtyMinute?: boolean
+}
+
+function cycleBool(v: boolean | undefined): boolean | undefined {
+  if (v === undefined) return true
+  if (v === true) return false
+  return undefined
 }
 
 export default function MealsPage() {
@@ -33,6 +46,12 @@ export default function MealsPage() {
   const [filterFavorite, setFilterFavorite] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
+
+  // Multi-select
+  const [selectMode, setSelectMode] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkEdits, setBulkEdits] = useState<BulkEdits>({})
+  const [applying, setApplying] = useState(false)
 
   const fetchMeals = useCallback((q: string) => {
     const params = new URLSearchParams()
@@ -86,13 +105,68 @@ export default function MealsPage() {
 
   const hasFilters = query || filterMealType || filterDiet || filterOffice || filterThirty || filterFavorite
 
+  // Multi-select helpers
+  const toggleSelect = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const exitSelectMode = () => {
+    setSelectMode(false)
+    setSelected(new Set())
+    setBulkEdits({})
+  }
+
+  const hasEdits = Object.values(bulkEdits).some((v) => v !== undefined)
+
+  const applyBulkEdits = async () => {
+    if (selected.size === 0 || !hasEdits || applying) return
+    const body: Record<string, unknown> = { ids: Array.from(selected) }
+    if (bulkEdits.mealType !== undefined) body.mealType = bulkEdits.mealType
+    if (bulkEdits.diet !== undefined) body.diet = bulkEdits.diet
+    if (bulkEdits.officeFriendly !== undefined) body.officeFriendly = bulkEdits.officeFriendly
+    if (bulkEdits.thirtyMinute !== undefined) body.thirtyMinute = bulkEdits.thirtyMinute
+
+    setApplying(true)
+    try {
+      const res = await fetch("/api/meals/bulk", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) throw new Error()
+      exitSelectMode()
+      setLoading(true)
+      fetchMeals(query).finally(() => setLoading(false))
+    } catch { /* silently ignore */ }
+    finally { setApplying(false) }
+  }
+
+  const setBulkMealType = (v: "Meal" | "Snack" | "Drink" | "Baked") =>
+    setBulkEdits((prev) => ({ ...prev, mealType: prev.mealType === v ? undefined : v }))
+
+  const setBulkDiet = (v: "Vegetarian" | "Fish" | "Meat") =>
+    setBulkEdits((prev) => ({ ...prev, diet: prev.diet === v ? undefined : v }))
+
   if (status === "loading") return null
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${selectMode ? styles.containerSelectMode : ""}`}>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{t.meals.title}</h1>
         <div className={styles.pageHeaderActions}>
+          <button
+            type="button"
+            className={`${styles.selectBtn} ${selectMode ? styles.selectBtnActive : ""}`}
+            onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
+          >
+            <Layers size={14} strokeWidth={2} />
+            {selectMode ? "Cancel" : "Select"}
+          </button>
           <button
             type="button"
             className={styles.batchBtn}
@@ -180,26 +254,48 @@ export default function MealsPage() {
         <p className={styles.emptyState}>{hasFilters ? t.meals.noRecipesMatch : t.meals.noRecipesYet}</p>
       ) : (
         <div className={styles.list}>
-          {meals.map((meal) => (
-            <div key={meal.id} className={styles.listItem}>
-              <Link href={`/meals/${meal.id}`} className={styles.listItemLink}>
-                <span className={styles.listItemName}>{meal.name}</span>
-                <span className={styles.listItemMeta}>
-                  {meal.mealType}
-                  {" · "}{dietLabel(meal.diet)}
-                  {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
-                  {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
-                </span>
-              </Link>
-              <button
-                className={`${styles.starBtn} ${meal.favorite ? styles.starBtnActive : ""}`}
-                onClick={() => toggleFavorite(meal.id, meal.favorite)}
-                title={meal.favorite ? "Remove from favourites" : "Add to favourites"}
+          {meals.map((meal) => {
+            const isSelected = selected.has(meal.id)
+            return (
+              <div
+                key={meal.id}
+                className={`${styles.listItem} ${selectMode && isSelected ? styles.listItemSelected : ""}`}
+                onClick={selectMode ? () => toggleSelect(meal.id) : undefined}
               >
-                <Star size={14} fill={meal.favorite ? "currentColor" : "none"} strokeWidth={1.5} />
-              </button>
-            </div>
-          ))}
+                {selectMode && (
+                  <span className={styles.listItemCheckbox}>
+                    {isSelected
+                      ? <CheckSquare size={16} strokeWidth={2} className={styles.checkboxChecked} />
+                      : <Square size={16} strokeWidth={2} className={styles.checkboxUnchecked} />
+                    }
+                  </span>
+                )}
+                <Link
+                  href={`/meals/${meal.id}`}
+                  className={styles.listItemLink}
+                  onClick={selectMode ? (e) => e.preventDefault() : undefined}
+                  tabIndex={selectMode ? -1 : undefined}
+                >
+                  <span className={styles.listItemName}>{meal.name}</span>
+                  <span className={styles.listItemMeta}>
+                    {meal.mealType}
+                    {" · "}{dietLabel(meal.diet)}
+                    {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
+                    {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
+                  </span>
+                </Link>
+                {!selectMode && (
+                  <button
+                    className={`${styles.starBtn} ${meal.favorite ? styles.starBtnActive : ""}`}
+                    onClick={() => toggleFavorite(meal.id, meal.favorite)}
+                    title={meal.favorite ? "Remove from favourites" : "Add to favourites"}
+                  >
+                    <Star size={14} fill={meal.favorite ? "currentColor" : "none"} strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
@@ -211,6 +307,74 @@ export default function MealsPage() {
             fetchMeals(query).finally(() => setLoading(false))
           }}
         />
+      )}
+
+      {/* Bulk action bar */}
+      {selectMode && (
+        <div className={styles.bulkBar}>
+          <span className={styles.bulkCount}>
+            {selected.size} selected
+          </span>
+
+          <div className={styles.bulkGroups}>
+            {/* Meal type */}
+            <div className={styles.bulkGroup}>
+              {(["Meal", "Snack", "Drink", "Baked"] as const).map((v) => (
+                <button
+                  key={v}
+                  className={`${styles.bulkChip} ${bulkEdits.mealType === v ? styles.bulkChipActive : ""}`}
+                  onClick={() => setBulkMealType(v)}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+
+            {/* Diet */}
+            <div className={styles.bulkGroup}>
+              {(["Vegetarian", "Fish", "Meat"] as const).map((v) => (
+                <button
+                  key={v}
+                  className={`${styles.bulkChip} ${bulkEdits.diet === v ? styles.bulkChipActive : ""}`}
+                  onClick={() => setBulkDiet(v)}
+                >
+                  {v === "Vegetarian" ? "Veggie" : v}
+                </button>
+              ))}
+            </div>
+
+            {/* Boolean toggles */}
+            <div className={styles.bulkGroup}>
+              <button
+                className={`${styles.bulkChip} ${bulkEdits.officeFriendly === true ? styles.bulkChipTrue : bulkEdits.officeFriendly === false ? styles.bulkChipFalse : ""}`}
+                onClick={() => setBulkEdits((prev) => ({ ...prev, officeFriendly: cycleBool(prev.officeFriendly) }))}
+                title="Cycle: unset → office-friendly → not office-friendly"
+              >
+                {bulkEdits.officeFriendly === true ? "✓ " : bulkEdits.officeFriendly === false ? "✗ " : ""}Office
+              </button>
+              <button
+                className={`${styles.bulkChip} ${bulkEdits.thirtyMinute === true ? styles.bulkChipTrue : bulkEdits.thirtyMinute === false ? styles.bulkChipFalse : ""}`}
+                onClick={() => setBulkEdits((prev) => ({ ...prev, thirtyMinute: cycleBool(prev.thirtyMinute) }))}
+                title="Cycle: unset → quick → not quick"
+              >
+                {bulkEdits.thirtyMinute === true ? "✓ " : bulkEdits.thirtyMinute === false ? "✗ " : ""}Quick
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.bulkActions}>
+            <button className={styles.bulkCancelBtn} onClick={exitSelectMode}>
+              Cancel
+            </button>
+            <button
+              className={styles.bulkApplyBtn}
+              disabled={selected.size === 0 || !hasEdits || applying}
+              onClick={applyBulkEdits}
+            >
+              {applying ? "Saving…" : "Apply"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )

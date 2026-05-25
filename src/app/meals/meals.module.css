@@ -960,6 +960,201 @@
   gap: 0.5rem;
 }
 
+/* ── Select mode ──────────────────────────────────────── */
+
+.selectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.45rem 0.875rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms, background-color 150ms, color 150ms;
+  white-space: nowrap;
+}
+
+.selectBtn:hover {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.selectBtnActive {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.containerSelectMode {
+  padding-bottom: 5rem; /* leave room for the fixed bulk bar */
+}
+
+.listItemSelected {
+  background: var(--accent-soft) !important;
+}
+
+.listItemSelected:hover {
+  background: var(--accent-soft) !important;
+}
+
+.listItemCheckbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.checkboxChecked {
+  color: var(--primary);
+}
+
+.checkboxUnchecked {
+  color: var(--secondary);
+  opacity: 0.4;
+}
+
+/* ── Bulk action bar ──────────────────────────────────── */
+
+.bulkBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  z-index: 50;
+  flex-wrap: wrap;
+}
+
+.bulkCount {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  min-width: 6ch;
+}
+
+.bulkGroups {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.bulkGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bulkChip {
+  padding: 0.3rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--secondary);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms, color 120ms;
+  white-space: nowrap;
+}
+
+.bulkChip:hover {
+  border-color: var(--primary);
+  color: var(--foreground);
+}
+
+.bulkChipActive {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.bulkChipTrue {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.bulkChipFalse {
+  border-color: #dc2626;
+  background: #fef2f2;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+:global([data-theme="dark"]) .bulkChipTrue {
+  background: #052e16;
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+:global([data-theme="dark"]) .bulkChipFalse {
+  background: #2d0a0a;
+  color: #f87171;
+  border-color: #f87171;
+}
+
+.bulkActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.bulkCancelBtn {
+  padding: 0.4rem 0.875rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+
+.bulkCancelBtn:hover {
+  border-color: var(--foreground);
+  color: var(--foreground);
+}
+
+.bulkApplyBtn {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 150ms;
+}
+
+.bulkApplyBtn:hover { opacity: 0.88; }
+
+.bulkApplyBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ── Batch import button (ghost/secondary) ─────────────── */
 
 .batchBtn {

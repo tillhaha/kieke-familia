@@ -255,27 +255,35 @@ export default function MealDetailPage() {
       </Link>
 
       <div className={styles.detailHeader}>
-        <input
-          className={styles.titleInput}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={handleNameBlur}
-        />
+        {isOwner ? (
+          <input
+            className={styles.titleInput}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={handleNameBlur}
+          />
+        ) : (
+          <h1 className={styles.titleInput}>{name}</h1>
+        )}
         <div className={styles.detailHeaderActions}>
-          <button
-            className={`${styles.detailStarBtn} ${favorite ? styles.detailStarBtnActive : ""}`}
-            onClick={handleFavoriteToggle}
-            title={favorite ? "Remove from favourites" : "Add to favourites"}
-          >
-            <Star size={18} fill={favorite ? "currentColor" : "none"} strokeWidth={1.5} />
-          </button>
-          <button
-            className={confirmDelete ? styles.deleteBtnConfirm : styles.deleteBtn}
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
-          </button>
+          {isOwner && (
+            <button
+              className={`${styles.detailStarBtn} ${favorite ? styles.detailStarBtnActive : ""}`}
+              onClick={handleFavoriteToggle}
+              title={favorite ? "Remove from favourites" : "Add to favourites"}
+            >
+              <Star size={18} fill={favorite ? "currentColor" : "none"} strokeWidth={1.5} />
+            </button>
+          )}
+          {isOwner && (
+            <button
+              className={confirmDelete ? styles.deleteBtnConfirm : styles.deleteBtn}
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
+            </button>
+          )}
         </div>
       </div>
 
@@ -285,17 +293,23 @@ export default function MealDetailPage() {
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img key={meal.imageUrl} src={meal.imageUrl} alt={meal.name} className={styles.recipeImage} />
-            <div className={styles.imageActions}>
-              <button className={styles.imageActionBtn} onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
-                <Pencil size={11} /> {t.meals.change}
-              </button>
-              <button className={styles.imageActionBtn} onClick={handleImageRemove} disabled={imageUploading}>
-                <Trash2 size={11} /> {t.meals.remove}
-              </button>
-            </div>
+            {isOwner && (
+              <div className={styles.imageActions}>
+                <button className={styles.imageActionBtn} onClick={() => fileInputRef.current?.click()} disabled={imageUploading}>
+                  <Pencil size={11} /> {t.meals.change}
+                </button>
+                <button className={styles.imageActionBtn} onClick={handleImageRemove} disabled={imageUploading}>
+                  <Trash2 size={11} /> {t.meals.remove}
+                </button>
+              </div>
+            )}
           </>
         ) : (
-          <div className={styles.imagePlaceholder} onClick={() => fileInputRef.current?.click()}>
+          <div
+            className={styles.imagePlaceholder}
+            onClick={isOwner ? () => fileInputRef.current?.click() : undefined}
+            style={isOwner ? undefined : { cursor: "default" }}
+          >
             <ImagePlus size={22} strokeWidth={1.5} />
             <span className={styles.imagePlaceholderText}>{imageUploading ? t.meals.uploading : t.meals.addPhoto}</span>
           </div>

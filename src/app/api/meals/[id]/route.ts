@@ -12,15 +12,10 @@ async function getAuthedMeal(id: string, familyId: string) {
 }
 
 export async function GET(_req: Request, { params }: Params) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
-  if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
   const { id } = await params
 
   try {
-    const meal = await getAuthedMeal(id, familyId)
+    const meal = await prisma.meal.findFirst({ where: { id } })
     if (!meal) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
     return NextResponse.json({ meal })

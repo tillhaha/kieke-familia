@@ -471,6 +471,124 @@ tr:last-child .cell {
   color: var(--primary);
 }
 
+/* ── Link prompt bar ─────────────────────────────────── */
+
+.linkPromptBar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.linkPromptIcon {
+  flex-shrink: 0;
+  color: var(--secondary);
+}
+
+.linkPromptInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.6875rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.linkPromptInput:focus {
+  border-color: var(--primary);
+}
+
+.linkPromptSubmit {
+  flex-shrink: 0;
+  padding: 0.2rem 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.linkPromptSubmit:hover {
+  opacity: 0.85;
+}
+
+/* ── Emoji picker ────────────────────────────────────── */
+
+.emojiPicker {
+  position: fixed;
+  z-index: 200;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  width: 224px;
+  overflow: hidden;
+}
+
+.emojiCategoryTabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0.2rem 0.2rem 0;
+  gap: 0.1rem;
+  background: var(--surface);
+}
+
+.emojiCategoryTab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0;
+  border-radius: 4px 4px 0 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 120ms;
+}
+
+.emojiCategoryTab:hover {
+  opacity: 0.85;
+}
+
+.emojiCategoryTabActive {
+  opacity: 1;
+  background: var(--background);
+  border-bottom: 2px solid var(--primary);
+}
+
+.emojiGrid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  padding: 0.35rem;
+  gap: 0.1rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.emojiBtn {
+  border: none;
+  background: transparent;
+  padding: 0.2rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 100ms;
+  text-align: center;
+}
+
+.emojiBtn:hover {
+  background: var(--surface);
+}
+
 /* ── Emilia row ──────────────────────────────────────── */
 
 .emiliaCell {

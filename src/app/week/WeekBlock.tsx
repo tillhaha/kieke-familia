@@ -2,9 +2,11 @@
 "use client"
 
 import { Fragment, useState, useCallback, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import ReactMarkdown from "react-markdown"
-import { Baby, ExternalLink, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
+import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
+import { EMOJI_CATEGORIES } from "./emojiData"
 import styles from "./week.module.css"
 
 export type DayWeather = {
@@ -66,6 +68,21 @@ type RecipeSearch = {
   query: string
   results: MealResult[]
   savedText: string
+}
+
+type LinkPrompt = {
+  key: string
+  selStart: number
+  selEnd: number
+  selText: string
+  baseText: string
+}
+
+type EmojiPickerState = {
+  key: string
+  colonPos: number
+  top: number
+  left: number
 }
 
 const SECTION_ROWS: { section: string; rows: { field: Field; label: string; placeholder: string }[] }[] = [
@@ -170,6 +187,140 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
   const [focusedKey, setFocusedKey] = useState<string | null>(null)
   const [recipeSearch, setRecipeSearch] = useState<RecipeSearch | null>(null)
   const [generating, setGenerating] = useState(false)
+  const [linkPrompt, setLinkPrompt] = useState<LinkPrompt | null>(null)
+  const [linkUrl, setLinkUrl] = useState("")
+  const linkPromptKeyRef = useRef<string | null>(null)
+  const linkUrlInputRef = useRef<HTMLInputElement>(null)
+  const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
+
+  useEffect(() => {
+    if (linkPrompt) setTimeout(() => linkUrlInputRef.current?.focus(), 0)
+  }, [linkPrompt])
+
+  const insertLink = (url: string) => {
+    if (!linkPrompt) return
+    const { key, selStart, selEnd, selText, baseText } = linkPrompt
+    const label = selText || (() => { try { return new URL(url).hostname.replace(/^www\./, "") } catch { return url } })()
+    const mdLink = `[${label}](${url})`
+    const newText = baseText.slice(0, selStart) + mdLink + baseText.slice(selEnd)
+    setDrafts((prev) => ({ ...prev, [key]: newText }))
+    linkPromptKeyRef.current = null
+    setLinkPrompt(null)
+    setLinkUrl("")
+    setTimeout(() => {
+      const ta = textareaRefs.current.get(key)
+      if (ta) { ta.focus(); const pos = selStart + mdLink.length; ta.setSelectionRange(pos, pos); autoResize(ta) }
+    }, 0)
+  }
+
+  const dismissLinkPrompt = (date: string, field: Field) => {
+    linkPromptKeyRef.current = null
+    setLinkPrompt(null)
+    setLinkUrl("")
+    handleBlur(date, field)
+  }
+
+  const [emojiPicker, setEmojiPicker] = useState<EmojiPickerState | null>(null)
+  const [activeEmojiCategory, setActiveEmojiCategory] = useState(0)
+  const emojiPickerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!emojiPicker) return
+    const onMouseDown = (e: MouseEvent) => {
+      if (emojiPickerRef.current?.contains(e.target as Node)) return
+      setEmojiPicker(null)
+    }
+    document.addEventListener("mousedown", onMouseDown)
+    return () => document.removeEventListener("mousedown", onMouseDown)
+  }, [emojiPicker])
+
+  const insertEmoji = (emoji: string, key: string, colonPos: number) => {
+    setDrafts((prev) => {
+      const current = prev[key] ?? ""
+      const before = current.slice(0, colonPos)
+      const after = current.slice(colonPos + 1)
+      return { ...prev, [key]: before + emoji + after }
+    })
+    setEmojiPicker(null)
+    setTimeout(() => {
+      const ta = textareaRefs.current.get(key)
+      if (ta) { ta.focus(); autoResize(ta) }
+    }, 0)
+  }
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, key: string, field: Field) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault()
+      const ta = e.currentTarget
+      const selStart = ta.selectionStart
+      const selEnd = ta.selectionEnd
+      const selText = ta.value.slice(selStart, selEnd)
+      linkPromptKeyRef.current = key
+      setLinkPrompt({ key, selStart, selEnd, selText, baseText: ta.value })
+      setLinkUrl("")
+      return
+    }
+    if (e.key === ":" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const ta = e.currentTarget
+      const rect = ta.getBoundingClientRect()
+      setEmojiPicker({ key, colonPos: ta.selectionStart, top: rect.bottom + 4, left: rect.left })
+      setActiveEmojiCategory(0)
+    }
+    if (e.key === "Escape" && emojiPicker?.key === key) {
+      setEmojiPicker(null)
+    }
+    if (field === "note" || field === "dinnerActivity") return
+    // slash command handled in onChange
+  }
+
+  const handleTextareaPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>, key: string) => {
+    const pasted = e.clipboardData.getData("text").trim()
+    if (!/^https?:\/\/\S+$/.test(pasted)) return
+    e.preventDefault()
+    const ta = e.currentTarget
+    const selStart = ta.selectionStart
+    const selEnd = ta.selectionEnd
+    const selText = ta.value.slice(selStart, selEnd)
+    let insert: string
+    if (selText) {
+      insert = `[${selText}](${pasted})`
+    } else {
+      try { insert = `[${new URL(pasted).hostname.replace(/^www\./, "")}](${pasted})` } catch { insert = pasted }
+    }
+    const newVal = ta.value.slice(0, selStart) + insert + ta.value.slice(selEnd)
+    setDrafts((prev) => ({ ...prev, [key]: newVal }))
+    setTimeout(() => { const ta2 = textareaRefs.current.get(key); if (ta2) autoResize(ta2) }, 0)
+  }
+
+  const renderLinkPromptBar = (key: string, date: string, field: Field) => {
+    if (linkPrompt?.key !== key) return null
+    return (
+      <div className={styles.linkPromptBar}>
+        <Link size={11} className={styles.linkPromptIcon} />
+        <input
+          ref={linkUrlInputRef}
+          className={styles.linkPromptInput}
+          value={linkUrl}
+          placeholder="https://…"
+          onChange={(e) => setLinkUrl(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") { e.preventDefault(); if (linkUrl.trim()) insertLink(linkUrl.trim()) }
+            if (e.key === "Escape") { e.preventDefault(); linkPromptKeyRef.current = null; setLinkPrompt(null); setLinkUrl(""); setTimeout(() => textareaRefs.current.get(key)?.focus(), 0) }
+          }}
+          onBlur={(e) => {
+            if (e.relatedTarget === textareaRefs.current.get(key)) return
+            dismissLinkPrompt(date, field)
+          }}
+        />
+        <button
+          className={styles.linkPromptSubmit}
+          onMouseDown={(e) => { e.preventDefault(); if (linkUrl.trim()) insertLink(linkUrl.trim()) }}
+        >
+          Insert
+        </button>
+      </div>
+    )
+  }
 
   // Mobile views
   const [mobileView, setMobileView] = useState<"day" | "3day" | "week">("3day")
@@ -472,6 +623,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                         </div>
                       ) : isFocused ? (
                         /* Edit mode */
+                        <>
                         <textarea
                           autoFocus
                           className={styles.cellInput}
@@ -489,9 +641,22 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             setDrafts((prev) => ({ ...prev, [key]: v }))
                             autoResize(e.target)
                           }}
-                          onBlur={() => handleBlur(day.date, field)}
-                          ref={(el) => { if (el) autoResize(el) }}
+                          onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
+                          onPaste={(e) => handleTextareaPaste(e, key)}
+                          onBlur={(e) => {
+                            if (e.relatedTarget === linkUrlInputRef.current) return
+                            if (linkPromptKeyRef.current === key) return
+                            if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return
+                            setEmojiPicker((prev) => prev?.key === key ? null : prev)
+                            handleBlur(day.date, field)
+                          }}
+                          ref={(el) => {
+                            if (el) { textareaRefs.current.set(key, el); autoResize(el) }
+                            else textareaRefs.current.delete(key)
+                          }}
                         />
+                        {renderLinkPromptBar(key, day.date, field)}
+                        </>
                       ) : (
                         /* Preview mode */
                         <div
@@ -678,6 +843,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             )}
                           </div>
                         ) : isFocused ? (
+                          <>
                           <textarea
                             autoFocus
                             className={styles.cellInput}
@@ -695,9 +861,22 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                               setDrafts((prev) => ({ ...prev, [key]: v }))
                               autoResize(e.target)
                             }}
-                            onBlur={() => handleBlur(day.date, field)}
-                            ref={(el) => { if (el) autoResize(el) }}
+                            onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
+                            onPaste={(e) => handleTextareaPaste(e, key)}
+                            onBlur={(e) => {
+                              if (e.relatedTarget === linkUrlInputRef.current) return
+                              if (linkPromptKeyRef.current === key) return
+                              if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return
+                              setEmojiPicker((prev) => prev?.key === key ? null : prev)
+                              handleBlur(day.date, field)
+                            }}
+                            ref={(el) => {
+                              if (el) { textareaRefs.current.set(key, el); autoResize(el) }
+                              else textareaRefs.current.delete(key)
+                            }}
                           />
+                          {renderLinkPromptBar(key, day.date, field)}
+                          </>
                         ) : (
                           <div
                             className={styles.mobileDayFieldContent}
@@ -1046,6 +1225,39 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
         <div className={styles.pillTooltip} style={{ left: pillTooltip.x, top: pillTooltip.y }}>
           {pillTooltip.text}
         </div>
+      )}
+
+      {emojiPicker && typeof document !== "undefined" && createPortal(
+        <div
+          ref={emojiPickerRef}
+          className={styles.emojiPicker}
+          style={{ top: emojiPicker.top, left: emojiPicker.left }}
+        >
+          <div className={styles.emojiCategoryTabs}>
+            {EMOJI_CATEGORIES.map((cat, i) => (
+              <button
+                key={i}
+                className={`${styles.emojiCategoryTab} ${activeEmojiCategory === i ? styles.emojiCategoryTabActive : ""}`}
+                onMouseDown={(e) => { e.preventDefault(); setActiveEmojiCategory(i) }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+          <div className={styles.emojiGrid}>
+            {EMOJI_CATEGORIES[activeEmojiCategory].emojis.map((emoji) => (
+              <button
+                key={emoji}
+                className={styles.emojiBtn}
+                title={emoji}
+                onMouseDown={(e) => { e.preventDefault(); insertEmoji(emoji, emojiPicker.key, emojiPicker.colonPos) }}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   )

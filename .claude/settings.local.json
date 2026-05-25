@@ -40,7 +40,8 @@
       "mcp__playwright__browser_evaluate",
       "Bash(node *)",
       "mcp__playwright__browser_resize",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(python3 -m json.tool)"
     ]
   },
   "enableAllProjectMcpServers": true,

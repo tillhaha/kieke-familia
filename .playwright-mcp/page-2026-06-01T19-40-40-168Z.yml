@@ -1,0 +1,42 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "YourKieke" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+          - generic [ref=e9]: YourKieke
+    - generic [ref=e18]:
+      - heading "Welcome to YourKieke" [level=1] [ref=e19]
+      - paragraph [ref=e20]: Your shared family management hub.
+      - button "Sign in with Google" [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+        - text: Sign in with Google
+      - generic [ref=e26]: or
+      - generic [ref=e27]:
+        - textbox "Username" [ref=e29]: till
+        - textbox "Password" [ref=e31]: till
+        - paragraph [ref=e52]: Invalid username or password
+        - button "Sign in" [ref=e32] [cursor=pointer]
+    - contentinfo [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: © 2026 YourKieke
+        - generic [ref=e13]:
+          - link "Impressum" [ref=e14] [cursor=pointer]:
+            - /url: /imprint
+          - link "Datenschutz" [ref=e15] [cursor=pointer]:
+            - /url: /privacy
+  - generic [ref=e37] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e38]:
+      - img [ref=e39]
+    - generic [ref=e42]:
+      - button "Open issues overlay" [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]: "2"
+          - generic [ref=e46]: "3"
+        - generic [ref=e47]:
+          - text: Issue
+          - generic [ref=e48]: s
+      - button "Collapse issues badge" [ref=e49]:
+        - img [ref=e50]
+  - alert [ref=e16]

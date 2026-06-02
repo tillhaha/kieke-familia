@@ -17,8 +17,7 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const { date: dateStr } = await params
-  const parsedDate = new Date(`${dateStr}T00:00:00.000Z`)
-  if (isNaN(parsedDate.getTime())) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     return NextResponse.json({ error: "Invalid date" }, { status: 400 })
   }
 
@@ -50,7 +49,7 @@ export async function PATCH(request: Request, { params }: Params) {
   let dayPlan
   try {
     dayPlan = await prisma.dayPlan.findUnique({
-      where: { date_familyId: { date: parsedDate, familyId } },
+      where: { date_familyId: { date: dateStr, familyId } },
     })
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -61,7 +60,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
   try {
     const updated = await prisma.dayPlan.update({
-      where: { date_familyId: { date: parsedDate, familyId } },
+      where: { date_familyId: { date: dateStr, familyId } },
       data: updates,
     })
     return NextResponse.json(updated)

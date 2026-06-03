@@ -46,7 +46,8 @@
       "Bash(git show *)",
       "Bash(npm test *)",
       "Bash(gh auth *)",
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "mcp__playwright__browser_snapshot"
     ]
   },
   "enableAllProjectMcpServers": true,

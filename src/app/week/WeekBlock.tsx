@@ -172,6 +172,9 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     }
     return init
   })
+  // Ref so handleBlur always reads the latest drafts, even if memoized by React Compiler
+  const draftsRef = useRef(drafts)
+  draftsRef.current = drafts
 
   const [mealIds, setMealIds] = useState<Record<string, string | null>>(() => {
     const init: Record<string, string | null> = {}
@@ -412,7 +415,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
   const handleBlur = async (date: string, field: Field) => {
     setFocusedKey(null)
     const key = `${date}:${field}`
-    const current = drafts[key] ?? ""
+    const current = draftsRef.current[key] ?? ""
     const saved = getSaved(date, field)
     if (current === saved) return
 

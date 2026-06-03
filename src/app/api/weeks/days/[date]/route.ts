@@ -52,10 +52,12 @@ export async function PATCH(request: Request, { params }: Params) {
     dayPlan = await prisma.dayPlan.findUnique({
       where: { date_familyId: { date: parsedDate, familyId } },
     })
-  } catch {
+  } catch (err) {
+    console.error("[PATCH /api/weeks/days] findUnique error", { dateStr, familyId, err })
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
   if (!dayPlan) {
+    console.error("[PATCH /api/weeks/days] dayPlan not found", { dateStr, familyId })
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }
 
@@ -66,7 +68,7 @@ export async function PATCH(request: Request, { params }: Params) {
     })
     return NextResponse.json(updated)
   } catch (err) {
-    console.error("[PATCH /api/weeks/days]", err)
+    console.error("[PATCH /api/weeks/days] update error", { dateStr, familyId, updates, err })
     return NextResponse.json({ error: "Failed to update day" }, { status: 500 })
   }
 }

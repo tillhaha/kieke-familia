@@ -417,6 +417,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     const key = `${date}:${field}`
     const current = draftsRef.current[key] ?? ""
     const saved = getSaved(date, field)
+    console.log("[handleBlur]", { key, current, saved, equal: current === saved })
     if (current === saved) return
 
     setSaving((prev) => new Set(prev).add(key))
@@ -430,12 +431,14 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
       setMealIds((prev) => ({ ...prev, [key]: null }))
     }
 
+    console.log("[handleBlur] sending PATCH", { date, field, body })
     try {
       const res = await fetch(`/api/weeks/days/${date}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
+      console.log("[handleBlur] PATCH response", res.status)
       if (!res.ok) throw new Error()
       onDayUpdate(date, field, current || null)
     } catch {
@@ -647,6 +650,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
                           onPaste={(e) => handleTextareaPaste(e, key)}
                           onBlur={(e) => {
+                            console.log("[onBlur]", { key, relatedTarget: e.relatedTarget, linkPromptKey: linkPromptKeyRef.current, isLinkInput: e.relatedTarget === linkUrlInputRef.current, isLinkPrompt: linkPromptKeyRef.current === key, isEmojiPicker: emojiPickerRef.current?.contains(e.relatedTarget as Node) })
                             if (e.relatedTarget === linkUrlInputRef.current) return
                             if (linkPromptKeyRef.current === key) return
                             if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return

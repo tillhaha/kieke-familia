@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
-import { WeekBlock, WeekData, CalendarEvent } from "./WeekBlock"
+import { WeekBlock, WeekData, CalendarEvent, CustodyEntry } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
 
@@ -15,6 +15,7 @@ export default function WeekPage() {
   const { t } = useTranslation()
   const [weeks, setWeeks] = useState<WeekData[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [planning, setPlanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,6 +36,7 @@ export default function WeekPage() {
         fetch(`/api/calendar/events?timeMin=${timeMin}&timeMax=${timeMax}`)
           .then((r) => r.json())
           .then((d) => {
+            setCustodyEntries(d.custodyEntries ?? [])
             const events: CalendarEvent[] = []
             const nextDay = (d: string) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10) }
             for (const e of (d.googleEvents ?? [])) {
@@ -158,6 +160,9 @@ export default function WeekPage() {
               onGenerateShopping={handleGenerateShopping}
               calendarEvents={calendarEvents.filter(
                 (e) => e.date <= week.endDate && e.endDate > week.startDate
+              )}
+              custodyEntries={custodyEntries.filter(
+                (c) => c.date >= week.startDate && c.date <= week.endDate
               )}
             />
           ))}

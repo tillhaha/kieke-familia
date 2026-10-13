@@ -669,12 +669,14 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                         >
                           {value && (
                             <div className={styles.cellPreviewInner}>
-                              <ReactMarkdown
-                                remarkPlugins={[remarkBreaks]}
-                                components={{
-                                  ...pillComponents,
-                                }}
-                              >{linkifyText(value)}</ReactMarkdown>
+                              <div className={styles.cellPreviewContent}>
+                                <ReactMarkdown
+                                  remarkPlugins={[remarkBreaks]}
+                                  components={{
+                                    ...pillComponents,
+                                  }}
+                                >{linkifyText(value)}</ReactMarkdown>
+                              </div>
                               {linkedMealId && (
                                 <a
                                   href={`/meals/${linkedMealId}`}

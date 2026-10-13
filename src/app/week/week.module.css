@@ -441,7 +441,7 @@ tr:last-child .cell {
   gap: 0.25rem;
 }
 
-.cellPreviewInner > :first-child {
+.cellPreviewContent {
   flex: 1;
   min-width: 0;
 }

@@ -241,6 +241,7 @@ export type Translations = {
   }
   settings: {
     title: string
+    lastRelease: string
     profile: string
     googleCalendar: string
     location: string
@@ -361,8 +362,8 @@ const en: Translations = {
     dinner: "Dinner",
     allDay: "All-Day",
     locationPlaceholder: "Add a note…",
-    lunchPlaceholder: "Lunch… (type /recipe to search)",
-    dinnerPlaceholder: "Dinner… (type /recipe to search)",
+    lunchPlaceholder: "Lunch… (type / to search)",
+    dinnerPlaceholder: "Dinner… (type / to search)",
     dayView: "Day",
     threeDayView: "3 Days",
     weekView: "Week",
@@ -557,6 +558,7 @@ const en: Translations = {
   },
   settings: {
     title: "Settings",
+    lastRelease: "Last release",
     profile: "Profile",
     googleCalendar: "Google Calendar",
     location: "Location",
@@ -873,6 +875,7 @@ const es: Translations = {
   },
   settings: {
     title: "Ajustes",
+    lastRelease: "Última versión",
     profile: "Perfil",
     googleCalendar: "Google Calendar",
     location: "Ubicación",
@@ -1189,6 +1192,7 @@ const de: Translations = {
   },
   settings: {
     title: "Einstellungen",
+    lastRelease: "Letztes Release",
     profile: "Profil",
     googleCalendar: "Google Kalender",
     location: "Standort",

@@ -27,6 +27,14 @@
   padding: 0 0.75rem;
 }
 
+.releaseNote {
+  margin-top: 1.5rem;
+  padding: 0 0.75rem;
+  font-size: 0.6875rem;
+  color: var(--secondary);
+  opacity: 0.6;
+}
+
 .sectionBtn {
   display: flex;
   align-items: center;

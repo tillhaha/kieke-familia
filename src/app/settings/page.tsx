@@ -42,6 +42,10 @@ export default function SettingsPage() {
 
   const langLabel = lang === "de" ? "Deutsch" : lang === "es" ? "Español" : "English"
 
+  const releaseTime = process.env.NEXT_PUBLIC_RELEASE_TIME
+    ? new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" }).format(new Date(process.env.NEXT_PUBLIC_RELEASE_TIME))
+    : null
+
   const sections: { id: Section; icon: React.ReactNode; label: string; status?: string }[] = [
     { id: "profile",    icon: <User size={18} strokeWidth={1.75} />,     label: t.settings.profile,       status: session?.user?.name ?? undefined },
     { id: "import",     icon: <Download size={18} strokeWidth={1.75} />, label: t.settings.calendarImport },
@@ -71,6 +75,7 @@ export default function SettingsPage() {
             {label}
           </button>
         ))}
+        {releaseTime && <p className={styles.releaseNote}>{t.settings.lastRelease}: {releaseTime}</p>}
       </aside>
 
       <div className={styles.content}>
@@ -89,6 +94,7 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          {releaseTime && <p className={styles.releaseNote}>{t.settings.lastRelease}: {releaseTime}</p>}
         </div>
 
         {/* Mobile: back button in detail view */}

@@ -859,8 +859,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             disabled={isDisabled}
                             onChange={(e) => {
                               const v = e.target.value
-                              if (isMealField && v.trimEnd().endsWith("/recipe")) {
-                                const textBeforeCommand = v.trimEnd().slice(0, -"/recipe".length)
+                              if (isMealField && v.trimEnd().endsWith("/")) {
+                                const textBeforeCommand = v.trimEnd().slice(0, -1)
                                 setFocusedKey(null)
                                 setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
                                 return

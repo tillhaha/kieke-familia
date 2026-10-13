@@ -37,6 +37,12 @@ function isUrl(text: string): boolean {
   try { const u = new URL(text); return u.protocol === "http:" || u.protocol === "https:" } catch { return false }
 }
 
+function linkifyNotes(text: string): string {
+  return text.replace(/(?<!\]\()https?:\/\/[^\s)\]>]+/g, (url) => {
+    try { return `[${new URL(url).hostname.replace(/^www\./, "")}](${url})` } catch { return url }
+  })
+}
+
 function autoResize(el: HTMLTextAreaElement) {
   el.style.height = "auto"
   el.style.height = el.scrollHeight + "px"
@@ -507,7 +513,26 @@ export default function MealDetailPage() {
             onClick={isOwner ? () => setEditingField("notes") : undefined}
           >
             {draftNotes
-              ? <div className={styles.markdown}><ReactMarkdown remarkPlugins={[remarkBreaks]}>{draftNotes}</ReactMarkdown></div>
+              ? <div className={styles.markdown}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkBreaks]}
+                    components={{
+                      a: ({ href, children }: React.ComponentPropsWithoutRef<"a">) => (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.inlineLink}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {children}
+                        </a>
+                      ),
+                    }}
+                  >
+                    {linkifyNotes(draftNotes)}
+                  </ReactMarkdown>
+                </div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.notesEmptyPrompt}</span>
             }
           </div>

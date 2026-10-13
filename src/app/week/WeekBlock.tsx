@@ -5,7 +5,7 @@ import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
-import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
+import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud, StickyNote } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { EMOJI_CATEGORIES } from "./emojiData"
 import styles from "./week.module.css"
@@ -23,8 +23,9 @@ export type DayData = {
   date: string // YYYY-MM-DD
   note: string | null
   lunch: string | null
+  lunchNote: string | null
   dinner: string | null
-  dinnerActivity: string | null
+  dinnerNote: string | null
   lunchMealId: string | null
   dinnerMealId: string | null
 }
@@ -60,7 +61,7 @@ type Props = {
   onGenerateShopping?: (weekStartDate: string) => Promise<void>
 }
 
-type Field = "note" | "lunch" | "dinner" | "dinnerActivity"
+type Field = "note" | "lunch" | "lunchNote" | "dinner" | "dinnerNote"
 
 type MealResult = { id: string; name: string; servings: number }
 
@@ -97,7 +98,9 @@ const SECTION_ROWS: { section: string; rows: { field: Field; label: string; plac
     section: "Meals",
     rows: [
       { field: "lunch", label: "Lunch", placeholder: "Lunch… (type / to search recipes)" },
+      { field: "lunchNote", label: "Notiz", placeholder: "Notiz…" },
       { field: "dinner", label: "Dinner", placeholder: "Dinner… (type / to search recipes)" },
+      { field: "dinnerNote", label: "Notiz", placeholder: "Notiz…" },
     ],
   },
 ]
@@ -106,7 +109,8 @@ const ALL_ROWS = SECTION_ROWS.flatMap((s) => s.rows)
 
 const FIELD_ICON: Record<string, React.ReactNode> = {
   note:          <MapPin size={11} strokeWidth={2} />,
-  dinnerActivity:<Zap size={11} strokeWidth={2} />,
+  lunchNote:     <StickyNote size={11} strokeWidth={2} />,
+  dinnerNote:    <StickyNote size={11} strokeWidth={2} />,
   lunch:         <Coffee size={11} strokeWidth={2} />,
   dinner:        <Utensils size={11} strokeWidth={2} />,
 }
@@ -155,12 +159,14 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     if (field === "note") return t.weekBlock.location
     if (field === "lunch") return t.weekBlock.lunch
     if (field === "dinner") return t.weekBlock.dinner
+    if (field === "lunchNote" || field === "dinnerNote") return t.weekBlock.notiz
     return field
   }
   const rowPlaceholder = (field: Field): string => {
     if (field === "note") return t.weekBlock.locationPlaceholder
     if (field === "lunch") return t.weekBlock.lunchPlaceholder
     if (field === "dinner") return t.weekBlock.dinnerPlaceholder
+    if (field === "lunchNote" || field === "dinnerNote") return t.weekBlock.notizPlaceholder
     return ""
   }
 
@@ -273,7 +279,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     if (e.key === "Escape" && emojiPicker?.key === key) {
       setEmojiPicker(null)
     }
-    if (field === "note" || field === "dinnerActivity") return
+    if (field === "note" || field === "lunchNote" || field === "dinnerNote") return
     // slash command handled in onChange
   }
 

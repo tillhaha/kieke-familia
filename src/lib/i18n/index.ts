@@ -47,6 +47,8 @@ export type Translations = {
     locationPlaceholder: string
     lunchPlaceholder: string
     dinnerPlaceholder: string
+    notiz: string
+    notizPlaceholder: string
     dayView: string
     threeDayView: string
     weekView: string
@@ -364,6 +366,8 @@ const en: Translations = {
     locationPlaceholder: "Add a note…",
     lunchPlaceholder: "Lunch… (type / to search)",
     dinnerPlaceholder: "Dinner… (type / to search)",
+    notiz: "Note",
+    notizPlaceholder: "Note…",
     dayView: "Day",
     threeDayView: "3 Days",
     weekView: "Week",
@@ -681,6 +685,8 @@ const es: Translations = {
     locationPlaceholder: "Añadir nota…",
     lunchPlaceholder: "Almuerzo…",
     dinnerPlaceholder: "Cena…",
+    notiz: "Nota",
+    notizPlaceholder: "Nota…",
     dayView: "Día",
     threeDayView: "3 Días",
     weekView: "Semana",
@@ -998,6 +1004,8 @@ const de: Translations = {
     locationPlaceholder: "Notiz hinzufügen…",
     lunchPlaceholder: "Mittagessen…",
     dinnerPlaceholder: "Abendessen…",
+    notiz: "Notiz",
+    notizPlaceholder: "Notiz…",
     dayView: "Tag",
     threeDayView: "3 Tage",
     weekView: "Woche",

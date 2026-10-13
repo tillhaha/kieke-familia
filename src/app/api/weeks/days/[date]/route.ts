@@ -29,15 +29,17 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { note, lunch, dinner, dinnerActivity, lunchMealId, dinnerMealId } = body as Record<string, unknown>
+  const { note, lunch, lunchNote, dinner, dinnerNote, lunchMealId, dinnerMealId } = body as Record<string, unknown>
 
   // Only include fields that were explicitly sent
   const updates: Record<string, string | null> = {}
   if (note !== undefined) updates.note = typeof note === "string" && note !== "" ? note : null
   if (lunch !== undefined) updates.lunch = typeof lunch === "string" && lunch !== "" ? lunch : null
+  if (lunchNote !== undefined)
+    updates.lunchNote = typeof lunchNote === "string" && lunchNote !== "" ? lunchNote : null
   if (dinner !== undefined) updates.dinner = typeof dinner === "string" && dinner !== "" ? dinner : null
-  if (dinnerActivity !== undefined)
-    updates.dinnerActivity = typeof dinnerActivity === "string" && dinnerActivity !== "" ? dinnerActivity : null
+  if (dinnerNote !== undefined)
+    updates.dinnerNote = typeof dinnerNote === "string" && dinnerNote !== "" ? dinnerNote : null
   if (lunchMealId !== undefined)
     updates.lunchMealId = typeof lunchMealId === "string" && lunchMealId !== "" ? lunchMealId : null
   if (dinnerMealId !== undefined)

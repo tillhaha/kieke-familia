@@ -159,8 +159,9 @@ model DayPlan {
   date           DateTime @db.Date
   note           String?
   lunch          String?
+  lunchNote      String?
   dinner         String?
-  dinnerActivity String?
+  dinnerNote     String?
   lunchMealId    String?
   lunchMeal      Meal?   @relation("LunchMeal",  fields: [lunchMealId],  references: [id], onDelete: SetNull)
   dinnerMealId   String?

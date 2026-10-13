@@ -727,11 +727,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       const entry = custodyEntries.find((c) => c.date === day.date)
                       return (
                         <td key={day.date} className={`${styles.cell} ${styles.emiliaCell}`}>
-                          {entry && (
+                          {entry?.location === "WITH_US" && (
                             <Baby
                               size={13}
                               strokeWidth={2}
-                              className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                              className={styles.emiliaIconHome}
                             />
                           )}
                         </td>
@@ -942,11 +942,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                         <div key={day.date} className={styles.mobileDayField}>
                           <span className={styles.mobileDayFieldLabel}>Emilia</span>
                           <div className={styles.mobileDayFieldIconWrap}>
-                            {custodyEntry && (
+                            {custodyEntry?.location === "WITH_US" && (
                               <Baby
                                 size={14}
                                 strokeWidth={2}
-                                className={custodyEntry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                                className={styles.emiliaIconHome}
                               />
                             )}
                           </div>
@@ -1137,11 +1137,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableCustodyCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
                           onClick={() => setMobileDayDetail(day.date)}
                         >
-                          {entry && (
+                          {entry?.location === "WITH_US" && (
                             <Baby
                               size={10}
                               strokeWidth={2}
-                              className={entry.location === "WITH_US" ? styles.emiliaIconHome : styles.emiliaIconMona}
+                              className={styles.emiliaIconHome}
                             />
                           )}
                         </div>

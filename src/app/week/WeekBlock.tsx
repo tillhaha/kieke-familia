@@ -4,6 +4,7 @@
 import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import ReactMarkdown from "react-markdown"
+import remarkBreaks from "remark-breaks"
 import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { EMOJI_CATEGORIES } from "./emojiData"
@@ -669,6 +670,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           {value && (
                             <div className={styles.cellPreviewInner}>
                               <ReactMarkdown
+                                remarkPlugins={[remarkBreaks]}
                                 components={{
                                   ...pillComponents,
                                 }}
@@ -887,7 +889,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           >
                             {value ? (
                               <>
-                                <ReactMarkdown components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
+                                <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
                                 {linkedMealId && (
                                   <a
                                     href={`/meals/${linkedMealId}`}
@@ -1094,7 +1096,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                           onClick={() => { if (!isDisabled) setFocusedKey(key) }}
                         >
                           {value
-                            ? <ReactMarkdown components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
+                            ? <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
                             : <span style={{ opacity: 0.3 }}>–</span>}
                         </div>
                       )}

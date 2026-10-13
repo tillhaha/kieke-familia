@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
+import remarkBreaks from "remark-breaks"
 import { ChevronLeft, ImagePlus, Pencil, Star, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
@@ -409,7 +410,7 @@ export default function MealDetailPage() {
             onClick={isOwner ? () => setEditingField("notes") : undefined}
           >
             {draftNotes
-              ? <div className={styles.markdown}><ReactMarkdown>{draftNotes}</ReactMarkdown></div>
+              ? <div className={styles.markdown}><ReactMarkdown remarkPlugins={[remarkBreaks]}>{draftNotes}</ReactMarkdown></div>
               : <span style={{ color: "var(--secondary)", opacity: 0.5, fontSize: "0.875rem" }}>{t.meals.notesEmptyPrompt}</span>
             }
           </div>

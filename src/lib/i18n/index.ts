@@ -44,7 +44,9 @@ export type Translations = {
     lunch: string
     dinner: string
     allDay: string
-    locationPlaceholder: string
+    locationOffice: string
+    locationHome: string
+    locationNotSet: string
     lunchPlaceholder: string
     dinnerPlaceholder: string
     notiz: string
@@ -363,7 +365,9 @@ const en: Translations = {
     lunch: "Lunch",
     dinner: "Dinner",
     allDay: "All-Day",
-    locationPlaceholder: "Add a note…",
+    locationOffice: "Office",
+    locationHome: "Home",
+    locationNotSet: "Not set",
     lunchPlaceholder: "Lunch… (type / to search)",
     dinnerPlaceholder: "Dinner… (type / to search)",
     notiz: "Note",
@@ -682,7 +686,9 @@ const es: Translations = {
     lunch: "Almuerzo",
     dinner: "Cena",
     allDay: "Todo el día",
-    locationPlaceholder: "Añadir nota…",
+    locationOffice: "Oficina",
+    locationHome: "Casa",
+    locationNotSet: "Sin definir",
     lunchPlaceholder: "Almuerzo…",
     dinnerPlaceholder: "Cena…",
     notiz: "Nota",
@@ -1001,7 +1007,9 @@ const de: Translations = {
     lunch: "Mittagessen",
     dinner: "Abendessen",
     allDay: "Ganztägig",
-    locationPlaceholder: "Notiz hinzufügen…",
+    locationOffice: "Büro",
+    locationHome: "Zuhause",
+    locationNotSet: "Nicht festgelegt",
     lunchPlaceholder: "Mittagessen…",
     dinnerPlaceholder: "Abendessen…",
     notiz: "Notiz",

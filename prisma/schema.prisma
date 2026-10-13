@@ -94,12 +94,17 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum WorkLocationType {
+  OFFICE
+  HOME
+}
+
 model WorkLocation {
-  id        String   @id @default(cuid())
-  date      DateTime
+  id        String           @id @default(cuid())
+  date      DateTime         @db.Date
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  location  String
+  user      User             @relation(fields: [userId], references: [id])
+  location  WorkLocationType
 
   @@unique([date, userId])
 }

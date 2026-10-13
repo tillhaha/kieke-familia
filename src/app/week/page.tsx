@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Plus } from "lucide-react"
-import { WeekBlock, WeekData, CalendarEvent, CustodyEntry } from "./WeekBlock"
+import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
 
@@ -16,12 +16,18 @@ export default function WeekPage() {
   const [weeks, setWeeks] = useState<WeekData[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
+  const [workLocations, setWorkLocations] = useState<WorkLocationEntry[]>([])
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([])
   const [loading, setLoading] = useState(true)
   const [planning, setPlanning] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (status !== "authenticated") return
+    fetch("/api/family/members")
+      .then((r) => r.ok ? r.json() : { members: [] })
+      .then((d) => setFamilyMembers(d.members ?? []))
+      .catch(() => {})
     fetch("/api/weeks")
       .then((r) => {
         if (!r.ok) throw new Error()
@@ -37,6 +43,7 @@ export default function WeekPage() {
           .then((r) => r.json())
           .then((d) => {
             setCustodyEntries(d.custodyEntries ?? [])
+            setWorkLocations(d.workLocations ?? [])
             const events: CalendarEvent[] = []
             const nextDay = (d: string) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10) }
             for (const e of (d.googleEvents ?? [])) {
@@ -112,6 +119,13 @@ export default function WeekPage() {
     )
   }
 
+  const handleWorkLocationUpdate = (date: string, userId: string, location: WorkLocationValue | null) => {
+    setWorkLocations((prev) => {
+      const filtered = prev.filter((w) => !(w.date === date && w.userId === userId))
+      return location ? [...filtered, { date, userId, location }] : filtered
+    })
+  }
+
   const handleGenerateShopping = async (weekStartDate: string) => {
     const res = await fetch("/api/shopping/generate", {
       method: "POST",
@@ -164,6 +178,11 @@ export default function WeekPage() {
               custodyEntries={custodyEntries.filter(
                 (c) => c.date >= week.startDate && c.date <= week.endDate
               )}
+              workLocations={workLocations.filter(
+                (w) => w.date >= week.startDate && w.date <= week.endDate
+              )}
+              familyMembers={familyMembers}
+              onWorkLocationUpdate={handleWorkLocationUpdate}
             />
           ))}
         </div>

@@ -5,7 +5,7 @@ import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
-import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud, StickyNote } from "lucide-react"
+import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud, StickyNote, Building2, Home, Minus } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { EMOJI_CATEGORIES } from "./emojiData"
 import styles from "./week.module.css"
@@ -38,6 +38,10 @@ export type WeekData = {
 
 export type CustodyEntry = { id: string; date: string; location: "WITH_US" | "WITH_MONA"; personName: string }
 
+export type WorkLocationValue = "OFFICE" | "HOME"
+export type WorkLocationEntry = { date: string; userId: string; location: WorkLocationValue }
+export type FamilyMember = { id: string; name: string | null }
+
 export type CalendarEvent = {
   id: string
   summary: string
@@ -55,13 +59,16 @@ type Props = {
   weather?: Record<string, DayWeather>
   custodyEntries?: CustodyEntry[]
   calendarEvents?: CalendarEvent[]
+  workLocations?: WorkLocationEntry[]
+  familyMembers?: FamilyMember[]
+  onWorkLocationUpdate?: (date: string, userId: string, location: WorkLocationValue | null) => void
   readOnly?: boolean
   id?: string
   editHref?: string
   onGenerateShopping?: (weekStartDate: string) => Promise<void>
 }
 
-type Field = "note" | "lunch" | "lunchNote" | "dinner" | "dinnerNote"
+type Field = "lunch" | "lunchNote" | "dinner" | "dinnerNote"
 
 type MealResult = { id: string; name: string; servings: number }
 
@@ -90,9 +97,7 @@ type EmojiPickerState = {
 const SECTION_ROWS: { section: string; rows: { field: Field; label: string; placeholder: string }[] }[] = [
   {
     section: "Notes",
-    rows: [
-      { field: "note", label: "Location", placeholder: "Add a note…" },
-    ],
+    rows: [],
   },
   {
     section: "Meals",
@@ -108,7 +113,6 @@ const SECTION_ROWS: { section: string; rows: { field: Field; label: string; plac
 const ALL_ROWS = SECTION_ROWS.flatMap((s) => s.rows)
 
 const FIELD_ICON: Record<string, React.ReactNode> = {
-  note:          <MapPin size={11} strokeWidth={2} />,
   lunchNote:     <StickyNote size={11} strokeWidth={2} />,
   dinnerNote:    <StickyNote size={11} strokeWidth={2} />,
   lunch:         <Coffee size={11} strokeWidth={2} />,
@@ -146,29 +150,69 @@ function WeatherIcon({ rain }: { rain: number }) {
   return <Sun size={15} color="#f59e0b" />
 }
 
+function LocationPill({
+  label,
+  value,
+  stateLabel,
+  disabled,
+  onClick,
+  size = 13,
+  compact = false,
+}: {
+  label: string
+  value: "OFFICE" | "HOME" | null
+  stateLabel: string
+  disabled: boolean
+  onClick: () => void
+  size?: number
+  compact?: boolean
+}) {
+  const Icon = value === "OFFICE" ? Building2 : value === "HOME" ? Home : Minus
+  const stateClass =
+    value === "OFFICE" ? styles.locationPillOffice : value === "HOME" ? styles.locationPillHome : styles.locationPillUnset
+  const title = `${label} · ${stateLabel}`
+  return (
+    <button
+      type="button"
+      className={`${styles.locationPill} ${compact ? styles.locationPillCompact : ""} ${stateClass}`}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={title}
+      title={title}
+    >
+      <Icon size={size} strokeWidth={2} />
+      {!compact && <span className={styles.locationPillName}>{label}</span>}
+    </button>
+  )
+}
+
 function autoResize(el: HTMLTextAreaElement) {
   el.style.height = "auto"
   el.style.height = el.scrollHeight + "px"
 }
 
-export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendarEvents, readOnly, id, editHref, onGenerateShopping }: Props) {
+export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendarEvents, workLocations, familyMembers, onWorkLocationUpdate, readOnly, id, editHref, onGenerateShopping }: Props) {
   const past = isPastWeek(week.endDate)
   const { t } = useTranslation()
 
   const rowLabel = (field: Field): string => {
-    if (field === "note") return t.weekBlock.location
     if (field === "lunch") return t.weekBlock.lunch
     if (field === "dinner") return t.weekBlock.dinner
     if (field === "lunchNote" || field === "dinnerNote") return t.weekBlock.notiz
     return field
   }
   const rowPlaceholder = (field: Field): string => {
-    if (field === "note") return t.weekBlock.locationPlaceholder
     if (field === "lunch") return t.weekBlock.lunchPlaceholder
     if (field === "dinner") return t.weekBlock.dinnerPlaceholder
     if (field === "lunchNote" || field === "dinnerNote") return t.weekBlock.notizPlaceholder
     return ""
   }
+
+  const locationStateLabel = (value: WorkLocationValue | null): string =>
+    value === "OFFICE" ? t.weekBlock.locationOffice : value === "HOME" ? t.weekBlock.locationHome : t.weekBlock.locationNotSet
+
+  const nextLocationValue = (current: WorkLocationValue | null): WorkLocationValue | null =>
+    current === null ? "OFFICE" : current === "OFFICE" ? "HOME" : null
 
   const [drafts, setDrafts] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {}
@@ -279,7 +323,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     if (e.key === "Escape" && emojiPicker?.key === key) {
       setEmojiPicker(null)
     }
-    if (field === "note" || field === "lunchNote" || field === "dinnerNote") return
+    if (field === "lunchNote" || field === "dinnerNote") return
     // slash command handled in onChange
   }
 
@@ -450,6 +494,31 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
       if (previousMealId !== null) {
         setMealIds((prev) => ({ ...prev, [key]: previousMealId }))
       }
+      setCellErrors((prev) => {
+        const next = new Set(prev).add(key)
+        setTimeout(() => setCellErrors((p) => { const n = new Set(p); n.delete(key); return n }), 2000)
+        return next
+      })
+    } finally {
+      setSaving((prev) => { const next = new Set(prev); next.delete(key); return next })
+    }
+  }
+
+  const handleLocationToggle = async (date: string, userId: string, current: WorkLocationValue | null) => {
+    if (readOnly || past) return
+    const next = nextLocationValue(current)
+    const key = `${date}:workloc:${userId}`
+    onWorkLocationUpdate?.(date, userId, next)
+    setSaving((prev) => new Set(prev).add(key))
+    try {
+      const res = await fetch("/api/calendar/work-location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, userId, location: next }),
+      })
+      if (!res.ok) throw new Error()
+    } catch {
+      onWorkLocationUpdate?.(date, userId, current)
       setCellErrors((prev) => {
         const next = new Set(prev).add(key)
         setTimeout(() => setCellErrors((p) => { const n = new Set(p); n.delete(key); return n }), 2000)
@@ -670,7 +739,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                       ) : (
                         /* Preview mode */
                         <div
-                          className={`${styles.cellPreview} ${readOnly ? styles.cellPreviewReadOnly : ""} ${field === "note" ? styles.cellPreviewNote : ""}`}
+                          className={`${styles.cellPreview} ${readOnly ? styles.cellPreviewReadOnly : ""}`}
                           onClick={() => { if (!isDisabled) setFocusedKey(key) }}
                         >
                           {value && (
@@ -703,6 +772,32 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 })}
                   </tr>
                 ))}
+                {section === "Notes" && familyMembers && familyMembers.length > 0 && (
+                  <tr>
+                    <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{t.weekBlock.location}</td>
+                    {week.days.map((day) => (
+                      <td key={day.date} className={`${styles.cell} ${styles.locationCell}`}>
+                        <div className={styles.locationPillGroup}>
+                          {familyMembers.map((member) => {
+                            const entry = workLocations?.find((w) => w.date === day.date && w.userId === member.id)
+                            const value = entry?.location ?? null
+                            const locKey = `${day.date}:workloc:${member.id}`
+                            return (
+                              <LocationPill
+                                key={member.id}
+                                label={member.name ?? "?"}
+                                value={value}
+                                stateLabel={locationStateLabel(value)}
+                                disabled={readOnly || past || saving.has(locKey)}
+                                onClick={() => handleLocationToggle(day.date, member.id, value)}
+                              />
+                            )
+                          })}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                )}
                 {section === "Notes" && calendarEvents && (
                   <tr>
                     <td className={`${styles.rowLabel} ${styles.subRowLabel}`}>{t.weekBlock.events}</td>
@@ -793,6 +888,80 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 )
               })}
             </div>
+
+            {/* Location row */}
+            {familyMembers && familyMembers.length > 0 && (
+              <div className={styles.mobileRowGroup}>
+                {getMobileDays().map((day) => (
+                  <div key={day.date} className={styles.mobileDayField}>
+                    <span className={styles.mobileDayFieldLabel}>{t.weekBlock.location}</span>
+                    <div className={styles.locationPillGroup}>
+                      {familyMembers.map((member) => {
+                        const entry = workLocations?.find((w) => w.date === day.date && w.userId === member.id)
+                        const value = entry?.location ?? null
+                        const locKey = `${day.date}:workloc:${member.id}`
+                        return (
+                          <LocationPill
+                            key={member.id}
+                            label={member.name ?? "?"}
+                            value={value}
+                            stateLabel={locationStateLabel(value)}
+                            disabled={readOnly || past || saving.has(locKey)}
+                            onClick={() => handleLocationToggle(day.date, member.id, value)}
+                            size={14}
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Events row */}
+            {calendarEvents && (
+              <div className={styles.mobileRowGroup}>
+                {getMobileDays().map((day) => {
+                  const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
+                  return (
+                    <div key={day.date} className={styles.mobileDayField}>
+                      <span className={styles.mobileDayFieldLabel}>{t.weekBlock.events}</span>
+                      <div className={styles.mobileDayFieldContent}>
+                        {dayEvents.length > 0 ? dayEvents.map((e) => (
+                          <div key={e.id} className={styles.calEventChip}>
+                            {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
+                            <span className={styles.calEventName}>{e.summary}</span>
+                          </div>
+                        )) : <span className={styles.mobileDayFieldEmpty}>–</span>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Custody (Emilia) row */}
+            {custodyEntries && custodyEntries.length > 0 && (
+              <div className={styles.mobileRowGroup}>
+                {getMobileDays().map((day) => {
+                  const custodyEntry = custodyEntries.find(c => c.date === day.date)
+                  return (
+                    <div key={day.date} className={styles.mobileDayField}>
+                      <span className={styles.mobileDayFieldLabel}>Emilia</span>
+                      <div className={styles.mobileDayFieldIconWrap}>
+                        {custodyEntry?.location === "WITH_US" && (
+                          <Baby
+                            size={14}
+                            strokeWidth={2}
+                            className={styles.emiliaIconHome}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
 
             {/* Field rows */}
             {ALL_ROWS.map(({ field }) => (
@@ -919,48 +1088,6 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     )
                   })}
                 </div>
-
-                {field === "note" && calendarEvents && (
-                  <div className={styles.mobileRowGroup}>
-                    {getMobileDays().map((day) => {
-                      const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
-                      return (
-                        <div key={day.date} className={styles.mobileDayField}>
-                          <span className={styles.mobileDayFieldLabel}>{t.weekBlock.events}</span>
-                          <div className={styles.mobileDayFieldContent}>
-                            {dayEvents.length > 0 ? dayEvents.map((e) => (
-                              <div key={e.id} className={styles.calEventChip}>
-                                {e.color && <span className={styles.calEventDot} style={{ background: e.color }} />}
-                                <span className={styles.calEventName}>{e.summary}</span>
-                              </div>
-                            )) : <span className={styles.mobileDayFieldEmpty}>–</span>}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-                {field === "note" && custodyEntries && custodyEntries.length > 0 && (
-                  <div className={styles.mobileRowGroup}>
-                    {getMobileDays().map((day) => {
-                      const custodyEntry = custodyEntries.find(c => c.date === day.date)
-                      return (
-                        <div key={day.date} className={styles.mobileDayField}>
-                          <span className={styles.mobileDayFieldLabel}>Emilia</span>
-                          <div className={styles.mobileDayFieldIconWrap}>
-                            {custodyEntry?.location === "WITH_US" && (
-                              <Baby
-                                size={14}
-                                strokeWidth={2}
-                                className={styles.emiliaIconHome}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
               </Fragment>
             ))}
           </div>
@@ -1008,6 +1135,85 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             <WeatherIcon rain={w.eveningRain} />
                           </div>
                         </>
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
+
+            {/* Location row */}
+            {familyMembers && familyMembers.length > 0 && (
+              <>
+                <div className={styles.mobileWeekTableLabel}><MapPin size={11} strokeWidth={2} /></div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableLocationCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      {familyMembers.map((member) => {
+                        const entry = workLocations?.find((w) => w.date === day.date && w.userId === member.id)
+                        if (!entry) return null
+                        const Icon = entry.location === "OFFICE" ? Building2 : Home
+                        return (
+                          <Icon
+                            key={member.id}
+                            size={10}
+                            strokeWidth={2}
+                            className={entry.location === "OFFICE" ? styles.locationIconOffice : styles.locationIconHome}
+                          />
+                        )
+                      })}
+                    </div>
+                  )
+                })}
+              </>
+            )}
+
+            {/* Events row */}
+            {calendarEvents && (
+              <>
+                <div className={styles.mobileWeekTableLabel}><Zap size={11} strokeWidth={2} /></div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      <span className={styles.mobileWeekTableCellText}>
+                        {dayEvents.map((e) => e.summary).join(", ")}
+                      </span>
+                    </div>
+                  )
+                })}
+              </>
+            )}
+
+            {/* Custody (Emilia) row */}
+            {custodyEntries && custodyEntries.length > 0 && (
+              <>
+                <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
+                {week.days.map((day) => {
+                  const isToday = day.date === todayDateStr
+                  const entry = custodyEntries.find(c => c.date === day.date)
+                  return (
+                    <div
+                      key={day.date}
+                      className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableCustodyCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
+                    >
+                      {entry?.location === "WITH_US" && (
+                        <Baby
+                          size={10}
+                          strokeWidth={2}
+                          className={styles.emiliaIconHome}
+                        />
                       )}
                     </div>
                   )
@@ -1111,50 +1317,6 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     </div>
                   )
                 })}
-                {field === "note" && calendarEvents && (
-                  <>
-                    <div className={styles.mobileWeekTableLabel}><Zap size={11} strokeWidth={2} /></div>
-                    {week.days.map((day) => {
-                      const isToday = day.date === todayDateStr
-                      const dayEvents = calendarEvents.filter((e) => e.date <= day.date && e.endDate > day.date)
-                      return (
-                        <div
-                          key={day.date}
-                          className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
-                          onClick={() => setMobileDayDetail(day.date)}
-                        >
-                          <span className={styles.mobileWeekTableCellText}>
-                            {dayEvents.map((e) => e.summary).join(", ")}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </>
-                )}
-                {field === "note" && custodyEntries && custodyEntries.length > 0 && (
-                  <>
-                    <div className={styles.mobileWeekTableLabel}><Baby size={11} strokeWidth={2} /></div>
-                    {week.days.map((day) => {
-                      const isToday = day.date === todayDateStr
-                      const entry = custodyEntries.find(c => c.date === day.date)
-                      return (
-                        <div
-                          key={day.date}
-                          className={`${styles.mobileWeekTableCell} ${styles.mobileWeekTableCustodyCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
-                          onClick={() => setMobileDayDetail(day.date)}
-                        >
-                          {entry?.location === "WITH_US" && (
-                            <Baby
-                              size={10}
-                              strokeWidth={2}
-                              className={styles.emiliaIconHome}
-                            />
-                          )}
-                        </div>
-                      )
-                    })}
-                  </>
-                )}
               </Fragment>
             ))}
           </div>
@@ -1188,6 +1350,29 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   <div className={styles.mobileModalWeather}>
                     <span>{w.low}–{w.high}°</span>
                     <WeatherIcon rain={w.afternoonRain} />
+                  </div>
+                )}
+                {familyMembers && familyMembers.length > 0 && (
+                  <div className={styles.mobileModalField}>
+                    <span className={styles.mobileModalFieldLabel}>{t.weekBlock.location}</span>
+                    <div className={styles.locationPillGroup}>
+                      {familyMembers.map((member) => {
+                        const entry = workLocations?.find((w2) => w2.date === day.date && w2.userId === member.id)
+                        const value = entry?.location ?? null
+                        const locKey = `${day.date}:workloc:${member.id}`
+                        return (
+                          <LocationPill
+                            key={member.id}
+                            label={member.name ?? "?"}
+                            value={value}
+                            stateLabel={locationStateLabel(value)}
+                            disabled={readOnly || past || saving.has(locKey)}
+                            onClick={() => handleLocationToggle(day.date, member.id, value)}
+                            size={14}
+                          />
+                        )
+                      })}
+                    </div>
                   </div>
                 )}
                 {ALL_ROWS.map(({ field }) => {

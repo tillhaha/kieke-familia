@@ -69,6 +69,22 @@ export async function GET(request: Request) {
       date: c.date.toISOString().split("T")[0],
     }))
 
+    const workLocations = familyId
+      ? await prisma.workLocation.findMany({
+          where: {
+            user: { familyId },
+            date: { gte: timeMin, lte: timeMax },
+          },
+          select: { date: true, userId: true, location: true },
+          orderBy: { date: "asc" },
+        })
+      : []
+
+    const serializedWorkLocations = workLocations.map((w) => ({
+      ...w,
+      date: w.date.toISOString().split("T")[0],
+    }))
+
     const importedCalendars = familyId
       ? await prisma.importedCalendar.findMany({
           where: { familyId },
@@ -83,7 +99,7 @@ export async function GET(request: Request) {
     )
     const importedEvents = importedEventsNested.flat()
 
-    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody, importedEvents })
+    return NextResponse.json({ googleEvents, calendarSyncCount, birthdays, travels, custodyEntries: serializedCustody, workLocations: serializedWorkLocations, importedEvents })
   } catch (error: unknown) {
     console.error("Calendar fetch error:", error)
     const msg = error instanceof Error ? error.message : String(error)

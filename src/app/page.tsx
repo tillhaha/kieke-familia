@@ -4,7 +4,7 @@
 import { useSession, signIn } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import { LogIn, ChevronLeft, ChevronRight } from "lucide-react"
-import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent } from "./week/WeekBlock"
+import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent, WorkLocationEntry, WorkLocationValue } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
@@ -43,6 +43,7 @@ export default function Home() {
   const [weather, setWeather] = useState<Record<string, DayWeather> | null>(null)
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
+  const [workLocations, setWorkLocations] = useState<WorkLocationEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [tasks, setTasks] = useState<FamilyTask[]>([])
   const [members, setMembers] = useState<{ id: string; name: string | null }[]>([])
@@ -90,6 +91,7 @@ export default function Home() {
       .then((r) => r.json())
       .then((d) => {
         setCustodyEntries(d.custodyEntries ?? [])
+        setWorkLocations(d.workLocations ?? [])
         const events: CalendarEvent[] = []
         const nextDay = (d: string) => { const x = new Date(d + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + 1); return x.toISOString().slice(0, 10) }
         for (const e of (d.googleEvents ?? [])) {
@@ -115,6 +117,13 @@ export default function Home() {
       })
       .catch(() => {})
   }, [week])
+
+  const handleWorkLocationUpdate = useCallback((date: string, userId: string, location: WorkLocationValue | null) => {
+    setWorkLocations((prev) => {
+      const filtered = prev.filter((w) => !(w.date === date && w.userId === userId))
+      return location ? [...filtered, { date, userId, location }] : filtered
+    })
+  }, [])
 
   const handleToggleDone = useCallback((id: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== id))
@@ -240,6 +249,9 @@ export default function Home() {
           weather={weather ?? undefined}
           custodyEntries={custodyEntries}
           calendarEvents={calendarEvents}
+          workLocations={workLocations}
+          familyMembers={members}
+          onWorkLocationUpdate={handleWorkLocationUpdate}
           readOnly
           editHref={`/week#week-${week.startDate}`}
         />

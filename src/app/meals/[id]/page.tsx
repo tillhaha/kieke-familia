@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
-import { ChevronLeft, ImagePlus, Pencil, Star, Trash2, Wand2 } from "lucide-react"
+import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
@@ -69,6 +69,16 @@ export default function MealDetailPage() {
   const [imageUploading, setImageUploading] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  type NotesLinkPrompt = { selStart: number; selEnd: number; selText: string; baseText: string }
+  const [linkPrompt, setLinkPrompt] = useState<NotesLinkPrompt | null>(null)
+  const [linkUrl, setLinkUrl] = useState("")
+  const notesTextareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const linkUrlInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (linkPrompt) setTimeout(() => linkUrlInputRef.current?.focus(), 0)
+  }, [linkPrompt])
 
   const { data: session, status } = useSession()
   const isOwner = status === "authenticated" && (session?.user as any)?.familyId === meal?.familyId
@@ -163,6 +173,60 @@ export default function MealDetailPage() {
       const updated = await patch({ notes: draftNotes || null })
       setDraftNotes(updated.notes ?? "")
     } catch { setDraftNotes(meal.notes ?? "") }
+  }
+
+  const insertLink = (url: string) => {
+    if (!linkPrompt) return
+    const { selStart, selEnd, selText, baseText } = linkPrompt
+    const label = selText || (() => { try { return new URL(url).hostname.replace(/^www\./, "") } catch { return url } })()
+    const mdLink = `[${label}](${url})`
+    const newText = baseText.slice(0, selStart) + mdLink + baseText.slice(selEnd)
+    setDraftNotes(newText)
+    setLinkPrompt(null)
+    setLinkUrl("")
+    setTimeout(() => {
+      const ta = notesTextareaRef.current
+      if (ta) { ta.focus(); const pos = selStart + mdLink.length; ta.setSelectionRange(pos, pos); autoResize(ta) }
+    }, 0)
+  }
+
+  const dismissLinkPrompt = () => {
+    setLinkPrompt(null)
+    setLinkUrl("")
+    handleNotesBlur()
+  }
+
+  const handleNotesKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      e.preventDefault()
+      const ta = e.currentTarget
+      setLinkPrompt({
+        selStart: ta.selectionStart,
+        selEnd: ta.selectionEnd,
+        selText: ta.value.slice(ta.selectionStart, ta.selectionEnd),
+        baseText: ta.value,
+      })
+      setLinkUrl("")
+    }
+  }
+
+  const handleNotesPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pasted = e.clipboardData.getData("text").trim()
+    if (!/^https?:\/\/\S+$/.test(pasted)) return
+    e.preventDefault()
+    const ta = e.currentTarget
+    const selStart = ta.selectionStart
+    const selEnd = ta.selectionEnd
+    const selText = ta.value.slice(selStart, selEnd)
+    let insert: string
+    if (selText) {
+      insert = `[${selText}](${pasted})`
+    } else {
+      try { insert = `[${new URL(pasted).hostname.replace(/^www\./, "")}](${pasted})` } catch { insert = pasted }
+    }
+    const newVal = ta.value.slice(0, selStart) + insert + ta.value.slice(selEnd)
+    setDraftNotes(newVal)
+    setTimeout(() => { if (notesTextareaRef.current) autoResize(notesTextareaRef.current) }, 0)
   }
 
   const handleIngredientsBlur = async () => {
@@ -396,14 +460,47 @@ export default function MealDetailPage() {
       <div className={styles.fieldSection}>
         <span className={styles.fieldLabel}>{t.meals.notesLabel}</span>
         {isOwner && editingField === "notes" ? (
-          <textarea
-            autoFocus
-            className={styles.fieldTextarea}
-            value={draftNotes}
-            onChange={(e) => { setDraftNotes(e.target.value); autoResize(e.target) }}
-            onBlur={handleNotesBlur}
-            ref={(el) => { if (el) autoResize(el) }}
-          />
+          <>
+            <textarea
+              autoFocus
+              className={styles.fieldTextarea}
+              value={draftNotes}
+              onChange={(e) => { setDraftNotes(e.target.value); autoResize(e.target) }}
+              onBlur={(e) => {
+                if (e.relatedTarget === linkUrlInputRef.current) return
+                handleNotesBlur()
+              }}
+              onKeyDown={handleNotesKeyDown}
+              onPaste={handleNotesPaste}
+              ref={(el) => { notesTextareaRef.current = el; if (el) autoResize(el) }}
+            />
+            {linkPrompt && (
+              <div className={styles.linkPromptBar}>
+                <LinkIcon size={11} className={styles.linkPromptIcon} />
+                <input
+                  ref={linkUrlInputRef}
+                  className={styles.linkPromptInput}
+                  value={linkUrl}
+                  placeholder="https://…"
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") { e.preventDefault(); if (linkUrl.trim()) insertLink(linkUrl.trim()) }
+                    if (e.key === "Escape") { e.preventDefault(); setLinkPrompt(null); setLinkUrl(""); setTimeout(() => notesTextareaRef.current?.focus(), 0) }
+                  }}
+                  onBlur={(e) => {
+                    if (e.relatedTarget === notesTextareaRef.current) return
+                    dismissLinkPrompt()
+                  }}
+                />
+                <button
+                  className={styles.linkPromptSubmit}
+                  onMouseDown={(e) => { e.preventDefault(); if (linkUrl.trim()) insertLink(linkUrl.trim()) }}
+                >
+                  Insert
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div
             className={styles.editableField}

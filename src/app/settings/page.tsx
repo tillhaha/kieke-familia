@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { User, CalendarDays, Download, Home, ShoppingCart, Globe, Palette, ChevronRight, ArrowLeft } from "lucide-react"
+import { User, Download, Home, ShoppingCart, Globe, Palette, ChevronRight, ArrowLeft } from "lucide-react"
 import { GoogleCalendarSync } from "./GoogleCalendarSync"
 import { ImportedCalendarsSection } from "./ImportedCalendarsSection"
 import { ProfileSection } from "./ProfileSection"

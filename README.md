@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Familia
 
-## Getting Started
+A family management app: shared week planning, a recipe library, a shopping
+list, task management, and a calendar view that merges Google Calendar,
+imported iCal feeds, birthdays, travel, and custody schedules.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router), React 19
+- PostgreSQL via Prisma (`@prisma/adapter-pg`)
+- NextAuth: Google OAuth + username/password (credentials) login
+- Google Calendar API, iCal feed parsing (`node-ical`)
+- Anthropic API for recipe parsing and shopping-list generation
+
+## Getting started
 
 ```bash
+npm install
+npx prisma generate
+npx prisma db push      # sync schema to DB — this project doesn't use `migrate dev`
+npx prisma db seed      # seed shopping categories + blacklist terms
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+DATABASE_URL
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+NEXTAUTH_SECRET
+NEXTAUTH_URL
+ANTHROPIC_API_KEY   # used by /api/meals/parse and /api/shopping/generate
+```
 
-## Learn More
+## Commands
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev      # dev server
+npm run build    # production build (runs prisma generate first)
+npm run lint     # ESLint
+npx prisma studio      # browse the database
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+One-off scripts in `scripts/` are run with `npx tsx scripts/<name>.ts` and are
+excluded from the TypeScript build.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+There is no test suite.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deployed via [Coolify](https://coolify.io) (self-hosted Docker), not Vercel.
+Recipe photo uploads (`public/uploads/meals/`) are backed by a Coolify volume
+mount so they survive redeploys — see `CLAUDE.md` for why uploads are served
+through an API route handler rather than Next's static file serving.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## More detail
+
+See `CLAUDE.md` for architecture notes (data model, auth flow, API routes,
+styling conventions) aimed at anyone — human or AI — working in this repo.

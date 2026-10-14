@@ -57,8 +57,6 @@ export async function POST(request: Request) {
     })
     clearTimeout(timer)
 
-    console.log(`[imported] fetch ${normalized} → status=${res.status} content-type=${res.headers.get("content-type")} final-url=${res.url}`)
-
     if (!res.ok) {
       return NextResponse.json(
         { error: `Could not fetch URL (HTTP ${res.status})` },
@@ -69,7 +67,6 @@ export async function POST(request: Request) {
     const text = await res.text()
     const first = text.trimStart().slice(0, 200)
     const ct = res.headers.get("content-type") ?? ""
-    console.log(`[imported] first 200 chars: ${first}`)
 
     if (!first.includes("BEGIN:VCALENDAR") && !ct.includes("text/calendar") && !ct.includes("application/octet-stream")) {
       return NextResponse.json(

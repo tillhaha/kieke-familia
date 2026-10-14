@@ -95,7 +95,7 @@ function CustodyPill({
 }
 
 export default function CalendarPage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const { t } = useTranslation()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<{
@@ -113,7 +113,6 @@ export default function CalendarPage() {
   const [calendarError, setCalendarError] = useState<string | null>(null)
   const [modal, setModal] = useState<ModalType>("NONE")
 
-  const [deleteConfirming, setDeleteConfirming] = useState(false)
   const [modalError, setModalError] = useState<string | null>(null)
 
   // Filter state
@@ -142,7 +141,6 @@ export default function CalendarPage() {
 
   const closeModal = () => {
     setModal("NONE")
-    setDeleteConfirming(false)
     setModalError(null)
     setOpenCustodyId(null)
     setCConflictPending(false)
@@ -260,7 +258,6 @@ export default function CalendarPage() {
               setCUntil(sixMonths)
               setCConflictPending(false)
               setOpenCustodyId(null)
-              setDeleteConfirming(false)
               setModalError(null)
               setModal("CUSTODY")
             }}

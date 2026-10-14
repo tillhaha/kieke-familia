@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-import { writeFile, mkdir, unlink, readdir, readFile } from "fs/promises"
+import { writeFile, mkdir, unlink, readFile } from "fs/promises"
 import path from "path"
+import { MEAL_IMAGE_UPLOAD_DIR as UPLOAD_DIR, findStoredMealImage as findStoredFile } from "@/lib/mealImages"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -12,7 +13,6 @@ type Params = { params: Promise<{ id: string }> }
 // in production, Next's router snapshots public/ once at server boot, so files
 // written here at runtime 404 until the next restart. Reading them back via a
 // route handler re-reads the filesystem on every request instead.
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "meals")
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -24,16 +24,6 @@ const CONTENT_TYPES: Record<string, string> = {
   png: "image/png",
   webp: "image/webp",
   gif: "image/gif",
-}
-
-async function findStoredFile(id: string) {
-  let files: string[]
-  try {
-    files = await readdir(UPLOAD_DIR)
-  } catch {
-    return null
-  }
-  return files.find((f) => f.startsWith(`${id}-`)) ?? null
 }
 
 export async function GET(_req: Request, { params }: Params) {

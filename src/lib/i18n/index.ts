@@ -112,6 +112,7 @@ export type Translations = {
     noRecipesMatch: string
     noRecipesYet: string
     aiImport: string
+    photoImport: string
     nameLabel: string
     typeLabel: string
     dietLabel: string
@@ -153,10 +154,7 @@ export type Translations = {
     batchImporting: string
     batchDoneAll: string
     batchDoneMixed: string
-    batchTabText: string
-    batchTabScreenshots: string
     batchDropzoneHint: string
-    batchScreenshotImport: string
   }
   taskModal: {
     editTitle: string
@@ -433,6 +431,7 @@ const en: Translations = {
     noRecipesMatch: "No recipes match filters.",
     noRecipesYet: "No recipes yet. Add your first recipe.",
     aiImport: "AI Import",
+    photoImport: "Photo import",
     nameLabel: "Name *",
     typeLabel: "Type",
     dietLabel: "Diet",
@@ -474,10 +473,7 @@ const en: Translations = {
     batchImporting: "Importing… {current} / {total}",
     batchDoneAll: "All {total} imported",
     batchDoneMixed: "{imported} imported, {failed} failed",
-    batchTabText: "Text / URL",
-    batchTabScreenshots: "Screenshots",
     batchDropzoneHint: "Drop images here or click to choose",
-    batchScreenshotImport: "Import recipe",
   },
   taskModal: {
     editTitle: "Edit task",
@@ -754,6 +750,7 @@ const es: Translations = {
     noRecipesMatch: "No hay recetas que coincidan.",
     noRecipesYet: "Sin recetas aún. Añade tu primera receta.",
     aiImport: "Importar con IA",
+    photoImport: "Importar foto",
     nameLabel: "Nombre *",
     typeLabel: "Tipo",
     dietLabel: "Dieta",
@@ -795,10 +792,7 @@ const es: Translations = {
     batchImporting: "Importando… {current} / {total}",
     batchDoneAll: "{total} importados",
     batchDoneMixed: "{imported} importados, {failed} fallidos",
-    batchTabText: "Texto / URL",
-    batchTabScreenshots: "Capturas",
     batchDropzoneHint: "Suelta imágenes aquí o haz clic",
-    batchScreenshotImport: "Importar receta",
   },
   taskModal: {
     editTitle: "Editar tarea",
@@ -1075,6 +1069,7 @@ const de: Translations = {
     noRecipesMatch: "Keine Rezepte entsprechen den Filtern.",
     noRecipesYet: "Noch keine Rezepte. Füge dein erstes Rezept hinzu.",
     aiImport: "KI-Import",
+    photoImport: "Foto-Import",
     nameLabel: "Name *",
     typeLabel: "Typ",
     dietLabel: "Diät",
@@ -1116,10 +1111,7 @@ const de: Translations = {
     batchImporting: "Importiere… {current} / {total}",
     batchDoneAll: "Alle {total} importiert",
     batchDoneMixed: "{imported} importiert, {failed} fehlgeschlagen",
-    batchTabText: "Text / URL",
-    batchTabScreenshots: "Screenshots",
     batchDropzoneHint: "Bilder hier ablegen oder klicken",
-    batchScreenshotImport: "Rezept importieren",
   },
   taskModal: {
     editTitle: "Aufgabe bearbeiten",

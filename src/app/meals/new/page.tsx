@@ -3,9 +3,34 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ChevronLeft, Sparkles, X, ImagePlus } from "lucide-react"
+import { ChevronLeft, Sparkles, X, ImagePlus, Camera } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
+
+type ScreenshotEntry = { dataUrl: string; name: string }
+
+type ParsedRecipe = {
+  name?: string
+  mealType?: string
+  servings?: number
+  diet?: string
+  officeFriendly?: boolean
+  thirtyMinute?: boolean
+  ingredients?: string[]
+  steps?: string[]
+  notes?: string
+  imageUrl?: string
+  source?: string
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
 
 export default function NewMealPage() {
   const router = useRouter()
@@ -32,6 +57,13 @@ export default function NewMealPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [photoModalOpen, setPhotoModalOpen] = useState(false)
+  const [screenshots, setScreenshots] = useState<ScreenshotEntry[]>([])
+  const [dragging, setDragging] = useState(false)
+  const [photoParsing, setPhotoParsing] = useState(false)
+  const [photoParseError, setPhotoParseError] = useState<string | null>(null)
+  const screenshotInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     if (modalOpen) {
       setTimeout(() => textareaRef.current?.focus(), 50)
@@ -47,6 +79,34 @@ export default function NewMealPage() {
     return () => window.removeEventListener("keydown", onKey)
   }, [modalOpen])
 
+  useEffect(() => {
+    if (!photoModalOpen) {
+      setPhotoParseError(null)
+      setScreenshots([])
+    }
+  }, [photoModalOpen])
+
+  useEffect(() => {
+    if (!photoModalOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setPhotoModalOpen(false) }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [photoModalOpen])
+
+  const applyParsedRecipe = (r: ParsedRecipe) => {
+    setName(r.name ?? "")
+    setMealType(r.mealType ?? "")
+    setServings(String(r.servings ?? 2))
+    setDiet(r.diet ?? "Meat")
+    setOfficeFriendly(r.officeFriendly ?? false)
+    setThirtyMinute(r.thirtyMinute ?? false)
+    setIngredients((r.ingredients ?? []).join("\n"))
+    setSteps((r.steps ?? []).join("\n"))
+    setNotes(r.notes ?? "")
+    setImageUrl(r.imageUrl ?? null)
+    setSource(r.source ?? "")
+  }
+
   const handleParse = async () => {
     if (!importText.trim() || parsing) return
     setParsing(true)
@@ -61,24 +121,59 @@ export default function NewMealPage() {
       const data = await res.json()
       if (!res.ok) { setParseError(data.error ?? "Failed to parse recipe."); return }
 
-      const r = data.recipe
-      setName(r.name ?? "")
-      setMealType(r.mealType ?? "")
-      setServings(String(r.servings ?? 2))
-      setDiet(r.diet ?? "Meat")
-      setOfficeFriendly(r.officeFriendly ?? false)
-      setThirtyMinute(r.thirtyMinute ?? false)
-      setIngredients((r.ingredients ?? []).join("\n"))
-      setSteps((r.steps ?? []).join("\n"))
-      setNotes(r.notes ?? "")
-      setImageUrl(r.imageUrl ?? null)
-      setSource(r.source ?? "")
+      applyParsedRecipe(data.recipe)
       setImportText("")
       setModalOpen(false)
     } catch {
       setParseError("Failed to parse recipe.")
     } finally {
       setParsing(false)
+    }
+  }
+
+  const addScreenshotFiles = async (files: FileList | File[]) => {
+    const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/"))
+    const entries = await Promise.all(
+      imageFiles.map(async (f) => ({ dataUrl: await fileToDataUrl(f), name: f.name }))
+    )
+    setScreenshots((prev) => [...prev, ...entries])
+  }
+
+  const handleScreenshotFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) addScreenshotFiles(e.target.files)
+    e.target.value = ""
+  }
+
+  const handleScreenshotDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragging(false)
+    if (e.dataTransfer.files) addScreenshotFiles(e.dataTransfer.files)
+  }
+
+  const removeScreenshot = (index: number) => {
+    setScreenshots((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handlePhotoParse = async () => {
+    if (screenshots.length === 0 || photoParsing) return
+    setPhotoParsing(true)
+    setPhotoParseError(null)
+
+    try {
+      const res = await fetch("/api/meals/parse", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images: screenshots.map((s) => s.dataUrl) }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setPhotoParseError(data.error ?? "Failed to parse recipe."); return }
+
+      applyParsedRecipe(data.recipe)
+      setPhotoModalOpen(false)
+    } catch {
+      setPhotoParseError("Failed to parse recipe.")
+    } finally {
+      setPhotoParsing(false)
     }
   }
 
@@ -135,10 +230,16 @@ export default function NewMealPage() {
 
       <div className={styles.detailHeader}>
         <h1 className={styles.pageTitle}>{t.meals.newRecipe}</h1>
-        <button type="button" className={styles.aiImportBtn} onClick={() => setModalOpen(true)}>
-          <Sparkles size={13} />
-          {t.meals.aiImport}
-        </button>
+        <div className={styles.detailHeaderActions}>
+          <button type="button" className={styles.aiImportBtn} onClick={() => setModalOpen(true)}>
+            <Sparkles size={13} />
+            {t.meals.aiImport}
+          </button>
+          <button type="button" className={styles.aiImportBtn} onClick={() => setPhotoModalOpen(true)}>
+            <Camera size={13} />
+            {t.meals.photoImport}
+          </button>
+        </div>
       </div>
 
       {imageUrl ? (
@@ -261,6 +362,68 @@ export default function NewMealPage() {
                 {parsing ? t.meals.importing : t.meals.import}
               </button>
               {parseError && <span className={styles.parseError}>{parseError}</span>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {photoModalOpen && (
+        <div className={styles.modalBackdrop} onClick={(e) => { if (e.target === e.currentTarget) setPhotoModalOpen(false) }}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <span className={styles.modalTitle}>{t.meals.photoImport}</span>
+              <button type="button" className={styles.modalCloseBtn} onClick={() => setPhotoModalOpen(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <input
+              ref={screenshotInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: "none" }}
+              onChange={handleScreenshotFileInput}
+            />
+            <div
+              className={`${styles.batchDropzone} ${dragging ? styles.batchDropzoneDragging : ""}`}
+              onClick={() => screenshotInputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={handleScreenshotDrop}
+            >
+              <span className={styles.batchDropzoneHint}>{t.meals.batchDropzoneHint}</span>
+            </div>
+
+            {screenshots.length > 0 && (
+              <div className={styles.batchThumbnails}>
+                {screenshots.map((img, i) => (
+                  <div key={i} className={styles.batchThumb}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.dataUrl} alt={img.name} />
+                    <button
+                      type="button"
+                      className={styles.batchThumbRemove}
+                      onClick={(e) => { e.stopPropagation(); removeScreenshot(i) }}
+                      disabled={photoParsing}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                className={styles.parseBtn}
+                onClick={handlePhotoParse}
+                disabled={photoParsing || screenshots.length === 0}
+              >
+                {photoParsing ? t.meals.importing : t.meals.import}
+              </button>
+              {photoParseError && <span className={styles.parseError}>{photoParseError}</span>}
             </div>
           </div>
         </div>

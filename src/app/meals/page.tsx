@@ -181,6 +181,37 @@ export default function MealsPage() {
         </div>
       </div>
 
+      {/* Meal type pills */}
+      <div className={styles.mealTypeRow}>
+        <div className={styles.mealTypePills}>
+          {([
+            ["", t.meals.allTypes],
+            ["Meal", t.meals.typeMeal],
+            ["Snack", t.meals.typeSnack],
+            ["Drink", t.meals.typeDrink],
+            ["Baked", t.meals.typeBaked],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value || "all"}
+              type="button"
+              className={`${styles.filterToggle} ${filterMealType === value ? styles.filterToggleActive : ""}`}
+              onClick={() => setFilterMealType(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {hasFilters && (
+          <button
+            className={styles.filterClear}
+            onClick={() => { setQuery(""); setFilterMealType(""); setFilterDiet(""); setFilterOffice(false); setFilterThirty(false); setFilterFavorite(false) }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
       {/* Search + Filters */}
       <div className={styles.controlsRow}>
         <div className={styles.searchRow}>
@@ -194,18 +225,6 @@ export default function MealsPage() {
         </div>
 
         <div className={styles.filterBar}>
-        <select
-          className={styles.filterSelect}
-          value={filterMealType}
-          onChange={(e) => setFilterMealType(e.target.value)}
-        >
-          <option value="">{t.meals.allTypes}</option>
-          <option value="Meal">{t.meals.typeMeal}</option>
-          <option value="Snack">{t.meals.typeSnack}</option>
-          <option value="Drink">{t.meals.typeDrink}</option>
-          <option value="Baked">{t.meals.typeBaked}</option>
-        </select>
-
         <select
           className={styles.filterSelect}
           value={filterDiet}
@@ -238,15 +257,6 @@ export default function MealsPage() {
         >
           <Star size={13} fill={filterFavorite ? "currentColor" : "none"} strokeWidth={1.5} />
         </button>
-
-        {hasFilters && (
-          <button
-            className={styles.filterClear}
-            onClick={() => { setQuery(""); setFilterMealType(""); setFilterDiet(""); setFilterOffice(false); setFilterThirty(false); setFilterFavorite(false) }}
-          >
-            Clear
-          </button>
-        )}
         </div>
       </div>
 

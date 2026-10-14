@@ -135,6 +135,7 @@ export default function CalendarPage() {
   const [openCustodyId, setOpenCustodyId] = useState<string | null>(null)
   const [cStart, setCStart] = useState("")
   const [cStartsWith, setCStartsWith] = useState<"WITH_US" | "WITH_MONA">("WITH_US")
+  const [cPattern, setCPattern] = useState<"ALTERNATING_WEEKS" | "SPLIT_4_3">("ALTERNATING_WEEKS")
   const [cRecurring, setCRecurring] = useState(true)
   const [cUntil, setCUntil] = useState("")
   const [cConflictPending, setCConflictPending] = useState(false)
@@ -254,6 +255,7 @@ export default function CalendarPage() {
               const sixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split("T")[0]
               setCStart(today)
               setCStartsWith("WITH_US")
+              setCPattern("ALTERNATING_WEEKS")
               setCRecurring(true)
               setCUntil(sixMonths)
               setCConflictPending(false)
@@ -437,6 +439,7 @@ export default function CalendarPage() {
                   body: JSON.stringify({
                     startDate: cStart,
                     startsWith: cStartsWith,
+                    pattern: cPattern,
                     recurring: cRecurring,
                     until: cRecurring ? cUntil : cStart,
                     force: cConflictPending,
@@ -469,45 +472,47 @@ export default function CalendarPage() {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label>{t.calendar.sleepsAt}</label>
-              <div style={{ display: "flex", gap: "8px" }}>
-                <button
-                  type="button"
-                  onClick={() => setCStartsWith("WITH_US")}
-                  style={{
-                    flex: 1,
-                    padding: "8px",
-                    borderRadius: "6px",
-                    border: cStartsWith === "WITH_US" ? "2px solid var(--primary)" : "1px solid var(--border)",
-                    background: cStartsWith === "WITH_US" ? "var(--accent-soft)" : "transparent",
-                    fontWeight: cStartsWith === "WITH_US" ? 700 : 500,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  {t.calendar.withUs}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCStartsWith("WITH_MONA")}
-                  style={{
-                    flex: 1,
-                    padding: "8px",
-                    borderRadius: "6px",
-                    border: cStartsWith === "WITH_MONA" ? "2px solid var(--primary)" : "1px solid var(--border)",
-                    background: cStartsWith === "WITH_MONA" ? "var(--accent-soft)" : "transparent",
-                    fontWeight: cStartsWith === "WITH_MONA" ? 700 : 500,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  {t.calendar.elsewhere}
-                </button>
+            {!(cRecurring && cPattern === "SPLIT_4_3") && (
+              <div className={styles.formGroup}>
+                <label>{t.calendar.sleepsAt}</label>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setCStartsWith("WITH_US")}
+                    style={{
+                      flex: 1,
+                      padding: "8px",
+                      borderRadius: "6px",
+                      border: cStartsWith === "WITH_US" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                      background: cStartsWith === "WITH_US" ? "var(--accent-soft)" : "transparent",
+                      fontWeight: cStartsWith === "WITH_US" ? 700 : 500,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    {t.calendar.withUs}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCStartsWith("WITH_MONA")}
+                    style={{
+                      flex: 1,
+                      padding: "8px",
+                      borderRadius: "6px",
+                      border: cStartsWith === "WITH_MONA" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                      background: cStartsWith === "WITH_MONA" ? "var(--accent-soft)" : "transparent",
+                      fontWeight: cStartsWith === "WITH_MONA" ? 700 : 500,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    {t.calendar.elsewhere}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className={styles.formGroup}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -541,9 +546,47 @@ export default function CalendarPage() {
                 </button>
               </div>
               {cRecurring && (
-                <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
-                  {t.calendar.alternatingWeeks}
-                </p>
+                <>
+                  <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => setCPattern("ALTERNATING_WEEKS")}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: cPattern === "ALTERNATING_WEEKS" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                        background: cPattern === "ALTERNATING_WEEKS" ? "var(--accent-soft)" : "transparent",
+                        fontWeight: cPattern === "ALTERNATING_WEEKS" ? 700 : 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      {t.calendar.patternAlternatingWeeks}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCPattern("SPLIT_4_3")}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: cPattern === "SPLIT_4_3" ? "2px solid var(--primary)" : "1px solid var(--border)",
+                        background: cPattern === "SPLIT_4_3" ? "var(--accent-soft)" : "transparent",
+                        fontWeight: cPattern === "SPLIT_4_3" ? 700 : 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        fontSize: "0.875rem",
+                      }}
+                    >
+                      {t.calendar.patternSplit43}
+                    </button>
+                  </div>
+                  <p style={{ fontSize: "0.75rem", color: "var(--secondary)", margin: "4px 0 0" }}>
+                    {cPattern === "SPLIT_4_3" ? t.calendar.split43Description : t.calendar.alternatingWeeks}
+                  </p>
+                </>
               )}
             </div>
 

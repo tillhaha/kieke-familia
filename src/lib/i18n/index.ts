@@ -84,7 +84,11 @@ export type Translations = {
     withUs: string
     elsewhere: string
     recurring: string
+    pattern: string
+    patternAlternatingWeeks: string
+    patternSplit43: string
     alternatingWeeks: string
+    split43Description: string
     until: string
     weeksOfSchedulePrefix: string
     weeksOfScheduleSuffix: string
@@ -403,7 +407,11 @@ const en: Translations = {
     withUs: "With us",
     elsewhere: "Elsewhere",
     recurring: "Recurring",
+    pattern: "Pattern",
+    patternAlternatingWeeks: "Alternating weeks",
+    patternSplit43: "4/3 split",
     alternatingWeeks: "Alternating weeks · switches on Sunday",
+    split43Description: "4/3 split · with us Sunday–Tuesday, with Mona Wednesday–Saturday, every week",
     until: "Until",
     weeksOfSchedulePrefix: "Creates ~",
     weeksOfScheduleSuffix: "weeks of schedule entries",
@@ -722,7 +730,11 @@ const es: Translations = {
     withUs: "Con nosotros",
     elsewhere: "En otro lugar",
     recurring: "Recurrente",
+    pattern: "Patrón",
+    patternAlternatingWeeks: "Semanas alternas",
+    patternSplit43: "Reparto 4/3",
     alternatingWeeks: "Semanas alternas · cambia los domingos",
+    split43Description: "Reparto 4/3 · con nosotros domingo–martes, con Mona miércoles–sábado, cada semana",
     until: "Hasta",
     weeksOfSchedulePrefix: "Crea ~",
     weeksOfScheduleSuffix: "semanas de entradas",
@@ -1041,7 +1053,11 @@ const de: Translations = {
     withUs: "Bei uns",
     elsewhere: "Woanders",
     recurring: "Wiederkehrend",
+    pattern: "Muster",
+    patternAlternatingWeeks: "Alternierende Wochen",
+    patternSplit43: "4/3-Aufteilung",
     alternatingWeeks: "Alternierende Wochen · wechselt sonntags",
+    split43Description: "4/3-Aufteilung · bei uns Sonntag–Dienstag, bei Mona Mittwoch–Samstag, jede Woche",
     until: "Bis",
     weeksOfSchedulePrefix: "Erstellt ~",
     weeksOfScheduleSuffix: "Wochen Einträge",

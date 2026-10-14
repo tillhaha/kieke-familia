@@ -22,22 +22,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { startDate, startsWith, recurring, until, force } = body as {
+  const { startDate, startsWith, recurring, until, force, pattern } = body as {
     startDate?: string
     startsWith?: string
     recurring?: boolean
     until?: string
     force?: boolean
+    pattern?: string
   }
 
   if (!startDate || typeof startDate !== "string") {
     return NextResponse.json({ error: "startDate is required" }, { status: 400 })
   }
-  if (startsWith !== "WITH_US" && startsWith !== "WITH_MONA") {
-    return NextResponse.json({ error: "startsWith must be WITH_US or WITH_MONA" }, { status: 400 })
-  }
   if (typeof recurring !== "boolean") {
     return NextResponse.json({ error: "recurring must be a boolean" }, { status: 400 })
+  }
+  // SPLIT_4_3 assigns location by day-of-week, so it doesn't need a starting location
+  const isSplit43 = recurring && pattern === "SPLIT_4_3"
+  if (!isSplit43 && startsWith !== "WITH_US" && startsWith !== "WITH_MONA") {
+    return NextResponse.json({ error: "startsWith must be WITH_US or WITH_MONA" }, { status: 400 })
   }
 
   const [sy, sm, sd] = startDate.split("-").map(Number)
@@ -86,14 +89,37 @@ export async function POST(request: Request) {
   const personName = "Emilia"
 
   if (!recurring) {
-    // Single day
+    // Single day (validated above: startsWith is WITH_US or WITH_MONA since isSplit43 requires recurring)
+    const location = startsWith as "WITH_US" | "WITH_MONA"
     ops.push(
       prisma.custodySchedule.upsert({
         where: { date_personName_familyId: { date: start, personName, familyId } },
-        create: { date: start, personName, location: startsWith, familyId },
-        update: { location: startsWith },
+        create: { date: start, personName, location, familyId },
+        update: { location },
       })
     )
+  } else if (isSplit43) {
+    // Fixed weekly pattern, keyed off day-of-week: Sun/Mon/Tue with us, Wed/Thu/Fri/Sat with Mona
+    const untilStr = until as string
+    const [uy2, um2, ud2] = untilStr.split("-").map(Number)
+    const end = new Date(Date.UTC(uy2, um2 - 1, ud2))
+    const cursor = new Date(start)
+
+    while (cursor <= end) {
+      const dayOfWeek = cursor.getUTCDay() // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+      const location: "WITH_US" | "WITH_MONA" = dayOfWeek <= 2 ? "WITH_US" : "WITH_MONA"
+
+      const dateSnapshot = new Date(cursor)
+      ops.push(
+        prisma.custodySchedule.upsert({
+          where: { date_personName_familyId: { date: dateSnapshot, personName, familyId } },
+          create: { date: dateSnapshot, personName, location, familyId },
+          update: { location },
+        })
+      )
+
+      cursor.setUTCDate(cursor.getUTCDate() + 1)
+    }
   } else {
     // Expand recurring: iterate day-by-day, flip location every Sunday (except startDate)
     const untilStr = until as string

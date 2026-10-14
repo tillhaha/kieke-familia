@@ -2,8 +2,27 @@
 
 // src/lib/i18n/LanguageContext.tsx
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useContext, useSyncExternalStore, ReactNode } from "react"
 import { translations, Translations } from "./index"
+
+const LANG_KEY = "lang"
+const LANG_EVENT = "familia-lang-change"
+
+function subscribeLang(callback: () => void) {
+  window.addEventListener("storage", callback)
+  window.addEventListener(LANG_EVENT, callback)
+  return () => {
+    window.removeEventListener("storage", callback)
+    window.removeEventListener(LANG_EVENT, callback)
+  }
+}
+function getLangSnapshot(): string {
+  const stored = localStorage.getItem(LANG_KEY)
+  return stored && translations[stored] ? stored : "en"
+}
+function getServerLangSnapshot(): string {
+  return "en"
+}
 
 type LanguageContextValue = {
   lang: string
@@ -18,19 +37,12 @@ const LanguageContext = createContext<LanguageContextValue>({
 })
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState("en")
-
-  useEffect(() => {
-    const stored = localStorage.getItem("lang")
-    if (stored && translations[stored]) {
-      setLangState(stored)
-    }
-  }, [])
+  const lang = useSyncExternalStore(subscribeLang, getLangSnapshot, getServerLangSnapshot)
 
   const setLang = (l: string) => {
     if (!translations[l]) return
-    setLangState(l)
-    localStorage.setItem("lang", l)
+    localStorage.setItem(LANG_KEY, l)
+    window.dispatchEvent(new Event(LANG_EVENT))
   }
 
   return (

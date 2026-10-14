@@ -87,7 +87,7 @@ export default function MealDetailPage() {
   }, [linkPrompt])
 
   const { data: session, status } = useSession()
-  const isOwner = status === "authenticated" && (session?.user as any)?.familyId === meal?.familyId
+  const isOwner = status === "authenticated" && session?.user?.familyId === meal?.familyId
 
   useEffect(() => {
     if (!isOwner) setConfirmDelete(false)

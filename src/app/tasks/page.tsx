@@ -105,7 +105,7 @@ export default function TasksPage() {
       if (!r.ok) return
       const data = await r.json()
       setTasks(
-        (data.tasks ?? []).map((t: any) => ({
+        (data.tasks ?? []).map((t: TaskData) => ({
           ...t,
           dueDate: toDateStr(t.dueDate),
         }))
@@ -122,7 +122,7 @@ export default function TasksPage() {
       fetch("/api/family/members").then((r) => r.json()),
     ]).then(([taskData, memberData]) => {
       setTasks(
-        (taskData.tasks ?? []).map((t: any) => ({
+        (taskData.tasks ?? []).map((t: TaskData) => ({
           ...t,
           dueDate: toDateStr(t.dueDate),
         }))

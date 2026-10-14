@@ -130,8 +130,8 @@ export function GoogleSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: newUrl.trim(), name: newName.trim(), color: newColor }),
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error((data as any).error ?? `Server error (${res.status})`)
+      const data = await res.json().catch(() => ({})) as ImportedCalendar & { error?: string }
+      if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`)
       setImported((prev) => [...prev, data])
       setNewUrl("")
       setNewName("")

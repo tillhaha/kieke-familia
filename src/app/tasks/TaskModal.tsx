@@ -58,8 +58,8 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
     setError("")
     try {
       await onSave({ name: name.trim(), description: description.trim(), dueDate, assigneeIds })
-    } catch (e: any) {
-      setError(e?.message ?? t.taskModal.failedSave)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t.taskModal.failedSave)
     } finally {
       setSaving(false)
     }

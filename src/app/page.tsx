@@ -68,9 +68,9 @@ export default function Home() {
         setWeekIndex(idx >= 0 ? idx : 0)
         setWeather(weatherData.weather ?? null)
         setTasks(
-          (taskData.tasks ?? []).map((t: any) => ({
+          (taskData.tasks ?? []).map((t: TaskData) => ({
             ...t,
-            dueDate: (t.dueDate as string).slice(0, 10),
+            dueDate: t.dueDate.slice(0, 10),
           }))
         )
         setMembers(memberData.members ?? [])

@@ -56,6 +56,7 @@ export default function NewMealPage() {
   const [parseError, setParseError] = useState<string | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const pendingImageFileRef = useRef<File | undefined>(undefined)
 
   const [photoModalOpen, setPhotoModalOpen] = useState(false)
   const [screenshots, setScreenshots] = useState<ScreenshotEntry[]>([])
@@ -182,7 +183,7 @@ export default function NewMealPage() {
     if (!file) return
     const objectUrl = URL.createObjectURL(file)
     setImageUrl(objectUrl)
-    ;(handleImageFile as any)._file = file
+    pendingImageFileRef.current = file
     e.target.value = ""
   }
 
@@ -207,7 +208,7 @@ export default function NewMealPage() {
       if (!res.ok) { setError(data.error ?? "Failed to create recipe."); return }
 
       const mealId = data.meal.id
-      const pendingFile = (handleImageFile as any)._file as File | undefined
+      const pendingFile = pendingImageFileRef.current
       if (pendingFile && mealId) {
         const form = new FormData()
         form.append("image", pendingFile)
@@ -246,7 +247,7 @@ export default function NewMealPage() {
         <div className={styles.imagePreview}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={imageUrl} alt="Recipe" className={styles.imagePreviewImg} />
-          <button type="button" className={styles.imagePreviewRemove} onClick={() => { setImageUrl(null); (handleImageFile as any)._file = undefined }}>
+          <button type="button" className={styles.imagePreviewRemove} onClick={() => { setImageUrl(null); pendingImageFileRef.current = undefined }}>
             <X size={13} />
           </button>
         </div>

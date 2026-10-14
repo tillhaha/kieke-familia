@@ -117,6 +117,11 @@ All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defin
 ### iCal / imported calendars
 `src/lib/ical.ts` — `fetchAndParseIcal(url, calendarId, name, color, timeMin, timeMax)` fetches an iCal URL (normalising `webcal://` → `https://`) and returns `ImportedEvent[]`. Recurring events are expanded via `expandRecurringEvent` from `node-ical`. Imported calendars are stored in the `ImportedCalendar` table (`User` → `ImportedCalendar`). Managed via `calendar/imported/` API routes; events are fetched alongside Google events in `calendar/events/`.
 
+### Recipe photo storage
+Recipe photos (`meals/[id]/image/`) are written to `public/uploads/meals/` on disk, but are **served through the same route handler** (`GET /api/meals/[id]/image`), not via Next's static `/public` serving. Reason: in production, Next's router snapshots the contents of `public/` once at server boot (`setupFsCheck` in `next/dist/server/lib/router-utils/filesystem.js`) and resolves static requests against that in-memory list — it never re-scans the filesystem. A file uploaded after the server started is invisible to that snapshot and 404s even though it genuinely exists on disk, regardless of host (true on Vercel and on a long-running container alike). The GET handler sidesteps this by reading the file straight off disk on every request (`Cache-Control: no-store`, since the URL is stable per meal and must reflect the latest upload). `Meal.imageUrl` for newly uploaded photos is the API path (`/api/meals/<id>/image`), not a literal `/uploads/...` path; do not rely on Next statically serving new uploads.
+
+Deployed via Coolify (self-hosted Docker, not Vercel — despite the README's default create-next-app boilerplate text). `public/uploads/meals/` is backed by a Coolify **Volume Mount** (named Docker volume, empty Source Path, destination `/app/public/uploads`) so uploads survive redeploys/restarts of the container.
+
 ### Styling
 CSS Modules per page/component. Global styles in `src/app/globals.css`. Fonts: Geist Sans + Geist Mono via `next/font/google`.
 

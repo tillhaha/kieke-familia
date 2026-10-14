@@ -7,7 +7,7 @@ import { NextResponse } from "next/server"
 export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const userId = (session.user as any).id as string | undefined
+  const userId = session.user.id
   if (!userId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   let body: unknown

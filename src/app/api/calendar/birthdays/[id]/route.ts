@@ -12,7 +12,7 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const userFamilyId = (session.user as any).familyId
+  const userFamilyId = session.user.familyId
 
   let birthday
   try {
@@ -31,22 +31,22 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { name, month, day, year } = body as any
+  const { name, month, day, year } = body as Record<string, unknown>
 
   if (!name || typeof name !== "string" || name.trim() === "") {
     return NextResponse.json({ error: "Name is required" }, { status: 400 })
   }
-  if (!Number.isInteger(month) || month < 1 || month > 12) {
+  if (typeof month !== "number" || !Number.isInteger(month) || month < 1 || month > 12) {
     return NextResponse.json({ error: "Month must be between 1 and 12" }, { status: 400 })
   }
-  if (!Number.isInteger(day) || day < 1 || day > 31) {
+  if (typeof day !== "number" || !Number.isInteger(day) || day < 1 || day > 31) {
     return NextResponse.json({ error: "Day must be between 1 and 31" }, { status: 400 })
   }
 
   try {
     const updated = await prisma.birthday.update({
       where: { id },
-      data: { name: name.trim(), month, day, year: year ?? null },
+      data: { name: name.trim(), month, day, year: typeof year === "number" ? year : null },
     })
     return NextResponse.json(updated)
   } catch {
@@ -61,7 +61,7 @@ export async function DELETE(_request: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const userFamilyId = (session.user as any).familyId
+  const userFamilyId = session.user.familyId
 
   let birthday
   try {

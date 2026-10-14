@@ -7,24 +7,28 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   const { id } = await params
   const item = await prisma.shoppingItem.findFirst({ where: { id, familyId } })
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  let body: any
+  let body: unknown
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
-  const { categoryId } = body
+  const bodyObj = body as Record<string, unknown>
+  const { categoryId } = bodyObj
+  if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
+    return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
+  }
 
   // Build update data — only include categoryId if explicitly provided in body
   const updateData: { categoryId?: string | null } = {}
-  if ("categoryId" in body) {
+  if ("categoryId" in bodyObj) {
     updateData.categoryId = categoryId ?? null
   }
 
@@ -56,7 +60,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   const { id } = await params

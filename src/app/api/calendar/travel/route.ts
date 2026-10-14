@@ -12,7 +12,8 @@ export async function POST(request: Request) {
 
   try {
     const { destination, startDate, endDate } = await request.json()
-    const userId = (session.user as any).id
+    const userId = session.user.id
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     const travel = await prisma.travel.create({
       data: {
@@ -24,7 +25,8 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(travel)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error) {
+    console.error("Travel create error:", error)
+    return NextResponse.json({ error: "Failed to create travel" }, { status: 500 })
   }
 }

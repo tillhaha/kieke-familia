@@ -7,7 +7,7 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   const items = await prisma.shoppingItem.findMany({
@@ -22,21 +22,24 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
-  let body: any
+  let body: unknown
   try {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
-  const { name, quantity, categoryId } = body
+  const { name, quantity, categoryId } = body as Record<string, unknown>
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "name required" }, { status: 400 })
   }
   if (quantity !== undefined && typeof quantity !== "string") {
     return NextResponse.json({ error: "quantity must be a string" }, { status: 400 })
+  }
+  if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
+    return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
   }
 
   // Validate categoryId belongs to this family
@@ -71,7 +74,7 @@ export async function DELETE() {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   await prisma.shoppingItem.deleteMany({ where: { familyId } })

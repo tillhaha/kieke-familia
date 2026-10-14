@@ -13,7 +13,7 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ family: null })
 
   try {
@@ -31,7 +31,7 @@ export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "No family" }, { status: 400 })
 
   let body: unknown

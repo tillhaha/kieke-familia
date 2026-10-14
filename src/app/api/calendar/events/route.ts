@@ -25,8 +25,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const userId = (session.user as any).id
-    const familyId = (session.user as any).familyId
+    const userId = session.user.id
+    const familyId = session.user.familyId
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
     // Fetch selected calendar IDs + names for this user
     const calendarSyncs = await prisma.calendarSync.findMany({

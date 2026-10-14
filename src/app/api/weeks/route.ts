@@ -21,7 +21,7 @@ export async function GET() {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
@@ -79,7 +79,7 @@ export async function POST() {
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }

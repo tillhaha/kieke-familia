@@ -3,14 +3,13 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-
-const MEAL_TYPES = ["Meal", "Snack", "Drink", "Baked"] as const
-const DIETS = ["Vegetarian", "Meat", "Fish"] as const
+import { MealType, Diet } from "@prisma/client"
+import { isMealType, isDiet } from "@/lib/mealFields"
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { searchParams } = new URL(request.url)
@@ -29,8 +28,8 @@ export async function GET(request: Request) {
           { name: { contains: q, mode: "insensitive" } },
           { notes: { contains: q, mode: "insensitive" } },
         ]} : {}),
-        ...(MEAL_TYPES.includes(mealType as any) ? { mealType: mealType as any } : {}),
-        ...(DIETS.includes(diet as any) ? { diet: diet as any } : {}),
+        ...(isMealType(mealType) ? { mealType } : {}),
+        ...(isDiet(diet) ? { diet } : {}),
         ...(officeFriendly === "true" ? { officeFriendly: true } : {}),
         ...(thirtyMinute === "true" ? { thirtyMinute: true } : {}),
         ...(favorite === "true" ? { favorite: true } : {}),
@@ -49,7 +48,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   let body: unknown
@@ -66,8 +65,8 @@ export async function POST(request: Request) {
     const meal = await prisma.meal.create({
       data: {
         name: name.trim(),
-        mealType: MEAL_TYPES.includes(mealType as any) ? mealType as any : "Meal",
-        diet: DIETS.includes(diet as any) ? diet as any : "Meat",
+        mealType: isMealType(mealType) ? mealType : MealType.Meal,
+        diet: isDiet(diet) ? diet : Diet.Meat,
         notes: typeof notes === "string" && notes.trim() ? notes.trim() : null,
         servings: typeof servings === "number" && servings > 0 ? servings : 2,
         officeFriendly: officeFriendly === true,

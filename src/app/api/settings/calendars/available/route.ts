@@ -10,7 +10,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const userId = (session.user as any).id
+  const userId = session.user.id
+  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   try {
     const calendar = await getGoogleCalendarClient(userId)
@@ -29,7 +30,8 @@ export async function GET() {
     if (msg.includes("no Google account")) {
       return NextResponse.json({ error: "No Google account linked" }, { status: 400 })
     }
-    const code = (error as any).code ?? (error as any).status
+    const errObj = error as { code?: number; status?: number } | undefined
+    const code = errObj?.code ?? errObj?.status
     if (
       code === 401 ||
       msg.includes("invalid_grant") ||

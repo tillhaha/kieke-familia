@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import { NextResponse } from "next/server"
 import { deleteStoredMealImage } from "@/lib/mealImages"
+import { isMealType, isDiet } from "@/lib/mealFields"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -29,7 +30,7 @@ export async function GET(_req: Request, { params }: Params) {
 export async function PATCH(request: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { id } = await params
@@ -57,8 +58,8 @@ export async function PATCH(request: Request, { params }: Params) {
     }
     updates.name = name.trim()
   }
-  if (mealType !== undefined && (["Meal","Snack","Drink","Baked"] as const).includes(mealType as any)) updates.mealType = mealType as any
-  if (diet !== undefined && (["Vegetarian","Meat","Fish"] as const).includes(diet as any)) updates.diet = diet as any
+  if (mealType !== undefined && isMealType(mealType)) updates.mealType = mealType
+  if (diet !== undefined && isDiet(diet)) updates.diet = diet
   if (notes !== undefined) updates.notes = typeof notes === "string" && notes.trim() ? notes.trim() : null
   if (servings !== undefined) {
     if (typeof servings !== "number" || servings <= 0) {
@@ -90,7 +91,7 @@ export async function PATCH(request: Request, { params }: Params) {
 export async function DELETE(_req: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { id } = await params

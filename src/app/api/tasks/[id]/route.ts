@@ -14,7 +14,7 @@ const assigneeSelect = {
 export async function PATCH(request: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { id } = await params
@@ -107,7 +107,7 @@ export async function PATCH(request: Request, { params }: Params) {
 export async function DELETE(_request: Request, { params }: Params) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { id } = await params

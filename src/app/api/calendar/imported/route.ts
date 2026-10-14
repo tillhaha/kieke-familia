@@ -10,7 +10,7 @@ function normalizeIcalUrl(url: string): string {
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json([])
 
   const calendars = await prisma.importedCalendar.findMany({
@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "You must be part of a family to import calendars" }, { status: 403 })
 
   let body: { url?: string; name?: string; color?: string }

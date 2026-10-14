@@ -55,8 +55,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id
-        token.familyId = (user as unknown as Record<string, unknown>).familyId
-        token.role = (user as unknown as Record<string, unknown>).role
+        token.familyId = user.familyId
+        token.role = user.role
         token.name = user.name
       }
       // Persist fresh Google tokens on every sign-in (PrismaAdapter does not update them on re-auth)
@@ -85,7 +85,7 @@ export const authOptions: NextAuthOptions = {
       // Refresh familyId from DB if missing (covers credential users on first login)
       if (!token.familyId && token.id) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
+          where: { id: token.id },
           select: { familyId: true, role: true },
         })
         if (dbUser?.familyId) token.familyId = dbUser.familyId
@@ -95,9 +95,9 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        (session.user as Record<string, unknown>).id = token.id as string | undefined
-        (session.user as Record<string, unknown>).familyId = token.familyId as string | undefined
-        (session.user as Record<string, unknown>).role = token.role as string | undefined
+        session.user.id = token.id
+        session.user.familyId = token.familyId
+        session.user.role = token.role
         session.user.name = (token.name as string | null) ?? null
       }
       return session

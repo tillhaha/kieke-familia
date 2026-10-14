@@ -12,7 +12,7 @@ export async function PATCH(request: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const userId = (session.user as any).id
+  const userId = session.user.id
 
   let travel
   try {
@@ -31,7 +31,7 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { destination, startDate, endDate } = body as any
+  const { destination, startDate, endDate } = body as Record<string, unknown>
 
   if (!destination || typeof destination !== "string" || destination.trim() === "") {
     return NextResponse.json({ error: "Destination is required" }, { status: 400 })
@@ -75,7 +75,7 @@ export async function DELETE(_request: Request, { params }: Params) {
   }
 
   const { id } = await params
-  const userId = (session.user as any).id
+  const userId = session.user.id
 
   let travel
   try {

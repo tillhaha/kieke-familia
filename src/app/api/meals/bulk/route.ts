@@ -3,14 +3,13 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
-
-const MEAL_TYPES = ["Meal", "Snack", "Drink", "Baked"] as const
-const DIETS = ["Vegetarian", "Meat", "Fish"] as const
+import { Prisma } from "@prisma/client"
+import { isMealType, isDiet } from "@/lib/mealFields"
 
 export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const familyId = (session.user as any).familyId as string | undefined
+  const familyId = session.user.familyId
   if (!familyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   let body: unknown
@@ -24,13 +23,13 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "ids must be a non-empty array of strings" }, { status: 400 })
   }
 
-  const data: Record<string, unknown> = {}
+  const data: Prisma.MealUpdateManyMutationInput = {}
   if (mealType !== undefined) {
-    if (!MEAL_TYPES.includes(mealType as any)) return NextResponse.json({ error: "Invalid mealType" }, { status: 400 })
+    if (!isMealType(mealType)) return NextResponse.json({ error: "Invalid mealType" }, { status: 400 })
     data.mealType = mealType
   }
   if (diet !== undefined) {
-    if (!DIETS.includes(diet as any)) return NextResponse.json({ error: "Invalid diet" }, { status: 400 })
+    if (!isDiet(diet)) return NextResponse.json({ error: "Invalid diet" }, { status: 400 })
     data.diet = diet
   }
   if (officeFriendly !== undefined) {
@@ -49,7 +48,7 @@ export async function PATCH(request: Request) {
   try {
     await prisma.meal.updateMany({
       where: { id: { in: ids as string[] }, familyId },
-      data: data as any,
+      data,
     })
     return NextResponse.json({ ok: true })
   } catch (err) {

@@ -12,8 +12,8 @@ export async function POST(request: Request) {
 
   try {
     const { name, month, day, year } = await request.json()
-    const userId = (session.user as any).id
-    let familyId = (session.user as any).familyId
+    const userId = session.user.id
+    let familyId = session.user.familyId
 
     // Auto-create a family if the user doesn't have one
     if (!familyId) {
@@ -39,8 +39,8 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(birthday)
-  } catch (error: any) {
+  } catch (error) {
     console.error("Birthday create error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: "Failed to create birthday" }, { status: 500 })
   }
 }

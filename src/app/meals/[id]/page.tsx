@@ -11,7 +11,7 @@ import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 }
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
-type MealType = "Meal" | "Snack" | "Drink" | "Baked"
+type MealType = "Meal" | "Snack" | "Drink" | "Baked" | "Aufstrich"
 type Diet = "Vegetarian" | "Meat" | "Fish"
 
 type Meal = {
@@ -403,6 +403,7 @@ export default function MealDetailPage() {
               <option value="Snack">{t.meals.typeSnack}</option>
               <option value="Drink">{t.meals.typeDrink}</option>
               <option value="Baked">{t.meals.typeBaked}</option>
+              <option value="Aufstrich">{t.meals.typeAufstrich}</option>
             </select>
           ) : (
             <span className={styles.typeSelect}>{mealType}</span>

@@ -182,6 +182,7 @@ enum MealType {
   Snack
   Drink
   Baked
+  Aufstrich
 }
 
 enum Diet {

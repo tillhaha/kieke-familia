@@ -107,6 +107,7 @@ export type Translations = {
     typeSnack: string
     typeDrink: string
     typeBaked: string
+    typeAufstrich: string
     dietMeat: string
     dietFish: string
     dietVegetarian: string
@@ -430,6 +431,7 @@ const en: Translations = {
     typeSnack: "Snack",
     typeDrink: "Drink",
     typeBaked: "Baked",
+    typeAufstrich: "Spread",
     dietMeat: "Meat",
     dietFish: "Fish",
     dietVegetarian: "Vegetarian",
@@ -753,6 +755,7 @@ const es: Translations = {
     typeSnack: "Snack",
     typeDrink: "Bebida",
     typeBaked: "Horneado",
+    typeAufstrich: "Untable",
     dietMeat: "Carne",
     dietFish: "Pescado",
     dietVegetarian: "Vegetariano",
@@ -1076,6 +1079,7 @@ const de: Translations = {
     typeSnack: "Snack",
     typeDrink: "Getränk",
     typeBaked: "Gebacken",
+    typeAufstrich: "Aufstrich",
     dietMeat: "Fleisch",
     dietFish: "Fisch",
     dietVegetarian: "Vegetarisch",

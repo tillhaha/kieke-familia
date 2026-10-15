@@ -20,7 +20,7 @@ type MealSummary = {
 }
 
 type BulkEdits = {
-  mealType?: "Meal" | "Snack" | "Drink" | "Baked"
+  mealType?: "Meal" | "Snack" | "Drink" | "Baked" | "Aufstrich"
   diet?: "Vegetarian" | "Fish" | "Meat"
   officeFriendly?: boolean
   thirtyMinute?: boolean
@@ -146,7 +146,7 @@ export default function MealsPage() {
     finally { setApplying(false) }
   }
 
-  const setBulkMealType = (v: "Meal" | "Snack" | "Drink" | "Baked") =>
+  const setBulkMealType = (v: "Meal" | "Snack" | "Drink" | "Baked" | "Aufstrich") =>
     setBulkEdits((prev) => ({ ...prev, mealType: prev.mealType === v ? undefined : v }))
 
   const setBulkDiet = (v: "Vegetarian" | "Fish" | "Meat") =>
@@ -190,6 +190,7 @@ export default function MealsPage() {
             ["Snack", t.meals.typeSnack],
             ["Drink", t.meals.typeDrink],
             ["Baked", t.meals.typeBaked],
+            ["Aufstrich", t.meals.typeAufstrich],
           ] as const).map(([value, label]) => (
             <button
               key={value || "all"}
@@ -329,7 +330,7 @@ export default function MealsPage() {
           <div className={styles.bulkGroups}>
             {/* Meal type */}
             <div className={styles.bulkGroup}>
-              {(["Meal", "Snack", "Drink", "Baked"] as const).map((v) => (
+              {(["Meal", "Snack", "Drink", "Baked", "Aufstrich"] as const).map((v) => (
                 <button
                   key={v}
                   className={`${styles.bulkChip} ${bulkEdits.mealType === v ? styles.bulkChipActive : ""}`}

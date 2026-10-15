@@ -277,6 +277,7 @@ export default function NewMealPage() {
               <option value="Snack">{t.meals.typeSnack}</option>
               <option value="Drink">{t.meals.typeDrink}</option>
               <option value="Baked">{t.meals.typeBaked}</option>
+              <option value="Aufstrich">{t.meals.typeAufstrich}</option>
             </select>
           </div>
 

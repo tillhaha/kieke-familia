@@ -9,7 +9,7 @@ import { z } from "zod"
 
 const ParsedRecipeSchema = z.object({
   name: z.string(),
-  mealType: z.enum(["Meal", "Snack", "Drink", "Baked"]),
+  mealType: z.enum(["Meal", "Snack", "Drink", "Baked", "Aufstrich"]),
   diet: z.enum(["Vegetarian", "Meat", "Fish"]),
   servings: z.number().int().min(1).max(99),
   officeFriendly: z.boolean(),
@@ -137,7 +137,7 @@ export async function POST(request: Request) {
 
 Rules:
 - name: the recipe title
-- mealType: "Meal" for main dishes, "Snack" for snacks/appetizers, "Drink" for beverages, "Baked" for baked goods
+- mealType: "Meal" for main dishes, "Snack" for snacks/appetizers, "Drink" for beverages, "Baked" for baked goods, "Aufstrich" for spreads (e.g. sandwich spreads, dips, jams)
 - servings: number of servings (default 2 if not stated)
 - diet: "Vegetarian" if no meat or fish, "Fish" if it contains fish/seafood but no meat, "Meat" if it contains meat
 - officeFriendly ("Office"): true only if the dish doesn't need reheating, has no strong smell, and can be eaten cold

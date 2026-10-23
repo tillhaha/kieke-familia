@@ -244,6 +244,7 @@ export default function Home() {
       )}
       {week ? (
         <WeekBlock
+          key={week.startDate}
           week={week}
           onDayUpdate={handleDayUpdate}
           weather={weather ?? undefined}

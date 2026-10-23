@@ -30,6 +30,7 @@ const prisma = new PrismaClient({ adapter })
 
 type Item = {
   name: string
+  aliases?: string[]
   category: string | null
   want: "auto" | "buy" | "skip"
   raw?: string[]
@@ -42,6 +43,9 @@ const apply = args.includes("--apply")
 const pruneRaw = args.includes("--prune-raw")
 const familyArg = args.includes("--family") ? args[args.indexOf("--family") + 1] : undefined
 const file = resolve(args.find((a) => a.endsWith(".json")) ?? "scripts/shopping-categories/result.json")
+
+// The shopping list may name an ingredient in either language, so every alias gets the same treatment
+const namesOf = (i: Item) => [...new Set([i.name, ...(i.aliases ?? [])].map((n) => n.trim().toLowerCase()))]
 
 async function main() {
   const data: Result = JSON.parse(readFileSync(file, "utf8"))
@@ -72,8 +76,7 @@ async function main() {
   const memories = await prisma.shoppingItemMemory.findMany({ where: { familyId } })
   const memByName = new Map(memories.map((m) => [m.itemName, m]))
   const catName = new Map(existingCats.map((c) => [c.id, c.name]))
-  for (const item of data.items) {
-    const itemName = item.name.trim().toLowerCase()
+  for (const item of data.items) for (const itemName of namesOf(item)) {
     const current = memByName.get(itemName)
     if (!item.category) {
       if (current) {
@@ -96,7 +99,7 @@ async function main() {
   }
 
   if (pruneRaw) {
-    const keep = new Set(data.items.map((i) => i.name.trim().toLowerCase()))
+    const keep = new Set(data.items.flatMap(namesOf))
     for (const m of memories) {
       if (keep.has(m.itemName) || !/[\d,(]/.test(m.itemName)) continue
       console.log(`- memory     ${m.itemName} (raw leftover)`)
@@ -107,9 +110,9 @@ async function main() {
   // Blacklist
   const wanted = new Set(data.terms.filter((t) => t.keep).map((t) => t.term.trim().toLowerCase()))
   // Terms match the normalised item name exactly (see api/shopping/generate)
-  const covers = (item: Item) => wanted.has(item.name.trim().toLowerCase())
+  const covers = (item: Item) => namesOf(item).some((n) => wanted.has(n))
   for (const item of data.items) {
-    if (item.want === "skip" && !covers(item)) wanted.add(item.name.trim().toLowerCase())
+    if (item.want === "skip") namesOf(item).forEach((n) => wanted.add(n))
   }
   const existingTerms = await prisma.shoppingBlacklist.findMany({ where: { familyId } })
   const have = new Set(existingTerms.map((t) => t.term.toLowerCase()))

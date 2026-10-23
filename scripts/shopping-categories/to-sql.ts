@@ -13,7 +13,7 @@
 import { readFileSync } from "fs"
 import { resolve } from "path"
 
-type Item = { name: string; category: string | null; want: "auto" | "buy" | "skip" }
+type Item = { name: string; aliases?: string[]; category: string | null; want: "auto" | "buy" | "skip" }
 type Term = { term: string; keep: boolean }
 type Result = { categories: string[]; terms: Term[]; items: Item[] }
 
@@ -26,12 +26,14 @@ const data: Result = JSON.parse(readFileSync(resolve(fileArg ?? "scripts/shoppin
 
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`
 const norm = (s: string) => s.trim().toLowerCase()
+// The shopping list may name an ingredient in either language, so every alias gets the same treatment
+const namesOf = (i: Item) => [...new Set([i.name, ...(i.aliases ?? [])].map(norm))]
 
 const wanted = new Set(data.terms.filter((t) => t.keep).map((t) => norm(t.term)))
-for (const i of data.items) if (i.want === "skip") wanted.add(norm(i.name))
+for (const i of data.items) if (i.want === "skip") namesOf(i).forEach((n) => wanted.add(n))
 const removed = data.terms.filter((t) => !t.keep).map((t) => norm(t.term)).filter((t) => !wanted.has(t))
 const withCat = data.items.filter((i) => i.category)
-const withoutCat = data.items.filter((i) => !i.category).map((i) => norm(i.name))
+const withoutCat = data.items.filter((i) => !i.category).flatMap(namesOf)
 
 const out: string[] = []
 out.push(`-- Shopping categories + blacklist from scripts/shopping-categories/result.json`)
@@ -56,9 +58,11 @@ for (const name of data.categories) {
 
 out.push(`\n  -- Item name → category`)
 for (const i of withCat) {
-  out.push(`  INSERT INTO "ShoppingItemMemory" (id, "familyId", "itemName", "categoryId")
-    SELECT gen_random_uuid()::text, fam, ${q(norm(i.name))}, c.id FROM "ShoppingCategory" c WHERE c."familyId" = fam AND c.name = ${q(i.category!)}
+  for (const name of namesOf(i)) {
+    out.push(`  INSERT INTO "ShoppingItemMemory" (id, "familyId", "itemName", "categoryId")
+    SELECT gen_random_uuid()::text, fam, ${q(name)}, c.id FROM "ShoppingCategory" c WHERE c."familyId" = fam AND c.name = ${q(i.category!)}
     ON CONFLICT ("familyId", "itemName") DO UPDATE SET "categoryId" = EXCLUDED."categoryId";`)
+  }
 }
 if (withoutCat.length) {
   out.push(`  DELETE FROM "ShoppingItemMemory" WHERE "familyId" = fam AND "itemName" IN (${withoutCat.map(q).join(", ")});`)

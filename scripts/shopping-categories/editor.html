@@ -1,0 +1,4331 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zutaten-Kategorien</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one working column — summary strip, then ingredient rows grouped under their category, then blacklist terms and categories. Palette follows the Familia app tokens. */
+:root {
+  --bg: #f8faf8;
+  --fg: #1a2e22;
+  --muted: #5a7464;
+  --surface: #ffffff;
+  --surface-2: #eef6f1;
+  --border: #d8e8dc;
+  --primary: #2d6a4f;
+  --primary-fg: #ffffff;
+  --warn-bg: #fdf1dc;
+  --warn-fg: #8a5300;
+  --block-bg: #f6e3e1;
+  --block-fg: #9b2d24;
+  --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a13; --fg: #d4ead8; --muted: #8fae99; --surface: #142010; --surface-2: #1b2d20;
+    --border: #24392c; --primary: #52b788; --primary-fg: #0b1a10;
+    --warn-bg: #3a2c10; --warn-fg: #f2c46d; --block-bg: #3a1a17; --block-fg: #f0a39a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a13; --fg: #d4ead8; --muted: #8fae99; --surface: #142010; --surface-2: #1b2d20;
+  --border: #24392c; --primary: #52b788; --primary-fg: #0b1a10;
+  --warn-bg: #3a2c10; --warn-fg: #f2c46d; --block-bg: #3a1a17; --block-fg: #f0a39a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+}
+.wrap {
+  max-width: 1840px; margin: 0 auto;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 28px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 20px; font-weight: 700; }
+.lede { color: var(--muted); max-width: 64ch; margin: 6px 0 0; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; font-variant-numeric: tabular-nums; }
+.stat b { font-family: var(--font-display); font-size: 22px; display: block; }
+.stat span { color: var(--muted); font-size: 13px; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toolbar input[type="search"] {
+  flex: 1 1 220px; min-width: 0; padding: 9px 12px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface); color: var(--fg); font: inherit;
+}
+.chip {
+  border: 1px solid var(--border); background: var(--surface); color: var(--fg);
+  padding: 7px 12px; border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.chip[aria-pressed="true"] { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.chip:focus-visible, select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.group { display: flex; flex-direction: column; gap: 6px; }
+.group-head { display: flex; align-items: baseline; gap: 10px; padding: 0 2px; }
+.group-head h3 { font-size: 16px; }
+.group-head .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.dot { width: 10px; height: 10px; border-radius: 3px; flex: none; align-self: center; }
+.rows { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+.row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 190px 190px; gap: 12px; align-items: center;
+  padding: 10px 14px; border-top: 1px solid var(--border);
+}
+.row:first-child { border-top: 0; }
+.row.is-out .name { text-decoration: line-through; text-decoration-color: var(--block-fg); color: var(--muted); }
+.name { font-weight: 700; }
+.meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+.note { font-size: 12.5px; color: var(--warn-fg); margin-top: 3px; }
+select {
+  width: 100%; padding: 7px 8px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--fg); font: inherit; font-size: 14px;
+}
+.bl { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.bl label { display: flex; gap: 7px; align-items: center; cursor: pointer; }
+.tag { display: inline-block; font-size: 12px; padding: 2px 7px; border-radius: 4px; }
+.tag.out { background: var(--block-bg); color: var(--block-fg); }
+.tag.warn { background: var(--warn-bg); color: var(--warn-fg); }
+.tag.new { background: var(--surface-2); color: var(--primary); border: 1px solid var(--border); }
+
+.panel { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.terms { display: flex; flex-wrap: wrap; gap: 8px; }
+.term {
+  display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border);
+  border-radius: 999px; padding: 5px 6px 5px 12px; font-size: 14px; background: var(--surface-2);
+}
+.term.off { opacity: 0.55; text-decoration: line-through; background: transparent; }
+.term.sug { border-style: dashed; border-color: var(--primary); }
+.term button { border: 0; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; padding: 2px 6px; border-radius: 999px; }
+.term button:hover { background: var(--border); color: var(--fg); }
+.term-notes { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; margin: 0; padding-left: 18px; }
+.add { display: flex; gap: 8px; flex-wrap: wrap; }
+.add input { flex: 1 1 200px; min-width: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--fg); font: inherit; }
+.btn { border: 0; background: var(--primary); color: var(--primary-fg); padding: 8px 14px; border-radius: 6px; font: inherit; font-weight: 700; cursor: pointer; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
+.empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--border); border-radius: var(--radius); }
+.status { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+.cats { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+
+@media (max-width: 720px) {
+  .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .row > :first-child { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+code { font-family: ui-monospace, Menlo, monospace; font-size: 0.92em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Familia · Einkaufsliste</div>
+    <h1>Zutaten-Kategorien</h1>
+    <p class="lede">Alle Zutaten aus euren Rezepten, so benannt, wie sie beim Erzeugen der Einkaufsliste ankommen. Ändere Kategorie oder Blacklist direkt in der Zeile. Änderungen bleiben in diesem Browser gespeichert. Wenn du fertig bist, klick auf „Exportieren“ und speichere die Datei als <code>result.json</code> in diesem Ordner.</p>
+  </header>
+
+  <div class="stats" id="stats" aria-live="polite"></div>
+
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="Zutat oder Rezept suchen" aria-label="Suchen">
+    <button class="chip" data-filter="all" aria-pressed="true">Alle</button>
+    <button class="chip" data-filter="conflict" aria-pressed="false">Konflikte</button>
+    <button class="chip" data-filter="out" aria-pressed="false">Gefiltert</button>
+    <button class="chip" data-filter="note" aria-pressed="false">Mit Hinweis</button>
+    <button class="chip" data-filter="none" aria-pressed="false">Ohne Kategorie</button>
+  </div>
+
+  <div class="legend">
+    <span><span class="tag out">gefiltert</span> landet nicht auf der Einkaufsliste</span>
+    <span><span class="tag warn">Konflikt</span> auf „kaufen“ gestellt, wird aber von einem Begriff gefiltert</span>
+    <span><span class="tag new">neuer Begriff</span> wird als Blacklist-Begriff angelegt</span>
+  </div>
+
+  <div id="list"><div class="empty">Zutaten werden geladen …</div></div>
+
+  <section class="panel" aria-labelledby="terms-h">
+    <h2 id="terms-h">Blacklist-Begriffe</h2>
+    <p class="lede" style="margin:0">Ein Begriff filtert nur die Zutat, die genau so heißt: „onion“ filtert „onion“, aber nicht „spring onion“. Allgemeine Begriffe wie „salt“ fangen Namensvarianten ab. Gestrichelt umrandet sind neue Begriffe. Klick auf ✕ schaltet einen Begriff aus.</p>
+    <div class="terms" id="terms"></div>
+    <ul class="term-notes" id="term-notes"></ul>
+    <form class="add" id="add-term">
+      <input id="new-term" placeholder="Neuer Begriff, z. B. rapeseed oil" aria-label="Neuer Blacklist-Begriff">
+      <button class="btn" type="submit">Begriff hinzufügen</button>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="cats-h">
+    <h2 id="cats-h">Kategorien</h2>
+    <div class="cats" id="cats"></div>
+    <form class="add" id="add-cat">
+      <input id="new-cat" placeholder="Neue Kategorie" aria-label="Neue Kategorie">
+      <button class="btn" type="submit">Kategorie hinzufügen</button>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="exp-h">
+    <h2 id="exp-h">Exportieren</h2>
+    <p class="lede" style="margin:0">Lädt <code>result.json</code> herunter und kopiert den Inhalt zusätzlich in die Zwischenablage. Lege die Datei in <code>scripts/shopping-categories/</code> ab, dann kann Claude sie in Familia schreiben.</p>
+    <div class="add">
+      <button class="btn" type="button" id="export">Exportieren</button>
+      <button class="chip" type="button" id="reset">Auf Vorschlag zurücksetzen</button>
+    </div>
+    <div class="status" id="reset-confirm" hidden>Alle Änderungen verwerfen? <button class="chip" type="button" id="reset-yes">Ja, zurücksetzen</button> <button class="chip" type="button" id="reset-no">Abbrechen</button></div>
+    <textarea id="out" rows="6" readonly hidden style="width:100%;font-family:ui-monospace,monospace;font-size:12px;background:var(--surface-2);color:var(--fg);border:1px solid var(--border);border-radius:6px;padding:8px"></textarea>
+  </section>
+
+  <div class="status" id="status"></div>
+</div>
+
+<script>
+const SEED = {
+  "categories": [
+    "Fruit/Vegetables",
+    "Meat",
+    "Fish",
+    "Milk Products",
+    "Bread",
+    "Condiments",
+    "Sauces",
+    "Drinks",
+    "Frozen",
+    "Nuts/Snacks",
+    "Pasta, Rice, Grains",
+    "Canned, Glass"
+  ],
+  "newCategories": [
+    "Pasta, Rice, Grains",
+    "Canned, Glass"
+  ],
+  "terms": [
+    {
+      "term": "oil",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "vinegar",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "salt",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "pepper",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "onion",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "mustard",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "sugar",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "flour",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "water",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "garlic",
+      "keep": true,
+      "suggested": false,
+      "note": null
+    },
+    {
+      "term": "oregano",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "zwiebel",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "knoblauch",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "salz",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "pfeffer",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "öl",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "essig",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "zucker",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "mehl",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "senf",
+      "keep": true,
+      "suggested": true,
+      "note": null
+    },
+    {
+      "term": "onions",
+      "keep": false,
+      "suggested": false,
+      "note": "Wird entfernt."
+    }
+  ],
+  "items": [
+    {
+      "name": "red wine vinegar",
+      "category": "Condiments",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Chicken Marbella"
+      ],
+      "raw": [
+        "1 tbsp red wine vinegar",
+        "3 tbsp red wine vinegar"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "shallot",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Veggie Niçoise Salad"
+      ],
+      "raw": [
+        "½ banana shallot, peeled and finely sliced into 2mm rings"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "green bean",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Veggie Niçoise Salad"
+      ],
+      "raw": [
+        "400g fine green beans, trimmed"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "basil",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "15g basil, picked and finely chopped",
+        "10g basil leaves, shredded",
+        "10g No.1 Greek Basil Large"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "parsley",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Marinated Za'atar Bean Salad",
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "15g parsley, picked and finely chopped",
+        "½ cup Fresh Parsley, finely chopped",
+        "15g parsley, roughly chopped"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kaper",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Nudeln mit Tunfischsauce",
+        "Chicken Marbella",
+        "Pappardelle with Rose Harissa, Black Olive and Capers",
+        "Pasta mit Oliven-Tapenade",
+        "Tuna & White Bean Salad",
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "2 tbsp capers, roughly chopped",
+        "25 g Kapern (1 h wässern, gut trocknen)",
+        "30 g Kapern",
+        "60g capers, plus 2 tbsp of their juices",
+        "20g baby capers",
+        "20 g Kapern",
+        "1 tbsp Nonparille Capers",
+        "2 EL Kapern"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "caper"
+      ]
+    },
+    {
+      "name": "dijon mustard",
+      "category": "Condiments",
+      "recipes": [
+        "Veggie Niçoise Salad"
+      ],
+      "raw": [
+        "2 tbsp dijon mustard"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "olive oil",
+      "category": "Condiments",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Focaccia v2",
+        "Marinated Za'atar Bean Salad",
+        "Roasted Mediterranean Vegetable Risotto",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Chicken Marbella",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet",
+        "Pappardelle with Rose Harissa, Black Olive and Capers",
+        "Tuna & White Bean Salad",
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "3 tbsp olive oil",
+        "10g olive oil, plus more generously for the pan and the top",
+        "¼ cup Extra-Virgin Olive Oil",
+        "Olive oil",
+        "130ml olive oil",
+        "120ml olive oil",
+        "2 tablespoons olive oil",
+        "2 tbsp olive oil",
+        "3 tbsp Waitrose Italian 100% Extra Virgin Olive Oil",
+        "30g olive oil"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "potato",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Veggie Niçoise Salad"
+      ],
+      "raw": [
+        "1 waxy potato, yukon gold or similar (270g), peeled, quartered and cut into 5mm slices"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "ei",
+      "category": "Milk Products",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Bibimbap",
+        "Spinat, Kartoffel, Spiegelei",
+        "Tortilla de Patata + Pimientos",
+        "Thunfisch Kartoffel Salat vom Spanier"
+      ],
+      "raw": [
+        "4 large eggs, fridge cold",
+        "2 Eier",
+        "6 Eier",
+        "4 Eier",
+        "3 Eier"
+      ],
+      "want": "buy",
+      "note": "Keine eigene Eier-Kategorie. Kühlregal liegt am nächsten.",
+      "aliases": [
+        "egg"
+      ]
+    },
+    {
+      "name": "olive",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Foccachia",
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Marinated Za'atar Bean Salad",
+        "Chicken Marbella",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Pappardelle with Rose Harissa, Black Olive and Capers",
+        "Pasta mit Oliven-Tapenade",
+        "Easy Olive Baguettes",
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "2 tbsp pitted black olives, roughly torn",
+        "80–100 g Oliven (entsteint, halbiert)",
+        "75 g Oliven (entsteint, abgetropft)",
+        "1 cup Green Olives (Castelvetrano or similar), roughly chopped",
+        "100g pitted green olives",
+        "100 g Oliven",
+        "55g pitted Kalamata olives, torn in half",
+        "100 g aromatische schwarze Oliven ohne Stein",
+        "250g olives (or sun-dried tomatoes)",
+        "1/2 Glas Oliven"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "black olive",
+        "green olive",
+        "kalamata olive"
+      ]
+    },
+    {
+      "name": "za'atar",
+      "category": "Condiments",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Marinated Za'atar Bean Salad"
+      ],
+      "raw": [
+        "1 tsp za'atar",
+        "1½ tbsp Za'atar Spice Blend"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "salt",
+      "category": "Condiments",
+      "recipes": [
+        "Veggie Niçoise Salad",
+        "Foccachia",
+        "Focaccia v2",
+        "Dark Chocolate Tahini Seed Bark",
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Marinated Za'atar Bean Salad",
+        "Chicken & Cucumber Salad",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Chicken Marbella",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Pappardelle with Rose Harissa, Black Olive and Capers",
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "fine sea salt and black pepper",
+        "Grobes Meersalz",
+        "11g salt",
+        "Flaky sea salt for finishing",
+        "1 pinch of flaky sea salt",
+        "24g feines Meersalz",
+        "½ tsp Kosher Salt",
+        "1 tbsp salt",
+        "coarse sea salt and black pepper",
+        "Salt and black pepper",
+        "salt and black pepper",
+        "1 tsp salt",
+        "Salt",
+        "9g salt"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "lachs",
+      "category": "Fish",
+      "recipes": [
+        "Festlicher Lachs"
+      ],
+      "raw": [
+        "1 Lachsseite aus nachhaltigem Fang oder Regenbogen-/Lachsforelle aus nachhaltiger Zucht (950 g) mit Haut"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "olivenöl",
+      "category": "Condiments",
+      "recipes": [
+        "Festlicher Lachs",
+        "Foccachia",
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Paella",
+        "Chicken Tikka Masala",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Pasta mit Oliven-Tapenade",
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "250 g mildes Olivenöl",
+        "2 EL Olivenöl",
+        "3–4 EL Olivenöl",
+        "28g Olivenöl",
+        "Olivenöl für das Backblech",
+        "Olivenöl",
+        "1 El Olivenöl",
+        "8 EL Olivenöl",
+        "4-5 El Olivenöl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "koriander",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Chicken Tikka Masala",
+        "Tacos",
+        "Chicken & Cucumber Salad",
+        "Wokgemüse mit Reis",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Fríjoles con arroz",
+        "Rote Linsen Dhal",
+        "Curry-Paste"
+      ],
+      "raw": [
+        "5 g Koriandergrün",
+        "20 g Korianderblätter",
+        "4 Stiele Koriander",
+        "1 Bund Koriander",
+        "Coriander, to serve",
+        "Frischer Koriander nach Belieben",
+        "Koriander frisch",
+        "1 Handvoll frischer Koriander",
+        "15 g Koriandergrün"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "coriander",
+        "koriandergrün"
+      ]
+    },
+    {
+      "name": "thai-basilikum",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "5 g Thai-Basilikum oder Basilikum",
+        "5 g Thai-Basilikumblätter",
+        "6 Stiele Thai-Basilikum",
+        "Blätter von 1 Bund Thai-Basilikum"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "limette",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Chicken Tikka Masala",
+        "Tacos",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Vietnamesischer Reisnudelsalat",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "Limettenspalten zum Servieren",
+        "3 EL Limettensaft",
+        "2 EL Limettensaft",
+        "1 Bio-Limette",
+        "5 Limetten",
+        "1 Limette, in Spalten geschnitten",
+        "Saft von 2 Limetten",
+        "Saft einer Limette"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "lime"
+      ]
+    },
+    {
+      "name": "tomate",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Paella",
+        "Tacos",
+        "Ratatouille",
+        "Fríjoles con arroz"
+      ],
+      "raw": [
+        "150 g süße, reife kleine Tomaten (z. B. Datterini)",
+        "1 mittelgroße Tomate, klein gewürfelt",
+        "200 g Tomate",
+        "200 g Tomaten",
+        "2 große Tomaten"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chilischote",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Chicken Tikka Masala",
+        "Vietnamesischer Reisnudelsalat",
+        "Tuna & White Bean Salad",
+        "Curry-Paste"
+      ],
+      "raw": [
+        "2-3 große milde rote Chilischoten, entkernt und grob gehackt (30 g)",
+        "2 rote Chilischoten",
+        "3 Thai-Chilis, entkernt und fein gehackt",
+        "6 rote Thai-Chilis",
+        "1 Red Chilli",
+        "1 rote Chilischote"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "red chilli",
+        "chili",
+        "thai-chili"
+      ]
+    },
+    {
+      "name": "ingwer",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Chicken Tikka Masala",
+        "Chicken & Cucumber Salad",
+        "Wokgemüse mit Reis",
+        "Vietnamesischer Reisnudelsalat",
+        "Rote Linsen Dhal",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "25 g Ingwer, geschält und grob gehackt",
+        "50 g Ingwer",
+        "20g ginger",
+        "1 kleines Stück Ingwer (ca. 2 cm)",
+        "1 Stück Ingwer à 5 cm Länge",
+        "1 Stück Ingwer (ca. 2 cm)",
+        "1 daumengroßes Stück Ingwer"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "ginger"
+      ]
+    },
+    {
+      "name": "knoblauch",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Paella",
+        "Chicken Tikka Masala",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Vietnamesischer Reisnudelsalat",
+        "Walnuss-Tomaten-Aufstrich",
+        "Pasta mit Oliven-Tapenade",
+        "Austernpilze mit Brokkoli in Austernsauce",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "4 Knoblauchzehen, grob gehackt",
+        "Knoblauch",
+        "3 Knoblauchzehen",
+        "4 Knoblauchzehen, geschält und mit der Breitseite einer Messerklinge zerdrückt",
+        "5 Knoblauchzehen, fein gewürfelt",
+        "2 Knoblauchzehen",
+        "1 Knoblauchzehe",
+        "4 Knoblauchzehen",
+        "4 Zehen Knoblauch"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schalotte",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel"
+      ],
+      "raw": [
+        "1 kleine längliche Schalotte, geschält und grob gehackt (40 g)",
+        "4 Schalotten, fein gehackt"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zitronengras",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "15 g Zitronengras, von der äußeren Schicht befreit, fein gehackt",
+        "2 Stangen Zitronengras",
+        "2 Stängel Zitronengras"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kaffirlimettenblatt",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln"
+      ],
+      "raw": [
+        "5 g Limettenblätter, von den Stielen befreit, grob gehackt",
+        "5 Kaffirlimettenblätter (frisch oder TK)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tomatenmark",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Festlicher Lachs",
+        "Bolognese",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Gulasch mit Nudeln",
+        "Walnuss-Tomaten-Aufstrich",
+        "Curry-Paste",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1 EL Tomatenmark (20 g)",
+        "Tomatenmark",
+        "2 TL Tomatenmark",
+        "2 EL Tomatenmark",
+        "160 g Tomatenmark",
+        "2 El Tomatenmark",
+        "50 g Tomatenmark"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "ahornsirup",
+      "category": "Condiments",
+      "recipes": [
+        "Festlicher Lachs",
+        "Dark Chocolate Tahini Seed Bark",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "2 EL Ahornsirup",
+        "1 teaspoon maple syrup",
+        "2 tsp maple syrup"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "maple syrup"
+      ]
+    },
+    {
+      "name": "sojasauce",
+      "category": "Sauces",
+      "recipes": [
+        "Festlicher Lachs",
+        "Pad Thai",
+        "Wokgemüse mit Reis",
+        "Vietnamesischer Reisnudelsalat",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "2 EL Sojasauce",
+        "Soja-Sauce",
+        "2 EL Sojasoße",
+        "2 El Sojasauce",
+        "3 EL Sojasoße"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "sojasoße"
+      ]
+    },
+    {
+      "name": "pfefferkörner",
+      "category": "Condiments",
+      "recipes": [
+        "Festlicher Lachs",
+        "Curry-Paste",
+        "Massaman Curry",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "½ TL grüne (oder schwarze) Pfefferkörner, grob zerstoßen",
+        "1 Tl schwarze Pfefferkörner",
+        "1 TL Pfefferkörner"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "salz",
+      "category": "Condiments",
+      "recipes": [
+        "Festlicher Lachs",
+        "Foccachia",
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Paella",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Chicken Tikka Masala",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Wokgemüse mit Reis",
+        "Krustenbrot nach Lutz Geissler",
+        "Roggen Weizen Brot",
+        "Pizza",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Vietnamesischer Reisnudelsalat",
+        "Gulasch mit Nudeln",
+        "Ratatouille",
+        "Fríjoles con arroz",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Walnuss-Tomaten-Aufstrich",
+        "Pasta mit Oliven-Tapenade",
+        "Curry-Paste",
+        "Massaman Curry",
+        "Artichoke, Oliven & Zitronen Aufstrich",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "2½ TL Salz",
+        "1 kräftige Prise Salz",
+        "10 g Salz",
+        "12,5 g Salz",
+        "Salz",
+        "Salz und Pfeffer nach Geschmack",
+        "13 g Salz",
+        "12 g Salz unjodiert",
+        "18 g Salz",
+        "¾ TL Salz",
+        "Salz nach Geschmack",
+        "1.5 tsp salt and pepper",
+        "salt and pepper to taste",
+        "½ TL Salz"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "gurke",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Quinoa Salat",
+        "Marinated Za'atar Bean Salad",
+        "Chili Con Carne Salat",
+        "Brotzeit + Salat",
+        "Chicken & Cucumber Salad",
+        "Linsensalat",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "½ Salatgurke, geschält, halbiert und von Kernen befreit",
+        "1/2 Gurke",
+        "1 small Cucumber, diced",
+        "1-2 whole cucumbers",
+        "1 Gurke"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "cucumber",
+        "salatgurke"
+      ]
+    },
+    {
+      "name": "rote zwiebel",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "½ rote Zwiebel, in feine Ringe geschnitten (60 g)",
+        "1/2 rote Zwiebel",
+        "2 rote Zwiebeln",
+        "1 rote Zwiebel"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "minze",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Festlicher Lachs",
+        "Marinated Za'atar Bean Salad",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "10 g Minzeblätter",
+        "¼ cup Fresh Mint, finely chopped",
+        "Minze",
+        "Blätter von 1 Bund Minze"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "mint"
+      ]
+    },
+    {
+      "name": "wiener würstchen",
+      "category": "Meat",
+      "recipes": [
+        "Würstchen mit Kartoffelsalat"
+      ],
+      "raw": [
+        "6 Wiener Würstchen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kartoffelsalat",
+      "category": "Milk Products",
+      "recipes": [
+        "Würstchen mit Kartoffelsalat"
+      ],
+      "raw": [
+        "400 g Kartoffelsalat"
+      ],
+      "want": "buy",
+      "note": "Fertigprodukt aus dem Kühlregal.",
+      "aliases": []
+    },
+    {
+      "name": "getrocknete tomate",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Gnocci mit Tomatensauce, Mozzarella und Rucola",
+        "Foccachia",
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Walnuss-Tomaten-Aufstrich"
+      ],
+      "raw": [
+        "100 gramm getrocknete Tomaten",
+        "80 g getrocknete Tomaten (in Öl, abgetropft, in Streifen)",
+        "50 g getrocknete Tomaten (nicht zu ölig)",
+        "8 sonnengetrocknete Tomaten, fein gehackt",
+        "140 g getrocknete Tomaten, in Öl (abgetropft und Öl aufgefangen)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "cherrytomate",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Gnocci mit Tomatensauce, Mozzarella und Rucola",
+        "Quinoa Salat",
+        "Marinated Za'atar Bean Salad",
+        "Chili Con Carne Salat",
+        "Brotzeit + Salat",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "Cherry Tomaten",
+        "200g Cherrytomaten",
+        "1 cup Cherry Tomatoes, halved",
+        "200 g Cherrytomaten",
+        "200 g Kirschtomaten",
+        "400g cherry tomatoes, halved"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "cherry tomato",
+        "kirschtomate"
+      ]
+    },
+    {
+      "name": "mozzarella",
+      "category": "Milk Products",
+      "recipes": [
+        "Gnocci mit Tomatensauce, Mozzarella und Rucola"
+      ],
+      "raw": [
+        "200 g Mozarella"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rucola",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Gnocci mit Tomatensauce, Mozzarella und Rucola"
+      ],
+      "raw": [
+        "1 Packung Rucola"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "gnocchi",
+      "category": "Milk Products",
+      "recipes": [
+        "Gnocci mit Tomatensauce, Mozzarella und Rucola"
+      ],
+      "raw": [
+        "400 g Gnocci"
+      ],
+      "want": "buy",
+      "note": "Frische Gnocchi aus dem Kühlregal. Bei Trockenware „Pasta, Rice, Grains“.",
+      "aliases": []
+    },
+    {
+      "name": "paprika",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Pad Thai",
+        "Bibimbap",
+        "Quinoa Salat",
+        "Paella",
+        "Chili Con Carne Salat",
+        "Tacos",
+        "Brotzeit + Salat",
+        "Ofengemüse",
+        "Wokgemüse mit Reis",
+        "Linsensalat",
+        "Gulasch mit Nudeln",
+        "Ratatouille",
+        "Fríjoles con arroz",
+        "Thunfisch Kartoffel Salat vom Spanier"
+      ],
+      "raw": [
+        "1 Paprika",
+        "1 rote Paprika, klein gewürfelt",
+        "1 grüne Paprika, klein gewürfelt",
+        "2 Paprika",
+        "2 Paprika rot",
+        "1 bunte Paprika",
+        "1 rote Paprika",
+        "1 grüne Paprika",
+        "1/2 Paprika"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "bell pepper",
+        "rote paprika"
+      ]
+    },
+    {
+      "name": "karotte",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Pad Thai",
+        "Bolognese",
+        "Bibimbap",
+        "Chili Con Carne Salat",
+        "Wokgemüse mit Reis",
+        "Vietnamesischer Reisnudelsalat",
+        "Massaman Curry",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 Karotte",
+        "1/2 Karotte",
+        "4 rote und gelbe Möhren",
+        "2 Karotten",
+        "2 Möhren"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "möhre"
+      ]
+    },
+    {
+      "name": "reisnudel",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pad Thai",
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "250 gramm Reisnudeln",
+        "400 g dünne Reisnudeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "frühlingszwiebel",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Pad Thai",
+        "Bibimbap",
+        "Vietnamesischer Reisnudelsalat",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 Frühlingszwiebel",
+        "Frühlingszwiebeln",
+        "1 Bund Frühlingszwiebeln",
+        "2 Frühlingszwiebeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sesamöl",
+      "category": "Condiments",
+      "recipes": [
+        "Pad Thai",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Chicken & Cucumber Salad",
+        "Wokgemüse mit Reis",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "Sesamöl",
+        "4 EL Sesamöl",
+        "2 tsp sesame oil",
+        "1 EL Sesamöl",
+        "2 tablespoons toasted sesame oil",
+        "2 TL Sesamöl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": [
+        "sesame oil"
+      ]
+    },
+    {
+      "name": "mehl typ 00",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Foccachia",
+        "Focaccia v2",
+        "Sven Teichner Pizzateig Blech 40x30"
+      ],
+      "raw": [
+        "500 g Doppio 00 Mehl",
+        "560g flour (00 flour recommended, but all-purpose or bread flour also work)",
+        "315g Weizenmehl Typ00 (11-15% Eiweiß) (Poolish)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "00 flour"
+      ]
+    },
+    {
+      "name": "wasser",
+      "category": "Drinks",
+      "recipes": [
+        "Foccachia",
+        "Focaccia v2",
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Chicken Tikka Masala",
+        "Krustenbrot nach Lutz Geissler",
+        "Roggen Weizen Brot",
+        "Pizza",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Easy Olive Baguettes",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "400 ml lauwarmes Wasser",
+        "470g cold water",
+        "375–390 g Wasser (je nach Aufnahmefähigkeit)",
+        "315g kaltes Wasser (Poolish)",
+        "250g kaltes Wasser (Hauptteig)",
+        "250 ml Wasser",
+        "50 ml handwarmes Wasser",
+        "420 g Wasser (120 g Zimmertemperatur + 165 g bei 45 °C + 135 g bei 45 °C)",
+        "350 g Wasser Zimmertemperatur",
+        "400 g Wasser",
+        "3 cups water",
+        "375g water",
+        "4 Liter kaltes Wasser"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": [
+        "water"
+      ]
+    },
+    {
+      "name": "trockenhefe",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Foccachia",
+        "Focaccia v2",
+        "Chicken Tikka Masala",
+        "Roggen Weizen Brot",
+        "Pizza"
+      ],
+      "raw": [
+        "3–4 g Trockenhefe (oder ~10 g frische Hefe)",
+        "5g instant yeast or 10g fresh yeast",
+        "½ Tl Trockenhefe",
+        "1 g Trockenhefe",
+        "9 g frische Hefe oder 3 g trocken Hefe"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "instant yeast"
+      ]
+    },
+    {
+      "name": "rosmarin",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Foccachia",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Ratatouille",
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "2–3 Zweige Rosmarin",
+        "Rosmarin",
+        "1 tbsp rosemary, finely chopped"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "rosemary"
+      ]
+    },
+    {
+      "name": "kartoffel",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ofenkartoffeln & Brokkoli",
+        "Ofengemüse",
+        "Spinat, Kartoffel, Spiegelei",
+        "Linsensalat",
+        "Tortilla de Patata + Pimientos",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1000 g Kartoffeln",
+        "200 g Kartoffeln",
+        "800 g Kartoffeln",
+        "600 g Kartoffeln",
+        "500 g Kartoffeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "brokkoli",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ofenkartoffeln & Brokkoli",
+        "Wokgemüse mit Reis",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "1 Brokkoli",
+        "150g Brokkoli",
+        "1 head broccoli (approximately 4 cups, stems and florets okay)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "broccoli"
+      ]
+    },
+    {
+      "name": "rinderhackfleisch",
+      "category": "Meat",
+      "recipes": [
+        "Bolognese",
+        "Chili Con Carne Salat"
+      ],
+      "raw": [
+        "250 g Hackfleisch Rind",
+        "250g Hackfleisch (Rind)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "dosentomaten",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Bolognese",
+        "Chili Con Carne Salat"
+      ],
+      "raw": [
+        "200 g Dosentomaten",
+        "200g Dosentomaten"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sellerie",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Bolognese",
+        "Chili Con Carne Salat"
+      ],
+      "raw": [
+        "Sellerie"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zwiebel",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Bolognese",
+        "Paella",
+        "Chicken Tikka Masala",
+        "Chili Con Carne Salat",
+        "Tacos",
+        "Nudeln mit Tunfischsauce",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Wokgemüse mit Reis",
+        "Tortilla de Patata + Pimientos",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Gulasch mit Nudeln",
+        "Ratatouille",
+        "Fríjoles con arroz",
+        "Rote Linsen Dhal",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Massaman Curry",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 Zwiebel",
+        "2 Zwiebeln, klein gewürfelt",
+        "200 g Zwiebeln",
+        "2 Zwiebeln",
+        "3 große Zwiebeln, in feine Ringe geschnitten",
+        "1 Zwiebel, halbiert und in sehr feine Streifen gehobelt",
+        "1 weiße Zwiebel"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "weizenmehl 550",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Roggen Weizen Brot"
+      ],
+      "raw": [
+        "400 g Weizenmehl 550",
+        "495g Weizenmehl (11-15% Eiweiß) (Hauptteig)",
+        "335 g Weizenmehl Type 550 (Tipo 0)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "weizenmehl 1050",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Krustenbrot nach Lutz Geissler"
+      ],
+      "raw": [
+        "35 g Weizenmehl 1050",
+        "265 g Weizenmehl 1050"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "weizenvollkornmehl",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Krustenbrot nach Lutz Geissler",
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "65 g Weizenvollkornmehl",
+        "165 g Weizenvollkornmehl",
+        "50g whole wheat flour"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "whole wheat flour"
+      ]
+    },
+    {
+      "name": "frische hefe",
+      "category": "Milk Products",
+      "recipes": [
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Krustenbrot nach Lutz Geissler",
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "1,5 g frische Hefe",
+        "0,5g frische Hefe (Poolish)",
+        "6g frische Hefe (Hauptteig)",
+        "5 g Frischhefe",
+        "12g fresh yeast (or 4g active dry yeast)"
+      ],
+      "want": "buy",
+      "note": "Frische Hefe liegt im Kühlregal.",
+      "aliases": [
+        "fresh yeast",
+        "hefe"
+      ]
+    },
+    {
+      "name": "oregano",
+      "category": "Condiments",
+      "recipes": [
+        "Pagnottone - Brot mit mediterraner Mischung",
+        "Chicken Marbella",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "5 g getrockneter Oregano",
+        "15g fresh oregano, torn, plus extra for garnish",
+        "2 tsp dried oregano"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sesam",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark",
+        "Chicken & Cucumber Salad",
+        "Vietnamesischer Reisnudelsalat",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "1 handful of white sesame (about 50g / 1.8 oz) + extra to decorate",
+        "Sesame seeds, to serve",
+        "4 El Sesamsaat",
+        "2 TL Sesam"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "sesame seed",
+        "sesame"
+      ]
+    },
+    {
+      "name": "sonnenblumenkerne",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark"
+      ],
+      "raw": [
+        "1 handful of sunflower seeds (about 50g / 1.8 oz)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kürbiskerne",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark"
+      ],
+      "raw": [
+        "1 handful of pumpkin seeds (about 50g / 1.8 oz)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "erdnuss",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark",
+        "Vietnamesischer Reisnudelsalat",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1 handful of unsalted peanuts (about 50g / 1.8 oz)",
+        "150 g geröstete Erdnüsse, grob gehackt",
+        "1 Handvoll Erdnüsse"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "peanut"
+      ]
+    },
+    {
+      "name": "zartbitterschokolade",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark"
+      ],
+      "raw": [
+        "200g 70% cocoa dark chocolate, roughly chopped"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tahini",
+      "category": "Sauces",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark",
+        "Quinoa Salat"
+      ],
+      "raw": [
+        "6 tablespoons tahini",
+        "Tahini"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schwarzer sesam",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Dark Chocolate Tahini Seed Bark"
+      ],
+      "raw": [
+        "2 tablespoons black sesame seeds"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sushireis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Bibimbap",
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "300 g (Sushi-)Reis",
+        "200g cooked short grain rice"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "champignon",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Bibimbap"
+      ],
+      "raw": [
+        "200 g Champignons"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "babyspinat",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Bibimbap"
+      ],
+      "raw": [
+        "200 g Babyspinat"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "baby spinach"
+      ]
+    },
+    {
+      "name": "quinoa",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Quinoa Salat"
+      ],
+      "raw": [
+        "400g Quinoa"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zitrone",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Quinoa Salat",
+        "Marinated Za'atar Bean Salad",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Tuna & White Bean Salad",
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "1 Zitrone",
+        "3 tbsp Fresh Lemon Juice",
+        "1 tbsp Lemon Zest",
+        "1 Bio-Zitrone",
+        "grated zest of 1 lemon",
+        "2 tbsp lemon juice",
+        "juice of one lemon",
+        "1 Lemon"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "lemon"
+      ]
+    },
+    {
+      "name": "salat",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Quinoa Salat",
+        "Chili Con Carne Salat",
+        "Brotzeit + Salat",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "Salat",
+        "fresh lettuce for serving"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "lettuce"
+      ]
+    },
+    {
+      "name": "honig",
+      "category": "Condiments",
+      "recipes": [
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Krustenbrot nach Lutz Geissler",
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "5g Honig",
+        "15 g Honig",
+        "3 El flüssiger Honig"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "semola",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Sven Teichner Pizzateig Blech 40x30"
+      ],
+      "raw": [
+        "Semola zum Arbeiten"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tomatensauce",
+      "category": "Sauces",
+      "recipes": [
+        "Sven Teichner Pizzateig Blech 40x30",
+        "Nudeln mit Tunfischsauce"
+      ],
+      "raw": [
+        "Tomatensauce"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kichererbse",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Marinated Za'atar Bean Salad",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet"
+      ],
+      "raw": [
+        "1 can (15 oz) Chickpeas, drained and rinsed",
+        "15 oz chickpeas, drained (250g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "chickpea"
+      ]
+    },
+    {
+      "name": "butter bean",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Marinated Za'atar Bean Salad"
+      ],
+      "raw": [
+        "1 can (15 oz) Butter Beans (or Cannellini beans), drained and rinsed"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "red onion",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Marinated Za'atar Bean Salad",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "½ small Red Onion, very thinly sliced into half-moons",
+        "1 piece red onion, chopped",
+        "1 Red Onion"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "garlic",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Marinated Za'atar Bean Salad",
+        "Chicken & Cucumber Salad",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Chicken Marbella",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "1 small Garlic Clove, finely grated or minced",
+        "4 garlic cloves, minced",
+        "2 garlic cloves, crushed",
+        "4 garlic cloves, crushed",
+        "5 garlic cloves, crushed",
+        "1 head garlic, minced",
+        "2 cloves of garlic, chopped",
+        "2 cloves of garlic, grated",
+        "1 Garlic Clove"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kreuzkümmel",
+      "category": "Condiments",
+      "recipes": [
+        "Marinated Za'atar Bean Salad",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Curry-Paste",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "½ tsp Ground Cumin",
+        "1/4 Teelöffel Kreuzkümmel",
+        "2 tsp cumin seeds, crushed",
+        "1 tsp ground cumin",
+        "1 tsp cumin powder",
+        "2 Tl Kreuzkümmelsaat",
+        "1 TL Kreuzkümmelsamen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "cumin"
+      ]
+    },
+    {
+      "name": "black pepper",
+      "category": "Condiments",
+      "recipes": [
+        "Marinated Za'atar Bean Salad",
+        "Roasted Mediterranean Vegetable Risotto"
+      ],
+      "raw": [
+        "¼ tsp Black Pepper",
+        "Black pepper"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "paellareis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Paella"
+      ],
+      "raw": [
+        "200 g Paella Reis"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "paprikapulver",
+      "category": "Condiments",
+      "recipes": [
+        "Paella",
+        "Chicken Tikka Masala",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Gulasch mit Nudeln",
+        "Walnuss-Tomaten-Aufstrich",
+        "Curry-Paste"
+      ],
+      "raw": [
+        "1 EL süßer Paprika",
+        "1 El edelsüßes Paprikapulver",
+        "½ TL Paprikapulver",
+        "2 TL Paprikapulver süß",
+        "2 TL Paprika edelsüß",
+        "2 Tl edelsüßes Paprikapulver"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "paprika edelsüß",
+        "edelsüßes paprikapulver"
+      ]
+    },
+    {
+      "name": "safran",
+      "category": "Condiments",
+      "recipes": [
+        "Paella"
+      ],
+      "raw": [
+        "Fingerspitze Safran"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tintenfisch",
+      "category": "Fish",
+      "recipes": [
+        "Paella"
+      ],
+      "raw": [
+        "500 g Tintenfisch"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "muschel",
+      "category": "Fish",
+      "recipes": [
+        "Paella"
+      ],
+      "raw": [
+        "200 g Muscheln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "garnele",
+      "category": "Fish",
+      "recipes": [
+        "Paella",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln"
+      ],
+      "raw": [
+        "400 g Garnelen",
+        "10 Black Tiger Garnelen (ohne Kopf; ohne Schale)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "shrimp",
+        "prawn"
+      ]
+    },
+    {
+      "name": "herzmuschel",
+      "category": "Fish",
+      "recipes": [
+        "Paella"
+      ],
+      "raw": [
+        "200 g Herzmuscheln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "gemüsebrühe",
+      "category": "Condiments",
+      "recipes": [
+        "Paella",
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Meeresfrüchte Risotto",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Hähnchenkeulen mit Ananas und 'Nduja",
+        "Pilzrisotto",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "700 ml Gemüsebrühe",
+        "250 ml Gemüsebrühe",
+        "Gemüsebrühe",
+        "100 g Hühnerknochenbrühe, Hühnerbrühe oder Wasser",
+        "300 ml Brühe"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "brühe",
+        "hühnerbrühe"
+      ]
+    },
+    {
+      "name": "kokosmilch",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Rote Linsen Dhal",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "300 ml Kokosmilch",
+        "200 g Kokosmilch",
+        "400 ml Kokosmilch"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rote currypaste",
+      "category": "Sauces",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "2 TL rote Thai-Currypaste",
+        "1 TL rote Currypaste"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "pfeffer",
+      "category": "Condiments",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Chicken Tikka Masala",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Gulasch mit Nudeln",
+        "Ratatouille",
+        "Fríjoles con arroz",
+        "Walnuss-Tomaten-Aufstrich"
+      ],
+      "raw": [
+        "Pfeffer",
+        "Pfeffer (frisch gemahlen)",
+        "Pfeffer, aus der Mühle",
+        "Pfeffer nach Geschmack",
+        "2 Prisen Pfeffer"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "reissirup",
+      "category": "Condiments",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln"
+      ],
+      "raw": [
+        "1 EL Reissirup"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "glasnudel",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln"
+      ],
+      "raw": [
+        "100 g Glasnudeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "romanesco",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln"
+      ],
+      "raw": [
+        "300 g Romanesco"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sojasprossen",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Wokgemüse mit Reis"
+      ],
+      "raw": [
+        "100 g Sojasprossen",
+        "100g Sojasprossen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chiliöl",
+      "category": "Sauces",
+      "recipes": [
+        "Garnelen-Spieße im Curry-Sud mit gebratenem Romanesco und Glasnudeln",
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "3 TL Crispy Chiliöl",
+        "2 tbsp chilli oil"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "chilli oil",
+        "chili oil"
+      ]
+    },
+    {
+      "name": "pasta",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pasta with Preserved Lemon",
+        "Nudeln mit Tunfischsauce",
+        "Gulasch mit Nudeln"
+      ],
+      "raw": [
+        "200g pasta",
+        "200 g Pasta",
+        "250g Nudeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "nudel"
+      ]
+    },
+    {
+      "name": "glutenfreie pasta",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pasta with Preserved Lemon",
+        "Nudeln mit Tunfischsauce"
+      ],
+      "raw": [
+        "150g gluten-free pasta",
+        "150 g Pasta glutenfrei"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "salzzitrone",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Pasta with Preserved Lemon",
+        "Pasta mit Oliven-Tapenade"
+      ],
+      "raw": [
+        "1 preserved lemon",
+        "½ Salzzitrone"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "senfsaat",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Tikka Masala"
+      ],
+      "raw": [
+        "1 El gelbe Senfsaat"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "garam masala",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Curry-Paste"
+      ],
+      "raw": [
+        "3 El Garam Masala",
+        "2 Tl Garam Masala"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "currypulver",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Tikka Masala"
+      ],
+      "raw": [
+        "1 El „Farben von Jaipur\"-Currypulver von Herbaria & BRIGITTE"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "naturjoghurt",
+      "category": "Milk Products",
+      "recipes": [
+        "Chicken Tikka Masala"
+      ],
+      "raw": [
+        "200 g Naturjoghurt (10 % Fett)",
+        "60 g Naturjoghurt (10 % Fett)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "hähnchenbrustfilet",
+      "category": "Meat",
+      "recipes": [
+        "Chicken Tikka Masala"
+      ],
+      "raw": [
+        "800 g Hähnchenbrustfilet"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "ghee",
+      "category": "Milk Products",
+      "recipes": [
+        "Chicken Tikka Masala"
+      ],
+      "raw": [
+        "2 El Ghee (geklärte Butter)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "cashew",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet"
+      ],
+      "raw": [
+        "60 g Cashewkerne",
+        "1 cup unsalted roasted cashews, chopped (115g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "stückige tomaten",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Rote Linsen Dhal"
+      ],
+      "raw": [
+        "250 g stückige Tomaten",
+        "1 Dose stückige Tomaten (400 g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schwarzkümmel",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel"
+      ],
+      "raw": [
+        "1 Tl Schwarzkümmel",
+        "1 EL Schwarzkümmel"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "mehl",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Pizza"
+      ],
+      "raw": [
+        "160 g Mehl + etwas zum Arbeiten",
+        "500 g Mehl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zucker",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Tikka Masala",
+        "Vietnamesischer Reisnudelsalat",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "½ Tl Zucker",
+        "100 g Zucker",
+        "2 TL Zucker"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tortilla",
+      "category": "Bread",
+      "recipes": [
+        "Tacos"
+      ],
+      "raw": [
+        "1 Packung Tortillas"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rinderschulter",
+      "category": "Meat",
+      "recipes": [
+        "Tacos",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1 kg Rinderschulter",
+        "500 g Rinderschulter"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "ananas",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Tacos",
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "1 Ananas",
+        "½ große, sehr reife Ananas, geschält (300 g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schwarze bohne",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Tacos",
+        "Fríjoles con arroz"
+      ],
+      "raw": [
+        "2 Dosen schwarze Bohnen",
+        "Schwarze Bohnen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "aufschnitt",
+      "category": "Meat",
+      "recipes": [
+        "Brotzeit + Salat"
+      ],
+      "raw": [
+        "Aufschnitt"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "käse",
+      "category": "Milk Products",
+      "recipes": [
+        "Brotzeit + Salat"
+      ],
+      "raw": [
+        "Käse"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "brot",
+      "category": "Bread",
+      "recipes": [
+        "Brotzeit + Salat"
+      ],
+      "raw": [
+        "Brot"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "glutenfreies brot",
+      "category": "Bread",
+      "recipes": [
+        "Brotzeit + Salat"
+      ],
+      "raw": [
+        "Glutenfreies Brot"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tunfisch",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Nudeln mit Tunfischsauce",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "Tunfisch",
+        "1 Dose Tunfisch",
+        "250g No.1 Albacore Tuna in Spring Water"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "tuna",
+        "thunfisch"
+      ]
+    },
+    {
+      "name": "aubergine",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ofengemüse",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Ratatouille"
+      ],
+      "raw": [
+        "2 Auberginen",
+        "1 Aubergine",
+        "2 medium aubergines"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zucchini",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ofengemüse",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Ratatouille"
+      ],
+      "raw": [
+        "1 Zucchini"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "courgette"
+      ]
+    },
+    {
+      "name": "lauch",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ofengemüse"
+      ],
+      "raw": [
+        "1 Lauch"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "spinat",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Spinat, Kartoffel, Spiegelei",
+        "Black Rice, Lentil and Aubergine Pilaf"
+      ],
+      "raw": [
+        "300 g Spinat",
+        "50g Spinat"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chicken breast",
+      "category": "Meat",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "450g chicken breast"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "spring onion",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "2 spring onions",
+        "3 spring onions"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sichuan pepper",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "1 tsp Sichuan peppercorns"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sugar",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "1 tbsp sugar"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chinese black vinegar",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "2 tbsp Chinese black vinegar"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "soy sauce",
+      "category": "Sauces",
+      "recipes": [
+        "Chicken & Cucumber Salad",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet"
+      ],
+      "raw": [
+        "2 tbsp soy sauce",
+        "90ml soy sauce",
+        "⅓ cup low sodium soy sauce (75g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "dark soy sauce",
+      "category": "Sauces",
+      "recipes": [
+        "Chicken & Cucumber Salad"
+      ],
+      "raw": [
+        "1 tbsp dark soy"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "mungobohne",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel"
+      ],
+      "raw": [
+        "250 g getrocknete Mungobohnen, über Nacht eingeweicht"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rotweinessig",
+      "category": "Condiments",
+      "recipes": [
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel"
+      ],
+      "raw": [
+        "3 EL Rotweinessig"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "senf",
+      "category": "Condiments",
+      "recipes": [
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel"
+      ],
+      "raw": [
+        "0,5 TL milder Senf"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "petersilie",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Mungbohnen mit karamellisierten Zwiebeln und Schwarzkümmel",
+        "Meeresfrüchte Risotto",
+        "Linsensalat",
+        "Pilzrisotto",
+        "Thunfisch Kartoffel Salat vom Spanier",
+        "Artichoke, Oliven & Zitronen Aufstrich",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "0,5 Bund Petersilie, fein gehackt",
+        "Petersilie",
+        "15 g Petersilie",
+        "4-5 Stiele Petersilie",
+        "Frische Petersilie"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kaiserbohne",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Wokgemüse mit Reis"
+      ],
+      "raw": [
+        "100g Kaiserbohnen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "pilz",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Wokgemüse mit Reis",
+        "Pilzrisotto"
+      ],
+      "raw": [
+        "100g Pilze",
+        "250 g Pilze"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "reis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Wokgemüse mit Reis",
+        "Rote Linsen Dhal"
+      ],
+      "raw": [
+        "150g Reis",
+        "150 g Reis"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "rice"
+      ]
+    },
+    {
+      "name": "neutrales öl",
+      "category": "Condiments",
+      "recipes": [
+        "Wokgemüse mit Reis",
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "1 EL neutrales Öl (z.B. Sonnenblumenöl)",
+        "ca. 3 EL neutrales Pflanzenöl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "risottoreis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Meeresfrüchte Risotto",
+        "Roasted Mediterranean Vegetable Risotto",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Pilzrisotto"
+      ],
+      "raw": [
+        "200 g Risottoreis",
+        "Risotto rice (quantity not specified)",
+        "200g good-quality risotto rice"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "risotto rice"
+      ]
+    },
+    {
+      "name": "meeresfrüchte",
+      "category": "Fish",
+      "recipes": [
+        "Meeresfrüchte Risotto"
+      ],
+      "raw": [
+        "250 g Meeresfrüchte"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "parmesan",
+      "category": "Milk Products",
+      "recipes": [
+        "Meeresfrüchte Risotto",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Pilzrisotto"
+      ],
+      "raw": [
+        "Parmesan",
+        "50g Parmesan (or another mature hard cheese), grated"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "white wine",
+      "category": "Drinks",
+      "recipes": [
+        "Meeresfrüchte Risotto",
+        "Mediterranes Risotto (Deliciously Ella)",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Chicken Marbella",
+        "Pilzrisotto"
+      ],
+      "raw": [
+        "125 ml Weisswein",
+        "120ml white wine",
+        "120ml dry white wine"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "weißwein",
+        "weisswein"
+      ]
+    },
+    {
+      "name": "linse",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Linsensalat",
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "200 g braune Linsen",
+        "100g braune Linsen",
+        "180g dried brown or green lentils"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "lentil",
+        "braune linse"
+      ]
+    },
+    {
+      "name": "dill",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Linsensalat"
+      ],
+      "raw": [
+        "Dill"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schwarzer reis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Black Rice, Lentil and Aubergine Pilaf"
+      ],
+      "raw": [
+        "100g Reis (black rice)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "getrocknete aprikose",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Black Rice, Lentil and Aubergine Pilaf"
+      ],
+      "raw": [
+        "10 getrocknete Aprikosen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kardamom",
+      "category": "Condiments",
+      "recipes": [
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1/2 Teelöffel Kardamom seeds",
+        "3 Kardamomkapseln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "kurkuma",
+      "category": "Condiments",
+      "recipes": [
+        "Black Rice, Lentil and Aubergine Pilaf",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Curry-Paste"
+      ],
+      "raw": [
+        "1/4 Teelöffel Kurkuma",
+        "1/2 tsp turmeric",
+        "1 Tl gemahlene Kurkuma"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "turmeric"
+      ]
+    },
+    {
+      "name": "chilipulver",
+      "category": "Condiments",
+      "recipes": [
+        "Black Rice, Lentil and Aubergine Pilaf"
+      ],
+      "raw": [
+        "1/4 Teelöffel Chillipulver"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "thymian",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Mediterranes Risotto (Deliciously Ella)"
+      ],
+      "raw": [
+        "Thymian"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "pimiento",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Tortilla de Patata + Pimientos"
+      ],
+      "raw": [
+        "200 g Pimenton"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "roggenmehl",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Krustenbrot nach Lutz Geissler",
+        "Roggen Weizen Brot"
+      ],
+      "raw": [
+        "230 g Roggenmehl 1150",
+        "100 g Roggenmehl Vollkornmehl"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "balsamico",
+      "category": "Condiments",
+      "recipes": [
+        "Krustenbrot nach Lutz Geissler",
+        "Roasted Mediterranean Vegetable Risotto",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "35 g Balsamico-Essig",
+        "Balsamic vinegar (for serving)",
+        "1 tbsp light balsamic vinegar",
+        "3 tbsp No.1 Aceto Balsamico di Modena I.G.P"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "öl",
+      "category": "Condiments",
+      "recipes": [
+        "Pizza",
+        "Walnuss-Tomaten-Aufstrich"
+      ],
+      "raw": [
+        "1 Esslöffel Öl",
+        "20 g Öl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "butternut squash",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Roasted Mediterranean Vegetable Risotto"
+      ],
+      "raw": [
+        "Butternut squash or mixed Mediterranean vegetables (quantity not specified)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "vegetable stock",
+      "category": "Condiments",
+      "recipes": [
+        "Roasted Mediterranean Vegetable Risotto",
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet"
+      ],
+      "raw": [
+        "Vegetable stock (quantity not specified)",
+        "750ml hot vegetable stock",
+        "1 litre vegetable or chicken stock",
+        "¼ cup vegetable stock (60g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "onion",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Ottolenghi's Lemon and Aubergine Risotto",
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "1 medium onion, finely chopped",
+        "2 onions, peeled and chopped into large chunks (300g)",
+        "1 large onion, thinly sliced (220g)"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "butter",
+      "category": "Milk Products",
+      "recipes": [
+        "Ottolenghi's Lemon and Aubergine Risotto"
+      ],
+      "raw": [
+        "20g butter"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "carrot",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "3 carrots, peeled and chopped into large chunks (250g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "oyster mushroom",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "300g oyster mushrooms, roughly chopped",
+        "400g oyster mushrooms"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "getrocknete steinpilze",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Pilzrisotto"
+      ],
+      "raw": [
+        "60g dried porcini, roughly blitzed",
+        "10 g getrocknete Steinpilze (optional)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "dried porcini",
+        "steinpilz"
+      ]
+    },
+    {
+      "name": "plum tomato",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "3–4 plum tomatoes, chopped into large chunks (350g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "eiertomate"
+      ]
+    },
+    {
+      "name": "white miso",
+      "category": "Sauces",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "70g white miso paste"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "misopaste",
+        "miso"
+      ]
+    },
+    {
+      "name": "rose harissa",
+      "category": "Sauces",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù",
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "40g rose harissa",
+        "3 tbsp rose harissa (45g)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "rosenharissa"
+      ]
+    },
+    {
+      "name": "tomato paste",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "4 tbsp tomato paste"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "perlgraupe",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "100g pearl barley"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "pearl barley"
+      ]
+    },
+    {
+      "name": "coconut cream",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "160g coconut cream"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "kokoscreme"
+      ]
+    },
+    {
+      "name": "red wine",
+      "category": "Drinks",
+      "recipes": [
+        "Yotam Ottolenghi's Ultimate Traybake Ragù"
+      ],
+      "raw": [
+        "100ml red wine"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "rotwein"
+      ]
+    },
+    {
+      "name": "hähnchenkeule",
+      "category": "Meat",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "4 Hähnchenkeulen, bei Zimmertemperatur"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "mandarine",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "4 süße Mandarinen (oder 2 Orangen), 100 g Saft ausgepresst"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schlagsahne",
+      "category": "Milk Products",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "2 EL Schlagsahne"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "'nduja",
+      "category": "Meat",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "50 g 'Nduja"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chipotle-chiliflocken",
+      "category": "Condiments",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "½ TL Chipotle-Chiliflocken"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schwarzer pfeffer",
+      "category": "Condiments",
+      "recipes": [
+        "Hähnchenkeulen mit Ananas und 'Nduja"
+      ],
+      "raw": [
+        "frisch gemahlener schwarzer Pfeffer (etwa 20 Umdrehungen)"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "essig",
+      "category": "Condiments",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat",
+        "Thunfisch Kartoffel Salat vom Spanier"
+      ],
+      "raw": [
+        "120 ml heller Essig",
+        "Essig"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "eisbergsalat",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "1 Eisbergsalat"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "schweinebauch",
+      "category": "Meat",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "500 g Schweinebauch"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "erdnussöl",
+      "category": "Condiments",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "2 El Erdnussöl",
+        "3 El Erdnussöl"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rohrohrzucker",
+      "category": "Condiments",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat"
+      ],
+      "raw": [
+        "1 Tl Rohrohrzucker"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "fischsauce",
+      "category": "Sauces",
+      "recipes": [
+        "Vietnamesischer Reisnudelsalat",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "2 1⁄2 El Fischsauce",
+        "3–4 EL Fischsauce"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chicken leg",
+      "category": "Meat",
+      "recipes": [
+        "Chicken Marbella"
+      ],
+      "raw": [
+        "8 chicken legs, drumstick and thigh attached, skin on (2kg net)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "date",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Chicken Marbella"
+      ],
+      "raw": [
+        "70g pitted and quartered lengthways medjoul dates"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "dattel"
+      ]
+    },
+    {
+      "name": "bay leaf",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Marbella"
+      ],
+      "raw": [
+        "2 bay leaves"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "date syrup",
+      "category": "Condiments",
+      "recipes": [
+        "Chicken Marbella"
+      ],
+      "raw": [
+        "1 tbsp date syrup or treacle"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rindfleisch",
+      "category": "Meat",
+      "recipes": [
+        "Gulasch mit Nudeln"
+      ],
+      "raw": [
+        "500g Rindfleisch, gewürfelt"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "passierte tomaten",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Gulasch mit Nudeln",
+        "Ratatouille",
+        "Fríjoles con arroz"
+      ],
+      "raw": [
+        "1 Dose passierte Tomaten (400g)",
+        "Passierte Tomaten",
+        "1 Dose Passierte Tomaten"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "paprikapulver rosenscharf",
+      "category": "Condiments",
+      "recipes": [
+        "Gulasch mit Nudeln"
+      ],
+      "raw": [
+        "1 TL Paprikapulver rosenscharf"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "lorbeerblatt",
+      "category": "Condiments",
+      "recipes": [
+        "Fríjoles con arroz",
+        "Massaman Curry",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "2 Lorbeerblätter",
+        "1 Lorbeerblatt"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "rote linse",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Rote Linsen Dhal"
+      ],
+      "raw": [
+        "150 g rote Linsen"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "speisestärke",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet",
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "1 tablespoon cornstarch (can sub arrowroot powder)",
+        "3 tsp cornstarch"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "cornstarch"
+      ]
+    },
+    {
+      "name": "garlic chili sauce",
+      "category": "Sauces",
+      "recipes": [
+        "Chickpea, Cashew & Broccoli with Garlic Sauce Skillet"
+      ],
+      "raw": [
+        "½-1 teaspoon garlic chili sauce (optional)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "canola oil",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "2 tbsp canola oil"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "geräuchertes paprikapulver",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "2 tsp smoked paprika powder"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "hefeflocken",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "2 tbsp yeast flakes"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "garlic powder",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "1 tsp garlic powder"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "vegane butter",
+      "category": "Milk Products",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "100g vegan butter"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "zimt",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt",
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1 pinch of cinnamon",
+        "2 cm Zimtstange"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "cinnamon"
+      ]
+    },
+    {
+      "name": "coconut blossom sugar",
+      "category": "Condiments",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "1 pinch of coconut blossom sugar"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "basmatireis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "2 cups basmati"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sojajoghurt",
+      "category": "Milk Products",
+      "recipes": [
+        "Mushroom Shawarma with Turmeric-Cinnamon Rice and Garlic Yoghurt"
+      ],
+      "raw": [
+        "200g soy yogurt"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "pappardelle",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "500g dried pappardelle pasta"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "griechischer joghurt",
+      "category": "Milk Products",
+      "recipes": [
+        "Pappardelle with Rose Harissa, Black Olive and Capers"
+      ],
+      "raw": [
+        "120g greek-style yoghurt"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "walnuss",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Walnuss-Tomaten-Aufstrich"
+      ],
+      "raw": [
+        "200 g Walnusshälften"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "mandel",
+      "category": "Nuts/Snacks",
+      "recipes": [
+        "Pasta mit Oliven-Tapenade"
+      ],
+      "raw": [
+        "2 El Mandelkerne"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "basilikum",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Pasta mit Oliven-Tapenade"
+      ],
+      "raw": [
+        "Blätter von 4 Stielen Basilikum"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tagliatelle",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Pasta mit Oliven-Tapenade"
+      ],
+      "raw": [
+        "200 g Tagliatelle"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "cannellini bean",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "300g Cannellini Beans"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "tomato",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "300g Heritage Tomatoes"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sardelle",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "4 No.1 Cantabrian Anchovy Fillets in Extra Virgin Olive Oil"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "anchovy"
+      ]
+    },
+    {
+      "name": "feta",
+      "category": "Milk Products",
+      "recipes": [
+        "Tuna & White Bean Salad"
+      ],
+      "raw": [
+        "20g No.1 Barrel Aged Greek Feta"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "chiliflocken",
+      "category": "Condiments",
+      "recipes": [
+        "Tuna & White Bean Salad",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 tsp Chilli Flakes",
+        "½ TL Chiliflocken (optional)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": [
+        "chilli flakes",
+        "chili flakes"
+      ]
+    },
+    {
+      "name": "koriandersaat",
+      "category": "Condiments",
+      "recipes": [
+        "Curry-Paste",
+        "Massaman Curry",
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "2 Tl Koriandersaat",
+        "1 TL Koriandersamen",
+        "1 TL Koriandersaat"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "bread flour",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Easy Olive Baguettes"
+      ],
+      "raw": [
+        "450g bread flour (11-13% protein is best)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "austernsauce",
+      "category": "Sauces",
+      "recipes": [
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "100 ml Austernsauce"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "reisessig",
+      "category": "Condiments",
+      "recipes": [
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "2 TL Reisessig"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "austernpilz",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "300 g Austernpilze"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "jasminreis",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Austernpilze mit Brokkoli in Austernsauce"
+      ],
+      "raw": [
+        "Jasminreis zum Servieren"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "palmzucker",
+      "category": "Condiments",
+      "recipes": [
+        "Massaman Curry"
+      ],
+      "raw": [
+        "2 EL Palmzucker"
+      ],
+      "want": "skip",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "muskatnuss",
+      "category": "Condiments",
+      "recipes": [
+        "Massaman Curry"
+      ],
+      "raw": [
+        "½ TL Muskatnusspulver"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "galgant",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Massaman Curry"
+      ],
+      "raw": [
+        "1 Stück Galgant"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "artischocke",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "1 Dose Artischocken"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sardine",
+      "category": "Canned, Glass",
+      "recipes": [
+        "Artichoke, Oliven & Zitronen Aufstrich"
+      ],
+      "raw": [
+        "optional: Sardinen/Tunfish"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "suppenhuhn",
+      "category": "Meat",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1,5 kg Hühnchen (Suppenhuhn, Schenkel oder Karkassen)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "suppengrün",
+      "category": "Fruit/Vegetables",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 Bund Suppengrün (Möhre, Sellerie, Lauch, Petersilienwurzel)"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "sternanis",
+      "category": "Condiments",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 Sternanis"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "fenchelsaat",
+      "category": "Condiments",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 TL Fenchelsaat"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "wacholderbeere",
+      "category": "Condiments",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "1 TL Wacholderbeeren"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    },
+    {
+      "name": "suppennudel",
+      "category": "Pasta, Rice, Grains",
+      "recipes": [
+        "Hühnersuppe wie bei Oma"
+      ],
+      "raw": [
+        "Buchstaben- oder Suppennudeln"
+      ],
+      "want": "buy",
+      "note": null,
+      "aliases": []
+    }
+  ]
+};
+(function () {
+  const KEY = "familia-shopping-categories-v3";
+  const PALETTE = ["#3f8f5a", "#b5473a", "#2f6f9f", "#c9a227", "#9a6b3f", "#7a5aa8", "#c0703a", "#4aa3a8", "#8b7d52", "#d06b8f", "#5d7a2e", "#6d6d9e"];
+  const ui = { filter: "all", q: "" };
+  let data = load();
+  const $ = (id) => document.getElementById(id);
+
+  function load() {
+    try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch (e) {}
+    return structuredClone(SEED);
+  }
+  function save(msg) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); setStatus(msg + " gespeichert."); }
+    catch (e) { setStatus(msg + " geändert. Der Browser speichert hier nicht, also vor dem Schließen exportieren."); }
+    render();
+  }
+  function el(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else if (v !== false && v != null) n.setAttribute(k, v === true ? "" : v);
+    }
+    for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : String(k));
+    return n;
+  }
+  function setStatus(t) { $("status").textContent = t; }
+  const idOf = (s) => s.toLowerCase().replace(/[^a-z0-9äöüß]+/g, "-");
+
+  const activeTerms = () => data.terms.filter((t) => t.keep).map((t) => t.term.toLowerCase());
+  function coveredBy(item) {
+    const names = [item.name, ...(item.aliases || [])].map((n) => n.trim().toLowerCase());
+    return activeTerms().find((t) => names.includes(t)) || null;
+  }
+  function verdict(item) {
+    const by = coveredBy(item);
+    if (item.want === "buy") return by ? { out: true, conflict: true, by } : { out: false };
+    if (item.want === "skip") return by ? { out: true, by } : { out: true, newTerm: true };
+    return by ? { out: true, by } : { out: false };
+  }
+  const catColor = (name) => { const i = data.categories.indexOf(name); return i < 0 ? "var(--muted)" : PALETTE[i % PALETTE.length]; };
+
+  function renderStats() {
+    const v = data.items.map(verdict);
+    const out = v.filter((x) => x.out).length;
+    $("stats").replaceChildren(
+      el("div", { class: "stat" }, el("b", {}, data.items.length), el("span", {}, "Zutaten")),
+      el("div", { class: "stat" }, el("b", {}, data.items.length - out), el("span", {}, "landen auf der Liste")),
+      el("div", { class: "stat" }, el("b", {}, out), el("span", {}, "gefiltert")),
+      el("div", { class: "stat" }, el("b", {}, v.filter((x) => x.conflict).length), el("span", {}, "Konflikte")),
+      el("div", { class: "stat" }, el("b", {}, data.items.filter((i) => !i.category).length), el("span", {}, "ohne Kategorie")));
+  }
+
+  function renderRow(item) {
+    const v = verdict(item);
+    const id = idOf(item.name);
+    const sel = el("select", { id: "cat-" + id, "aria-label": "Kategorie für " + item.name,
+      onchange: (e) => { item.category = e.target.value || null; save(item.name); } },
+      el("option", { value: "" }, "— keine —"),
+      data.categories.map((c) => el("option", { value: c, selected: c === item.category }, c)));
+    // Show the effective outcome; only store an explicit choice when it differs from what the terms do anyway
+    const byTerms = coveredBy(item) ? "skip" : "buy";
+    const shown = item.want === "auto" ? byTerms : item.want;
+    const want = el("select", { id: "want-" + id, "aria-label": "Einkaufen von " + item.name,
+      onchange: (e) => { item.want = e.target.value === byTerms ? "auto" : e.target.value; save(item.name); } },
+      [["buy", "Kaufen"], ["skip", "Nicht kaufen"]].map(([val, label]) => el("option", { value: val, selected: shown === val }, label)));
+    const tag = v.conflict ? el("span", { class: "tag warn" }, "Konflikt: „" + v.by + "“ filtert")
+      : v.by ? el("span", { class: "tag out" }, "gefiltert durch „" + v.by + "“")
+      : v.newTerm ? el("span", { class: "tag new" }, "neuer Begriff: „" + item.name + "“") : null;
+    return el("div", { class: "row" + (v.out ? " is-out" : "") },
+      el("div", {},
+        el("div", { class: "name" }, item.name, (item.aliases || []).length ? el("span", { class: "meta", style: "font-weight:400" }, "  auch: " + item.aliases.join(", ")) : null),
+        el("div", { class: "meta", title: (item.raw || []).join("\n") }, (item.recipes || []).join(" · ")),
+        item.note ? el("div", { class: "note" }, item.note) : null),
+      sel,
+      el("div", { class: "bl" }, want, tag));
+  }
+
+  function renderList() {
+    const q = ui.q.trim().toLowerCase();
+    const items = data.items.filter((i) => {
+      const v = verdict(i);
+      if (ui.filter === "conflict" && !v.conflict) return false;
+      if (ui.filter === "out" && !v.out) return false;
+      if (ui.filter === "note" && !i.note) return false;
+      if (ui.filter === "none" && i.category) return false;
+      if (q && !(i.name.toLowerCase().includes(q) || (i.aliases || []).some((a) => a.includes(q)) || (i.recipes || []).some((r) => r.toLowerCase().includes(q)) || (i.raw || []).some((r) => r.toLowerCase().includes(q)))) return false;
+      return true;
+    });
+    if (!items.length) { $("list").replaceChildren(el("div", { class: "empty" }, "Keine Zutat passt zu diesem Filter.")); return; }
+    const groups = [...data.categories, null].map((c) => ({ c, rows: items.filter((i) => (i.category || null) === c) })).filter((g) => g.rows.length);
+    $("list").replaceChildren(el("div", { style: "display:flex;flex-direction:column;gap:22px" },
+      groups.map((g) => el("section", { class: "group" },
+        el("div", { class: "group-head" },
+          el("span", { class: "dot", style: g.c ? "background:" + catColor(g.c) : "border:1px dashed var(--muted)" }),
+          el("h3", {}, g.c || "Ohne Kategorie"),
+          data.newCategories.includes(g.c) ? el("span", { class: "tag new" }, "neue Kategorie") : null,
+          el("span", { class: "count" }, g.rows.length)),
+        el("div", { class: "rows" }, [...g.rows].sort((a, b) => a.name.localeCompare(b.name, "de")).map(renderRow))))));
+  }
+
+  function renderTerms() {
+    const sorted = [...data.terms].sort((a, b) => (a.suggested - b.suggested) || a.term.localeCompare(b.term, "de"));
+    $("terms").replaceChildren(...sorted.map((t) => {
+      const hits = data.items.filter((i) => [i.name, ...(i.aliases || [])].some((n) => n.trim().toLowerCase() === t.term.toLowerCase())).length;
+      return el("span", { class: "term" + (t.keep ? "" : " off") + (t.suggested ? " sug" : ""), title: hits + " Zutaten betroffen" },
+        t.term, el("span", { class: "meta", style: "margin:0" }, hits),
+        el("button", { type: "button", "aria-label": (t.keep ? "Ausschalten: " : "Einschalten: ") + t.term,
+          onclick: () => { t.keep = !t.keep; save("„" + t.term + "“"); } }, t.keep ? "✕" : "↺"));
+    }));
+    $("term-notes").replaceChildren(...data.terms.filter((t) => t.note).map((t) => el("li", {}, el("b", {}, t.term), ": " + t.note)));
+  }
+
+  function renderCats() {
+    $("cats").replaceChildren(...data.categories.map((c) => el("span", { class: "cat" },
+      el("span", { class: "dot", style: "background:" + catColor(c) }), c,
+      el("span", { class: "meta", style: "margin:0" }, data.items.filter((i) => i.category === c).length),
+      data.newCategories.includes(c) ? el("span", { class: "tag new" }, "neu") : null)));
+  }
+
+  function render() { renderStats(); renderList(); renderTerms(); renderCats(); }
+
+  document.querySelectorAll("[data-filter]").forEach((b) => b.addEventListener("click", () => {
+    ui.filter = b.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderList();
+  }));
+  $("q").addEventListener("input", (e) => { ui.q = e.target.value; renderList(); });
+
+  $("add-term").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const term = $("new-term").value.trim().toLowerCase();
+    if (!term) return;
+    const existing = data.terms.find((t) => t.term === term);
+    if (existing) { existing.keep = true; } else data.terms.push({ term, keep: true, suggested: true, note: null });
+    $("new-term").value = "";
+    save("„" + term + "“");
+  });
+  $("add-cat").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = $("new-cat").value.trim();
+    if (!name) return;
+    if (data.categories.includes(name)) { setStatus("„" + name + "“ gibt es schon."); return; }
+    data.categories.push(name); data.newCategories.push(name);
+    $("new-cat").value = "";
+    save("Kategorie „" + name + "“");
+  });
+
+  $("export").addEventListener("click", () => {
+    const json = JSON.stringify(data, null, 2);
+    const out = $("out"); out.value = json; out.hidden = false;
+    try {
+      const a = el("a", { href: URL.createObjectURL(new Blob([json], { type: "application/json" })), download: "result.json" });
+      document.body.append(a); a.click(); a.remove();
+    } catch (e) {}
+    const done = () => setStatus("Exportiert. Falls kein Download kam: Text unten ist markiert, kopieren und als result.json speichern.");
+    if (navigator.clipboard) navigator.clipboard.writeText(json).then(() => setStatus("Exportiert und in die Zwischenablage kopiert."), () => { out.select(); done(); });
+    else { out.select(); done(); }
+  });
+  $("reset").addEventListener("click", () => { $("reset-confirm").hidden = false; });
+  $("reset-no").addEventListener("click", () => { $("reset-confirm").hidden = true; });
+  $("reset-yes").addEventListener("click", () => { data = structuredClone(SEED); $("reset-confirm").hidden = true; save("Vorschlag"); });
+
+  render();
+})();
+</script>

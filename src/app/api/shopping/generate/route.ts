@@ -66,11 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ added: 0 })
   }
 
-  // Fetch blacklist
-  const blacklist = await prisma.shoppingBlacklist.findMany({ where: { familyId } })
-  const blacklistTerms = blacklist.map((b) => b.term)
-
-  // Call Claude to normalise, merge, filter, and order ingredients
+  // Call Claude to normalise, merge, and order ingredients
   let unified: Array<{ name: string; quantity: string | null }>
   try {
     const response = await client.messages.parse({
@@ -82,7 +78,6 @@ export async function POST(request: Request) {
       system: `You are a shopping list assistant. Given a list of raw meal ingredients, return a clean, unified shopping list.
 
 Rules:
-- Remove any ingredient that contains one of the blacklist terms as a substring (case-insensitive).
 - Merge clearly identical ingredients (e.g. "2 chicken breasts" and "3 chicken pieces" → one "chicken breast" entry).
 - For similar-but-potentially-different ingredients (e.g. "potatoes" and "small potatoes"), keep both but place them adjacent in the list.
 - Strip quantities and units from the name field — put them in the quantity field (null if none).
@@ -92,9 +87,7 @@ Rules:
       messages: [
         {
           role: "user",
-          content: `Blacklist terms: ${blacklistTerms.length > 0 ? blacklistTerms.join(", ") : "(none)"}
-
-Ingredients:
+          content: `Ingredients:
 ${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
         },
       ],
@@ -108,6 +101,16 @@ ${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
     console.error("[generate] Claude unification error:", err)
     return NextResponse.json({ error: "AI unification failed" }, { status: 500 })
   }
+
+  if (unified.length === 0) {
+    return NextResponse.json({ added: 0 })
+  }
+
+  // Drop blacklisted items: a term matches the normalised name exactly, so
+  // "onion" filters "onion" but not "spring onion", and "salt" never hits "unsalted butter"
+  const blacklist = await prisma.shoppingBlacklist.findMany({ where: { familyId } })
+  const blacklistTerms = new Set(blacklist.map((b) => b.term.trim().toLowerCase()))
+  unified = unified.filter((i) => !blacklistTerms.has(i.name.trim().toLowerCase()))
 
   if (unified.length === 0) {
     return NextResponse.json({ added: 0 })

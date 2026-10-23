@@ -10,6 +10,7 @@ import { ProfileSection } from "./ProfileSection"
 import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
 import { ShoppingSection } from "./ShoppingSection"
+import { ApiTokensSection } from "./ApiTokensSection"
 import { LanguageSection } from "./LanguageSection"
 import { AppearanceSection } from "./AppearanceSection"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
@@ -120,7 +121,12 @@ export default function SettingsPage() {
               <LocationSection />
             </>
           )}
-          {activeSection === "shopping"   && <ShoppingSection />}
+          {activeSection === "shopping" && (
+            <>
+              <ShoppingSection />
+              <ApiTokensSection />
+            </>
+          )}
           {activeSection === "language"   && <LanguageSection />}
           {activeSection === "appearance" && <AppearanceSection />}
         </div>

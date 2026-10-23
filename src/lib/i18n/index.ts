@@ -320,6 +320,18 @@ export type Translations = {
     failedSaveRetry: string
     minChars: string
     copyCode: string
+    apiTokensTitle: string
+    apiTokensDesc: string
+    mcpEndpointLabel: string
+    apiTokenCreated: string
+    mcpSetupLabel: string
+    apiTokenNamePlaceholder: string
+    createToken: string
+    revoke: string
+    lastUsed: string
+    neverUsed: string
+    noApiTokens: string
+    copy: string
   }
 }
 
@@ -643,6 +655,18 @@ const en: Translations = {
     failedSaveRetry: "Failed to save. Please try again.",
     minChars: "Min. 8 characters",
     copyCode: "Copy code",
+    apiTokensTitle: "Connect Claude (MCP)",
+    apiTokensDesc: "Create a personal token so Claude can add, list and remove shopping list items through the MCP endpoint below.",
+    mcpEndpointLabel: "MCP endpoint",
+    apiTokenCreated: "New token — copy it now, it won't be shown again",
+    mcpSetupLabel: "Add it to Claude Code with:",
+    apiTokenNamePlaceholder: "Token name, e.g. Claude Code",
+    createToken: "Create token",
+    revoke: "Revoke",
+    lastUsed: "last used",
+    neverUsed: "never used",
+    noApiTokens: "No tokens yet.",
+    copy: "Copy",
   },
 }
 
@@ -966,6 +990,18 @@ const es: Translations = {
     failedSaveRetry: "Error al guardar. Inténtalo de nuevo.",
     minChars: "Mín. 8 caracteres",
     copyCode: "Copiar código",
+    apiTokensTitle: "Conectar Claude (MCP)",
+    apiTokensDesc: "Crea un token personal para que Claude pueda añadir, ver y quitar artículos de la lista de la compra a través del endpoint MCP.",
+    mcpEndpointLabel: "Endpoint MCP",
+    apiTokenCreated: "Nuevo token: cópialo ahora, no se volverá a mostrar",
+    mcpSetupLabel: "Añádelo a Claude Code con:",
+    apiTokenNamePlaceholder: "Nombre del token, p. ej. Claude Code",
+    createToken: "Crear token",
+    revoke: "Revocar",
+    lastUsed: "último uso",
+    neverUsed: "nunca usado",
+    noApiTokens: "Aún no hay tokens.",
+    copy: "Copiar",
   },
 }
 
@@ -1289,6 +1325,18 @@ const de: Translations = {
     failedSaveRetry: "Speichern fehlgeschlagen. Bitte erneut versuchen.",
     minChars: "Mind. 8 Zeichen",
     copyCode: "Code kopieren",
+    apiTokensTitle: "Claude verbinden (MCP)",
+    apiTokensDesc: "Erstelle ein persönliches Token, damit Claude über den MCP-Endpunkt unten Artikel auf der Einkaufsliste hinzufügen, anzeigen und entfernen kann.",
+    mcpEndpointLabel: "MCP-Endpunkt",
+    apiTokenCreated: "Neues Token – jetzt kopieren, es wird nicht noch einmal angezeigt",
+    mcpSetupLabel: "In Claude Code hinzufügen mit:",
+    apiTokenNamePlaceholder: "Token-Name, z. B. Claude Code",
+    createToken: "Token erstellen",
+    revoke: "Widerrufen",
+    lastUsed: "zuletzt benutzt",
+    neverUsed: "nie benutzt",
+    noApiTokens: "Noch keine Tokens.",
+    copy: "Kopieren",
   },
 }
 

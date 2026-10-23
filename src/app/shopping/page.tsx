@@ -3,9 +3,10 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo } from "react"
-import { Plus, X } from "lucide-react"
+import { Pencil, Plus, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import EditItemModal, { type ItemChanges } from "./EditItemModal"
 
 type Category = { id: string; name: string; order: number }
 type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null }
@@ -23,8 +24,9 @@ export default function ShoppingPage() {
   const [addError, setAddError] = useState<string | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
-  // Inline category reassign
-  const [editingCategoryFor, setEditingCategoryFor] = useState<string | null>(null)
+  // Edit modal
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const editingItem = items.find((i) => i.id === editingItemId) ?? null
 
   const [clearing, setClearing] = useState(false)
 
@@ -118,20 +120,19 @@ export default function ShoppingPage() {
     }
   }
 
-  const handleCategoryChange = async (itemId: string, newCategoryId: string) => {
-    setEditingCategoryFor(null)
-    const oldItem = items.find((i) => i.id === itemId)
-    const newCat = categories.find((c) => c.id === newCategoryId) ?? null
-    setItems((prev) => prev.map((i) => i.id === itemId ? { ...i, categoryId: newCategoryId || null, category: newCat } : i))
+  const handleEditSave = async (itemId: string, changes: ItemChanges): Promise<boolean> => {
     try {
       const res = await fetch(`/api/shopping/items/${itemId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categoryId: newCategoryId || null }),
+        body: JSON.stringify(changes),
       })
-      if (!res.ok && oldItem) setItems((prev) => prev.map((i) => i.id === itemId ? oldItem : i))
+      if (!res.ok) return false
+      const updated: ShoppingItem = await res.json()
+      setItems((prev) => prev.map((i) => (i.id === itemId ? updated : i)))
+      return true
     } catch {
-      if (oldItem) setItems((prev) => prev.map((i) => i.id === itemId ? oldItem : i))
+      return false
     }
   }
 
@@ -213,28 +214,15 @@ export default function ShoppingPage() {
                     />
                     {item.quantity && <span className={styles.itemQty}>{item.quantity}</span>}
                     <span className={styles.itemName}>{item.name}</span>
-                    {editingCategoryFor === item.id ? (
-                      <select
-                        className={styles.categoryPillSelect}
-                        value={item.categoryId ?? ""}
-                        autoFocus
-                        onBlur={() => setEditingCategoryFor(null)}
-                        onChange={(e) => handleCategoryChange(item.id, e.target.value)}
-                      >
-                        <option value="">{t.shopping.other}</option>
-                        {categories.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <button
-                        className={styles.categoryPill}
-                        onClick={() => setEditingCategoryFor(item.id)}
-                        title={t.shopping.changeCategory}
-                      >
-                        {item.category?.name ?? t.shopping.other}
-                      </button>
-                    )}
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => setEditingItemId(item.id)}
+                      aria-label={t.shopping.editItem}
+                      title={t.shopping.editItem}
+                      disabled={item.id.startsWith("optimistic-")}
+                    >
+                      <Pencil size={14} strokeWidth={2} />
+                    </button>
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleDelete(item.id)}
@@ -259,6 +247,15 @@ export default function ShoppingPage() {
           {t.shopping.clearList}
         </button>
       </div>
+
+      {editingItem && (
+        <EditItemModal
+          item={editingItem}
+          categories={categories}
+          onClose={() => setEditingItemId(null)}
+          onSave={(changes) => handleEditSave(editingItem.id, changes)}
+        />
+      )}
     </div>
   )
 }

@@ -21,13 +21,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
   const bodyObj = body as Record<string, unknown>
-  const { categoryId } = bodyObj
+  const { name, quantity, categoryId } = bodyObj
+  if (name !== undefined && (typeof name !== "string" || !name.trim())) {
+    return NextResponse.json({ error: "name must be a non-empty string" }, { status: 400 })
+  }
+  if (quantity !== undefined && quantity !== null && typeof quantity !== "string") {
+    return NextResponse.json({ error: "quantity must be a string" }, { status: 400 })
+  }
   if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
     return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
   }
 
-  // Build update data — only include categoryId if explicitly provided in body
-  const updateData: { categoryId?: string | null } = {}
+  // Build update data — only include fields explicitly provided in body
+  const updateData: { name?: string; quantity?: string | null; categoryId?: string | null } = {}
+  if (typeof name === "string") updateData.name = name.trim()
+  if ("quantity" in bodyObj) updateData.quantity = (quantity as string | null)?.trim() || null
   if ("categoryId" in bodyObj) {
     updateData.categoryId = categoryId ?? null
   }
@@ -44,13 +52,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     include: { category: true },
   })
 
-  // Update memory for this item name (only if category explicitly set)
-  if (updateData.categoryId) {
-    await prisma.shoppingItemMemory.upsert({
-      where: { familyId_itemName: { familyId, itemName: item.name.toLowerCase() } },
-      update: { categoryId: updateData.categoryId },
-      create: { familyId, itemName: item.name.toLowerCase(), categoryId: updateData.categoryId },
-    })
+  // Overwrite the remembered category for this item name (only if category explicitly set).
+  // Moving an item to "Other" forgets the mapping so it isn't re-applied next time.
+  if (updateData.categoryId !== undefined) {
+    const itemName = updated.name.toLowerCase()
+    if (updateData.categoryId) {
+      await prisma.shoppingItemMemory.upsert({
+        where: { familyId_itemName: { familyId, itemName } },
+        update: { categoryId: updateData.categoryId },
+        create: { familyId, itemName, categoryId: updateData.categoryId },
+      })
+    } else {
+      await prisma.shoppingItemMemory.deleteMany({ where: { familyId, itemName } })
+    }
   }
 
   return NextResponse.json(updated)

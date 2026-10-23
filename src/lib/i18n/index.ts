@@ -210,7 +210,12 @@ export type Translations = {
     add: string
     noItems: string
     other: string
-    changeCategory: string
+    editItem: string
+    itemName: string
+    category: string
+    save: string
+    cancel: string
+    failedToSave: string
     removeItem: string
     clearList: string
     failedToAdd: string
@@ -547,7 +552,12 @@ const en: Translations = {
     add: "Add",
     noItems: "No items yet. Add something above.",
     other: "Other",
-    changeCategory: "Change category",
+    editItem: "Edit item",
+    itemName: "Item",
+    category: "Category",
+    save: "Save",
+    cancel: "Cancel",
+    failedToSave: "Failed to save item",
     removeItem: "Remove item",
     clearList: "Clear list",
     failedToAdd: "Failed to add item",
@@ -884,7 +894,12 @@ const es: Translations = {
     add: "Añadir",
     noItems: "Sin artículos. Añade algo arriba.",
     other: "Otros",
-    changeCategory: "Cambiar categoría",
+    editItem: "Editar artículo",
+    itemName: "Artículo",
+    category: "Categoría",
+    save: "Guardar",
+    cancel: "Cancelar",
+    failedToSave: "Error al guardar el artículo",
     removeItem: "Eliminar artículo",
     clearList: "Limpiar lista",
     failedToAdd: "Error al añadir artículo",
@@ -1221,7 +1236,12 @@ const de: Translations = {
     add: "Hinzufügen",
     noItems: "Noch keine Artikel. Füge oben etwas hinzu.",
     other: "Sonstiges",
-    changeCategory: "Kategorie ändern",
+    editItem: "Artikel bearbeiten",
+    itemName: "Artikel",
+    category: "Kategorie",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    failedToSave: "Artikel konnte nicht gespeichert werden",
     removeItem: "Artikel entfernen",
     clearList: "Liste leeren",
     failedToAdd: "Artikel konnte nicht hinzugefügt werden",

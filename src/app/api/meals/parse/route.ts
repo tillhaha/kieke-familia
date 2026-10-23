@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import Anthropic from "@anthropic-ai/sdk"
-import type { ImageBlockParam, TextBlockParam } from "@anthropic-ai/sdk/resources/messages/messages"
+import type { DocumentBlockParam, ImageBlockParam, TextBlockParam } from "@anthropic-ai/sdk/resources/messages/messages"
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
 
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
   let source: string | null = null
 
   // Build the Claude message content
-  type ContentBlock = TextBlockParam | ImageBlockParam
+  type ContentBlock = TextBlockParam | ImageBlockParam | DocumentBlockParam
 
   let messageContent: string | ContentBlock[]
 
@@ -103,11 +103,14 @@ export async function POST(request: Request) {
       const rawMediaType = match?.[1] ?? "image/jpeg"
       const media_type: SupportedMediaType = isSupportedMediaType(rawMediaType) ? rawMediaType : "image/jpeg"
       const data = match?.[2] ?? dataUrl
+      if (rawMediaType === "application/pdf") {
+        return { type: "document", source: { type: "base64", media_type: "application/pdf", data } } satisfies DocumentBlockParam
+      }
       return { type: "image", source: { type: "base64", media_type, data } } satisfies ImageBlockParam
     })
     imageBlocks.push({
       type: "text",
-      text: "Extract the recipe from these screenshot(s). If multiple images show different parts of the same recipe (e.g. ingredients on one page, steps on another), combine them into one recipe.",
+      text: "Extract the recipe from these screenshot(s) or PDF(s). If multiple images or pages show different parts of the same recipe (e.g. ingredients on one page, steps on another), combine them into one recipe.",
     })
     messageContent = imageBlocks
   } else {

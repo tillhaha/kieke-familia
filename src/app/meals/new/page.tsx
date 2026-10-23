@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ChevronLeft, Sparkles, X, ImagePlus, Camera } from "lucide-react"
+import { ChevronLeft, Sparkles, X, ImagePlus, Camera, FileText } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 
@@ -133,7 +133,7 @@ export default function NewMealPage() {
   }
 
   const addScreenshotFiles = async (files: FileList | File[]) => {
-    const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/"))
+    const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/") || f.type === "application/pdf")
     const entries = await Promise.all(
       imageFiles.map(async (f) => ({ dataUrl: await fileToDataUrl(f), name: f.name }))
     )
@@ -382,7 +382,7 @@ export default function NewMealPage() {
             <input
               ref={screenshotInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               multiple
               style={{ display: "none" }}
               onChange={handleScreenshotFileInput}
@@ -401,8 +401,15 @@ export default function NewMealPage() {
               <div className={styles.batchThumbnails}>
                 {screenshots.map((img, i) => (
                   <div key={i} className={styles.batchThumb}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.dataUrl} alt={img.name} />
+                    {img.dataUrl.startsWith("data:application/pdf") ? (
+                      <div className={styles.batchThumbPdf} title={img.name}>
+                        <FileText size={22} strokeWidth={1.5} />
+                        <span>{img.name}</span>
+                      </div>
+                    ) : (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={img.dataUrl} alt={img.name} />
+                    )}
                     <button
                       type="button"
                       className={styles.batchThumbRemove}

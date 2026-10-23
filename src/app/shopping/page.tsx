@@ -20,7 +20,6 @@ export default function ShoppingPage() {
   // Add form
   const [qty, setQty] = useState("")
   const [name, setName] = useState("")
-  const [categoryId, setCategoryId] = useState("")
   const [addError, setAddError] = useState<string | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
 
@@ -48,11 +47,12 @@ export default function ShoppingPage() {
     return m
   }, [items])
 
+  // Items already on the list are placed right away; anything else is
+  // categorised by the server (remembered mapping, then AI)
   const effectiveCategoryId = useMemo(() => {
-    if (categoryId) return categoryId
     const key = name.trim().toLowerCase()
     return (key && memory[key]) ? memory[key] : ""
-  }, [categoryId, name, memory])
+  }, [name, memory])
 
   const handleAdd = async (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -73,7 +73,6 @@ export default function ShoppingPage() {
     const savedCatId = effectiveCategoryId
     setQty("")
     setName("")
-    setCategoryId("")
     nameInputRef.current?.focus()
 
     try {
@@ -190,16 +189,6 @@ export default function ShoppingPage() {
           onChange={(e) => setName(e.target.value)}
           autoComplete="off"
         />
-        <select
-          className={styles.categorySelect}
-          value={effectiveCategoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-        >
-          <option value="">{t.shopping.categoryPlaceholder}</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
         <button type="submit" className={styles.addBtn} disabled={!name.trim()}>
           <Plus size={14} strokeWidth={2.5} />
           {t.shopping.add}

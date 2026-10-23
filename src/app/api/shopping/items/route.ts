@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { categorizeShoppingItem } from "@/lib/shoppingCategorize"
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -48,12 +49,14 @@ export async function POST(request: Request) {
     if (!cat) return NextResponse.json({ error: "Invalid category" }, { status: 400 })
   }
 
+  const resolvedCategoryId = categoryId || (await categorizeShoppingItem(familyId, name))
+
   const item = await prisma.shoppingItem.create({
     data: {
       familyId,
       name: name.trim(),
       quantity: quantity?.trim() || null,
-      categoryId: categoryId || null,
+      categoryId: resolvedCategoryId,
     },
     include: { category: true },
   })

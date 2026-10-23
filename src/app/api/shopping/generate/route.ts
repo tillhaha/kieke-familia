@@ -5,6 +5,7 @@ import { NextResponse } from "next/server"
 import Anthropic from "@anthropic-ai/sdk"
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
+import { categorizeShoppingItems } from "@/lib/shoppingCategorize"
 
 const client = new Anthropic()
 
@@ -128,14 +129,11 @@ ${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
     return NextResponse.json({ added: 0 })
   }
 
-  // Look up memory for category pre-assignment
-  const memories = await prisma.shoppingItemMemory.findMany({
-    where: {
-      familyId,
-      itemName: { in: newIngredients.map((i) => i.name.toLowerCase()) },
-    },
-  })
-  const memoryMap = new Map(memories.map((m) => [m.itemName, m.categoryId]))
+  // Category pre-assignment: remembered mapping, then AI for unknown names
+  const categoryMap = await categorizeShoppingItems(
+    familyId as string,
+    newIngredients.map((i) => i.name)
+  )
 
   // Insert items in Claude's order, assigning sortOrder (atomic to avoid race conditions)
   try {
@@ -151,7 +149,7 @@ ${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
           familyId: familyId as string,
           name: item.name,
           quantity: item.quantity ?? null,
-          categoryId: memoryMap.get(item.name) ?? null,
+          categoryId: categoryMap.get(item.name.trim().toLowerCase()) ?? null,
           sortOrder: baseOrder + index,
         })),
       })

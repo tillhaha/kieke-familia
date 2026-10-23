@@ -207,7 +207,6 @@ export type Translations = {
     title: string
     qty: string
     addItemPlaceholder: string
-    categoryPlaceholder: string
     add: string
     noItems: string
     other: string
@@ -531,7 +530,6 @@ const en: Translations = {
     title: "Shopping List",
     qty: "Qty",
     addItemPlaceholder: "Add item…",
-    categoryPlaceholder: "Category…",
     add: "Add",
     noItems: "No items yet. Add something above.",
     other: "Other",
@@ -855,7 +853,6 @@ const es: Translations = {
     title: "Lista de compras",
     qty: "Cant.",
     addItemPlaceholder: "Añadir artículo…",
-    categoryPlaceholder: "Categoría…",
     add: "Añadir",
     noItems: "Sin artículos. Añade algo arriba.",
     other: "Otros",
@@ -1179,7 +1176,6 @@ const de: Translations = {
     title: "Einkaufsliste",
     qty: "Menge",
     addItemPlaceholder: "Artikel hinzufügen…",
-    categoryPlaceholder: "Kategorie…",
     add: "Hinzufügen",
     noItems: "Noch keine Artikel. Füge oben etwas hinzu.",
     other: "Sonstiges",

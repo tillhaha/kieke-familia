@@ -253,6 +253,7 @@ export type Translations = {
     location: string
     family: string
     shopping: string
+    integrations: string
     language: string
     appearance: string
     appearanceDesc: string
@@ -325,6 +326,7 @@ export type Translations = {
     mcpEndpointLabel: string
     apiTokenCreated: string
     mcpSetupLabel: string
+    connectorSetupLabel: string
     apiTokenNamePlaceholder: string
     createToken: string
     revoke: string
@@ -588,6 +590,7 @@ const en: Translations = {
     location: "Location",
     family: "Family",
     shopping: "Shopping",
+    integrations: "Integrations",
     language: "Language",
     appearance: "Appearance",
     appearanceDesc: "Choose how the app looks.",
@@ -656,10 +659,11 @@ const en: Translations = {
     minChars: "Min. 8 characters",
     copyCode: "Copy code",
     apiTokensTitle: "Connect Claude (MCP)",
-    apiTokensDesc: "Create a personal token so Claude can add, list and remove shopping list items through the MCP endpoint below.",
+    apiTokensDesc: "Create a personal token so Claude can access your family's Familia data through the MCP endpoint below. Currently: adding, listing and removing shopping list items.",
     mcpEndpointLabel: "MCP endpoint",
     apiTokenCreated: "New token — copy it now, it won't be shown again",
     mcpSetupLabel: "Add it to Claude Code with:",
+    connectorSetupLabel: "For claude.ai and the Claude apps, add a custom connector (Settings → Connectors) with this URL:",
     apiTokenNamePlaceholder: "Token name, e.g. Claude Code",
     createToken: "Create token",
     revoke: "Revoke",
@@ -923,6 +927,7 @@ const es: Translations = {
     location: "Ubicación",
     family: "Familia",
     shopping: "Compras",
+    integrations: "Integraciones",
     language: "Idioma",
     appearance: "Apariencia",
     appearanceDesc: "Elige cómo se ve la app.",
@@ -991,10 +996,11 @@ const es: Translations = {
     minChars: "Mín. 8 caracteres",
     copyCode: "Copiar código",
     apiTokensTitle: "Conectar Claude (MCP)",
-    apiTokensDesc: "Crea un token personal para que Claude pueda añadir, ver y quitar artículos de la lista de la compra a través del endpoint MCP.",
+    apiTokensDesc: "Crea un token personal para que Claude pueda acceder a los datos de Familia de tu familia a través del endpoint MCP. Por ahora: añadir, ver y quitar artículos de la lista de la compra.",
     mcpEndpointLabel: "Endpoint MCP",
     apiTokenCreated: "Nuevo token: cópialo ahora, no se volverá a mostrar",
     mcpSetupLabel: "Añádelo a Claude Code con:",
+    connectorSetupLabel: "Para claude.ai y las apps de Claude, añade un conector personalizado (Ajustes → Conectores) con esta URL:",
     apiTokenNamePlaceholder: "Nombre del token, p. ej. Claude Code",
     createToken: "Crear token",
     revoke: "Revocar",
@@ -1258,6 +1264,7 @@ const de: Translations = {
     location: "Standort",
     family: "Familie",
     shopping: "Einkauf",
+    integrations: "Integrationen",
     language: "Sprache",
     appearance: "Erscheinungsbild",
     appearanceDesc: "Wähle aus, wie die App aussieht.",
@@ -1326,10 +1333,11 @@ const de: Translations = {
     minChars: "Mind. 8 Zeichen",
     copyCode: "Code kopieren",
     apiTokensTitle: "Claude verbinden (MCP)",
-    apiTokensDesc: "Erstelle ein persönliches Token, damit Claude über den MCP-Endpunkt unten Artikel auf der Einkaufsliste hinzufügen, anzeigen und entfernen kann.",
+    apiTokensDesc: "Erstelle ein persönliches Token, damit Claude über den MCP-Endpunkt unten auf die Familia-Daten deiner Familie zugreifen kann. Aktuell: Artikel auf der Einkaufsliste hinzufügen, anzeigen und entfernen.",
     mcpEndpointLabel: "MCP-Endpunkt",
     apiTokenCreated: "Neues Token – jetzt kopieren, es wird nicht noch einmal angezeigt",
     mcpSetupLabel: "In Claude Code hinzufügen mit:",
+    connectorSetupLabel: "Für claude.ai und die Claude-Apps einen eigenen Connector (Einstellungen → Connectors) mit dieser URL hinzufügen:",
     apiTokenNamePlaceholder: "Token-Name, z. B. Claude Code",
     createToken: "Token erstellen",
     revoke: "Widerrufen",

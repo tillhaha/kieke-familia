@@ -89,8 +89,9 @@ export function ApiTokensSection() {
   if (loading) return <p className={styles.spinner}>{t.settings.loading}</p>
 
   const setupCommand = createdToken
-    ? `claude mcp add --transport http familia ${endpoint} --header "Authorization: Bearer ${createdToken}"`
+    ? `claude mcp add --scope user --transport http familia ${endpoint} --header "Authorization: Bearer ${createdToken}"`
     : null
+  const connectorUrl = createdToken ? `${endpoint}/${createdToken}` : null
 
   return (
     <div className={styles.section}>
@@ -105,7 +106,7 @@ export function ApiTokensSection() {
         </div>
       </div>
 
-      {createdToken && setupCommand && (
+      {createdToken && setupCommand && connectorUrl && (
         <div className={styles.fieldGroup}>
           <span className={styles.fieldLabel}>{t.settings.apiTokenCreated}</span>
           <div className={styles.tokenRow}>
@@ -116,6 +117,11 @@ export function ApiTokensSection() {
           <div className={styles.tokenRow}>
             <code className={styles.tokenValue}>{setupCommand}</code>
             <CopyButton value={setupCommand} title={t.settings.copy} />
+          </div>
+          <span className={styles.fieldHint}>{t.settings.connectorSetupLabel}</span>
+          <div className={styles.tokenRow}>
+            <code className={styles.tokenValue}>{connectorUrl}</code>
+            <CopyButton value={connectorUrl} title={t.settings.copy} />
           </div>
         </div>
       )}

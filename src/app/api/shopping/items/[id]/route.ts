@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { isShoppingTagList, type ShoppingTag } from "@/lib/shoppingTags"
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
@@ -21,7 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
   const bodyObj = body as Record<string, unknown>
-  const { name, quantity, categoryId } = bodyObj
+  const { name, quantity, categoryId, tags } = bodyObj
   if (name !== undefined && (typeof name !== "string" || !name.trim())) {
     return NextResponse.json({ error: "name must be a non-empty string" }, { status: 400 })
   }
@@ -31,11 +32,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
     return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
   }
+  if (tags !== undefined && !isShoppingTagList(tags)) {
+    return NextResponse.json({ error: "Invalid tags" }, { status: 400 })
+  }
 
   // Build update data — only include fields explicitly provided in body
-  const updateData: { name?: string; quantity?: string | null; categoryId?: string | null } = {}
+  const updateData: { name?: string; quantity?: string | null; categoryId?: string | null; tags?: ShoppingTag[] } = {}
   if (typeof name === "string") updateData.name = name.trim()
   if ("quantity" in bodyObj) updateData.quantity = (quantity as string | null)?.trim() || null
+  if (tags !== undefined) updateData.tags = [...new Set(tags)]
   if ("categoryId" in bodyObj) {
     updateData.categoryId = categoryId ?? null
   }

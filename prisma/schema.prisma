@@ -265,6 +265,7 @@ model ShoppingItem {
   quantity   String?
   categoryId String?
   category   ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags       String[]          @default([])
   sortOrder  Int               @default(0)
   createdAt  DateTime          @default(now())
 

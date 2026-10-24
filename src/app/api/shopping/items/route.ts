@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { categorizeShoppingItem } from "@/lib/shoppingCategorize"
+import { isShoppingTagList } from "@/lib/shoppingTags"
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
-  const { name, quantity, categoryId } = body as Record<string, unknown>
+  const { name, quantity, categoryId, tags } = body as Record<string, unknown>
   if (!name || typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "name required" }, { status: 400 })
   }
@@ -41,6 +42,9 @@ export async function POST(request: Request) {
   }
   if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
     return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
+  }
+  if (tags !== undefined && !isShoppingTagList(tags)) {
+    return NextResponse.json({ error: "Invalid tags" }, { status: 400 })
   }
 
   // Validate categoryId belongs to this family
@@ -57,6 +61,7 @@ export async function POST(request: Request) {
       name: name.trim(),
       quantity: quantity?.trim() || null,
       categoryId: resolvedCategoryId,
+      tags: tags ? [...new Set(tags)] : [],
     },
     include: { category: true },
   })

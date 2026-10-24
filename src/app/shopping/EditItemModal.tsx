@@ -4,10 +4,11 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
 type Category = { id: string; name: string; order: number }
-export type EditableItem = { id: string; name: string; quantity: string | null; categoryId: string | null }
-export type ItemChanges = { name?: string; quantity?: string | null; categoryId?: string | null }
+export type EditableItem = { id: string; name: string; quantity: string | null; categoryId: string | null; tags: ShoppingTag[] }
+export type ItemChanges = { name?: string; quantity?: string | null; categoryId?: string | null; tags?: ShoppingTag[] }
 
 type Props = {
   item: EditableItem
@@ -21,6 +22,7 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
   const [qty, setQty] = useState(item.quantity ?? "")
   const [name, setName] = useState(item.name)
   const [categoryId, setCategoryId] = useState(item.categoryId ?? "")
+  const [tags, setTags] = useState<ShoppingTag[]>(item.tags)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
@@ -41,6 +43,7 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
     if (name.trim() !== item.name) changes.name = name.trim()
     if ((qty.trim() || null) !== item.quantity) changes.quantity = qty.trim() || null
     if ((categoryId || null) !== item.categoryId) changes.categoryId = categoryId || null
+    if (tags.length !== item.tags.length || tags.some((tag) => !item.tags.includes(tag))) changes.tags = tags
     if (Object.keys(changes).length === 0) {
       onClose()
       return
@@ -85,6 +88,23 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
             ))}
           </select>
         </label>
+
+        <div className={styles.modalField}>
+          <span className={styles.modalLabel}>{t.shopping.tags}</span>
+          <div className={styles.modalTags}>
+            {SHOPPING_TAGS.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                className={`${styles.tagFilterPill} ${tags.includes(tag) ? styles.tagFilterPillActive : ""}`}
+                onClick={() => setTags((prev) => prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag])}
+                aria-pressed={tags.includes(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {error && <p className={styles.addError}>{error}</p>}
 

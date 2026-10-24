@@ -7,9 +7,10 @@ import { Pencil, Plus, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import EditItemModal, { type ItemChanges } from "./EditItemModal"
+import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
 type Category = { id: string; name: string; order: number }
-type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null }
+type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null; tags: ShoppingTag[] }
 
 export default function ShoppingPage() {
   const { status } = useSession()
@@ -23,6 +24,10 @@ export default function ShoppingPage() {
   const [name, setName] = useState("")
   const [addError, setAddError] = useState<string | null>(null)
   const nameInputRef = useRef<HTMLInputElement>(null)
+
+  // Tag filter — while active, only tagged items are shown and new items get the tag
+  const [tagFilter, setTagFilter] = useState<ShoppingTag | null>(null)
+  const visibleItems = tagFilter ? items.filter((i) => i.tags.includes(tagFilter)) : items
 
   // Edit modal
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
@@ -67,6 +72,7 @@ export default function ShoppingPage() {
       quantity: qty.trim() || null,
       categoryId: effectiveCategoryId || null,
       category: categories.find((c) => c.id === effectiveCategoryId) ?? null,
+      tags: tagFilter ? [tagFilter] : [],
     }
     setItems((prev) => [...prev, optimisticItem])
 
@@ -81,7 +87,7 @@ export default function ShoppingPage() {
       const res = await fetch("/api/shopping/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: savedName.trim(), quantity: savedQty.trim() || undefined, categoryId: savedCatId || undefined }),
+        body: JSON.stringify({ name: savedName.trim(), quantity: savedQty.trim() || undefined, categoryId: savedCatId || undefined, tags: optimisticItem.tags }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -152,7 +158,7 @@ export default function ShoppingPage() {
 
   const grouped = (() => {
     const catMap = new Map<string | null, ShoppingItem[]>()
-    for (const item of items) {
+    for (const item of visibleItems) {
       const key = item.categoryId ?? null
       if (!catMap.has(key)) catMap.set(key, [])
       catMap.get(key)!.push(item)
@@ -197,8 +203,27 @@ export default function ShoppingPage() {
       </form>
       {addError && <p className={styles.addError}>{addError}</p>}
 
-      {items.length === 0 ? (
-        <p className={styles.emptyState}>{t.shopping.noItems}</p>
+      <div className={styles.tagFilter}>
+        <button
+          className={`${styles.tagFilterPill} ${tagFilter === null ? styles.tagFilterPillActive : ""}`}
+          onClick={() => setTagFilter(null)}
+        >
+          {t.shopping.allItems}
+        </button>
+        {SHOPPING_TAGS.map((tag) => (
+          <button
+            key={tag}
+            className={`${styles.tagFilterPill} ${tagFilter === tag ? styles.tagFilterPillActive : ""}`}
+            onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
+          >
+            {tag}
+            <span className={styles.tagFilterCount}>{items.filter((i) => i.tags.includes(tag)).length}</span>
+          </button>
+        ))}
+      </div>
+
+      {visibleItems.length === 0 ? (
+        <p className={styles.emptyState}>{tagFilter ? t.shopping.noItemsWithTag : t.shopping.noItems}</p>
       ) : (
         <div className={styles.list}>
           {grouped.map(({ category, items: groupItems }) => (
@@ -214,6 +239,9 @@ export default function ShoppingPage() {
                     />
                     {item.quantity && <span className={styles.itemQty}>{item.quantity}</span>}
                     <span className={styles.itemName}>{item.name}</span>
+                    {item.tags.map((tag) => (
+                      <span key={tag} className={styles.tagChip}>{tag}</span>
+                    ))}
                     <button
                       className={styles.editBtn}
                       onClick={() => setEditingItemId(item.id)}

@@ -216,6 +216,9 @@ export type Translations = {
     save: string
     cancel: string
     failedToSave: string
+    tags: string
+    allItems: string
+    noItemsWithTag: string
     removeItem: string
     clearList: string
     failedToAdd: string
@@ -558,6 +561,9 @@ const en: Translations = {
     save: "Save",
     cancel: "Cancel",
     failedToSave: "Failed to save item",
+    tags: "Tags",
+    allItems: "All",
+    noItemsWithTag: "No items with this tag.",
     removeItem: "Remove item",
     clearList: "Clear list",
     failedToAdd: "Failed to add item",
@@ -900,6 +906,9 @@ const es: Translations = {
     save: "Guardar",
     cancel: "Cancelar",
     failedToSave: "Error al guardar el artículo",
+    tags: "Etiquetas",
+    allItems: "Todos",
+    noItemsWithTag: "No hay artículos con esta etiqueta.",
     removeItem: "Eliminar artículo",
     clearList: "Limpiar lista",
     failedToAdd: "Error al añadir artículo",
@@ -1242,6 +1251,9 @@ const de: Translations = {
     save: "Speichern",
     cancel: "Abbrechen",
     failedToSave: "Artikel konnte nicht gespeichert werden",
+    tags: "Tags",
+    allItems: "Alle",
+    noItemsWithTag: "Keine Artikel mit diesem Tag.",
     removeItem: "Artikel entfernen",
     clearList: "Liste leeren",
     failedToAdd: "Artikel konnte nicht hinzugefügt werden",

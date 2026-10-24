@@ -2,11 +2,16 @@
 // MCP tools for the family shopping list
 import { prisma } from "@/lib/prisma"
 import { categorizeShoppingItems } from "@/lib/shoppingCategorize"
+import { SHOPPING_TAGS } from "@/lib/shoppingTags"
 import { z } from "zod"
 import { type McpTool, type ToolResult, text } from "../types"
 
 const AddArgs = z.object({
-  items: z.array(z.object({ name: z.string().trim().min(1), quantity: z.string().trim().optional() })).min(1),
+  items: z.array(z.object({
+    name: z.string().trim().min(1),
+    quantity: z.string().trim().optional(),
+    tags: z.array(z.enum(SHOPPING_TAGS)).optional(),
+  })).min(1),
 })
 const RemoveArgs = z.object({ names: z.array(z.string().trim().min(1)).min(1) })
 
@@ -17,7 +22,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
   const existing = await prisma.shoppingItem.findMany({ where: { familyId }, select: { name: true } })
   const seen = new Set(existing.map((i) => i.name.toLowerCase()))
   const skipped: string[] = []
-  const toAdd: Array<{ name: string; quantity: string | null }> = []
+  const toAdd: Array<{ name: string; quantity: string | null; tags: string[] }> = []
   for (const item of parsed.data.items) {
     const key = item.name.toLowerCase()
     if (seen.has(key)) {
@@ -25,7 +30,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
       continue
     }
     seen.add(key)
-    toAdd.push({ name: item.name, quantity: item.quantity || null })
+    toAdd.push({ name: item.name, quantity: item.quantity || null, tags: [...new Set(item.tags ?? [])] })
   }
 
   if (toAdd.length > 0) {
@@ -39,6 +44,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
           name: item.name,
           quantity: item.quantity,
           categoryId: categoryMap.get(item.name.toLowerCase()) ?? null,
+          tags: item.tags,
           sortOrder: baseOrder + index,
         })),
       })
@@ -49,7 +55,8 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
     const lines = toAdd.map((i) => {
       const catId = categoryMap.get(i.name.toLowerCase())
       const qty = i.quantity ? ` (${i.quantity})` : ""
-      return `- ${i.name}${qty} → ${(catId && categoryName.get(catId)) ?? "Other"}`
+      const tags = i.tags.length ? ` [${i.tags.join(", ")}]` : ""
+      return `- ${i.name}${qty}${tags} → ${(catId && categoryName.get(catId)) ?? "Other"}`
     })
     const summary = `Added ${toAdd.length} item(s):\n${lines.join("\n")}`
     return text(skipped.length ? `${summary}\nAlready on the list: ${skipped.join(", ")}` : summary)
@@ -70,7 +77,8 @@ async function listItems(familyId: string): Promise<ToolResult> {
   for (const item of items) {
     const name = item.category?.name ?? "Other"
     if (!groups.has(name)) groups.set(name, { order: item.category?.order ?? Number.MAX_SAFE_INTEGER, lines: [] })
-    groups.get(name)!.lines.push(`- ${item.name}${item.quantity ? ` (${item.quantity})` : ""}`)
+    const tags = item.tags.length ? ` [${item.tags.join(", ")}]` : ""
+    groups.get(name)!.lines.push(`- ${item.name}${item.quantity ? ` (${item.quantity})` : ""}${tags}`)
   }
   const sections = [...groups.entries()]
     .sort((a, b) => a[1].order - b[1].order)
@@ -110,6 +118,11 @@ export const shoppingTools: McpTool[] = [
             properties: {
               name: { type: "string", description: "Item name without quantity, e.g. \"milk\" or \"Zitrone\"" },
               quantity: { type: "string", description: "Optional amount, e.g. \"2\", \"500 g\", \"1 bunch\"" },
+              tags: {
+                type: "array",
+                items: { type: "string", enum: [...SHOPPING_TAGS] },
+                description: "Optional shop tags: \"Drogerie\" for drugstore items (toiletries, cleaning, …), \"Asia\" for items from the Asian supermarket",
+              },
             },
             required: ["name"],
           },
@@ -121,7 +134,7 @@ export const shoppingTools: McpTool[] = [
   },
   {
     name: "list_shopping_items",
-    description: "List everything currently on the family shopping list, grouped by category.",
+    description: "List everything currently on the family shopping list, grouped by category. Tags are shown in square brackets.",
     inputSchema: { type: "object", properties: {} },
     handler: (familyId) => listItems(familyId),
   },

@@ -5,7 +5,7 @@ import { Fragment, useState, useCallback, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
-import { Baby, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud, StickyNote, Building2, Home, Minus } from "lucide-react"
+import { Baby, ChevronLeft, ChevronRight, ExternalLink, Link, Pencil, Sun, CloudSun, CloudRain, CloudLightning, ShoppingCart, MapPin, Zap, Coffee, Utensils, Cloud, StickyNote, Building2, Home, Minus } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { EMOJI_CATEGORIES } from "./emojiData"
 import styles from "./week.module.css"
@@ -1334,8 +1334,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
 
         {/* Day detail modal (week view tap) */}
         {mobileDayDetail && (() => {
-          const day = week.days.find(d => d.date === mobileDayDetail)
-          if (!day) return null
+          const dayIndex = week.days.findIndex(d => d.date === mobileDayDetail)
+          if (dayIndex === -1) return null
+          const day = week.days[dayIndex]
+          const prevDay = week.days[dayIndex - 1]
+          const nextDay = week.days[dayIndex + 1]
           const { weekday, day: dayNum } = formatDayHeader(day.date)
           const w = weather?.[day.date]
           const custodyEntry = custodyEntries?.find(c => c.date === day.date)
@@ -1343,6 +1346,24 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
             <div className={styles.mobileModalBackdrop} onClick={() => setMobileDayDetail(null)}>
               <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
                 <div className={styles.mobileModalHeader}>
+                  <div className={styles.mobileModalNav}>
+                    <button
+                      className={styles.mobileModalNavBtn}
+                      onClick={() => prevDay && setMobileDayDetail(prevDay.date)}
+                      disabled={!prevDay}
+                      aria-label="Previous day"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <button
+                      className={styles.mobileModalNavBtn}
+                      onClick={() => nextDay && setMobileDayDetail(nextDay.date)}
+                      disabled={!nextDay}
+                      aria-label="Next day"
+                    >
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
                   <span className={styles.mobileModalWeekday}>{weekday}</span>
                   <span className={styles.mobileModalDate}>{dayNum}</span>
                 </div>
@@ -1383,7 +1404,9 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   return (
                     <div key={field} className={styles.mobileModalField}>
                       <span className={styles.mobileModalFieldLabel}>{rowLabel(field)}</span>
-                      <div className={styles.mobileModalFieldValue}>{value}</div>
+                      <div className={`${styles.mobileDayFieldContent} ${styles.mobileModalFieldValue}`}>
+                        <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ a: pillComponents.a }}>{linkifyText(value)}</ReactMarkdown>
+                      </div>
                       {linkedMealId && (
                         <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
                           <ExternalLink size={11} /> {t.weekBlock.viewRecipe}

@@ -798,16 +798,10 @@
     gap: 0.75rem;
   }
 
-  /* Dedicated scroll wrapper — isolates horizontal scroll to the grid only */
+  /* Grid fits the screen (no horizontal scroll) so the weekday headers can
+     stick to the page scroll — an overflow-x scroller would break sticky */
   .calendarScrollWrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     min-width: 0; /* allow flex item to shrink */
-    /* Extend to container edges for a full-bleed scroll feel */
-    margin-left: -0.75rem;
-    margin-right: -0.75rem;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
   }
 
   .calendarHeader {
@@ -820,7 +814,17 @@
   }
 
   .calendarGrid {
-    min-width: 560px;
+    overflow: clip; /* clip (not hidden) keeps sticky headers working */
+  }
+
+  /* Keep weekday headers visible below the sticky navbar (56px + 1px border) */
+  .weekdayHeader {
+    position: sticky;
+    top: 57px;
+    z-index: 5;
+    padding: 0.375rem 0.125rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
   }
 
   .dayCell {
@@ -894,15 +898,4 @@
   font-family: inherit;
   cursor: pointer;
   color: var(--foreground);
-}
-
-@media (max-width: 480px) {
-  .calendarScrollWrapper {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-
-  .calendarGrid {
-    min-width: 480px;
-  }
 }

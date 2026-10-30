@@ -923,7 +923,8 @@ tr:last-child .cell {
   grid-template-columns: 40px repeat(7, 1fr);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  /* clip (not hidden) so the sticky day headers still stick to the page scroll */
+  overflow: clip;
 }
 
 /* Every 8th child (label + 7 cells per row) — last cell has no right border */
@@ -1168,6 +1169,23 @@ tr:last-child .cell {
 
   .mobileViews {
     display: block;
+  }
+
+  /* Keep day/date headers visible below the sticky navbar (56px + 1px border) */
+  .mobileDaysHeaderRow {
+    position: sticky;
+    top: 57px;
+    z-index: 5;
+    background: var(--background);
+    padding-bottom: 0.375rem;
+    margin-bottom: -0.375rem;
+  }
+
+  .mobileWeekTableCorner,
+  .mobileWeekTableDayHeader {
+    position: sticky;
+    top: 57px;
+    z-index: 5;
   }
 
   .pageHeader {

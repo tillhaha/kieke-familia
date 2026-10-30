@@ -864,8 +864,8 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
         {/* Day / 3-Day columns — row-first layout for equal row heights */}
         {(mobileView === "day" || mobileView === "3day") && (
           <div className={styles.mobileDaysRow}>
-            {/* Header row */}
-            <div className={styles.mobileRowGroup}>
+            {/* Header row — sticky below the navbar while scrolling */}
+            <div className={`${styles.mobileRowGroup} ${styles.mobileDaysHeaderRow}`}>
               {getMobileDays().map((day) => {
                 const isToday = day.date === todayDateStr
                 const { weekday, day: dayNum } = formatDayHeader(day.date)

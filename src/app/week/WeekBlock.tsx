@@ -418,6 +418,123 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
     return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`
   })()
 
+  // Editable field body shared by the Day/3-Day view and the day detail modal.
+  const renderMobileFieldEditor = (day: DayData, field: Field) => {
+    const key = `${day.date}:${field}`
+    const value = drafts[key] ?? ""
+    const isDisabled = readOnly || past || saving.has(key)
+    const isFocused = focusedKey === key
+    const isSearching = recipeSearch?.key === key
+    const isMealField = MEAL_FIELDS.has(field)
+    const linkedMealId = isMealField ? mealIds[key] : null
+    return (
+      isSearching ? (
+        <div className={styles.recipeSearchContainer}>
+          <input
+            autoFocus
+            className={styles.recipeSearchInput}
+            value={recipeSearch!.query}
+            placeholder={t.weekBlock.searchMeals}
+            onChange={(e) =>
+              setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setRecipeSearch((prev) => {
+                  if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                  return null
+                })
+              }
+            }}
+            onBlur={() => {
+              setTimeout(() => {
+                setRecipeSearch((prev) => {
+                  if (prev?.key === key) {
+                    setDrafts((d) => ({ ...d, [key]: prev.savedText }))
+                    return null
+                  }
+                  return prev
+                })
+              }, 150)
+            }}
+          />
+          {recipeSearch!.results.length > 0 && (
+            <ul className={styles.recipeDropdown}>
+              {recipeSearch!.results.map((meal) => (
+                <li
+                  key={meal.id}
+                  className={styles.recipeDropdownItem}
+                  onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
+                >
+                  <span className={styles.recipeDropdownName}>{meal.name}</span>
+                  <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : isFocused ? (
+        <>
+        <textarea
+          autoFocus
+          className={styles.cellInput}
+          value={value}
+          placeholder={rowPlaceholder(field)}
+          disabled={isDisabled}
+          onChange={(e) => {
+            const v = e.target.value
+            if (isMealField && v.trimEnd().endsWith("/")) {
+              const textBeforeCommand = v.trimEnd().slice(0, -1)
+              setFocusedKey(null)
+              setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
+              return
+            }
+            setDrafts((prev) => ({ ...prev, [key]: v }))
+            autoResize(e.target)
+          }}
+          onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
+          onPaste={(e) => handleTextareaPaste(e, key)}
+          onBlur={(e) => {
+            if (linkUrlInputRef.current !== null && e.relatedTarget === linkUrlInputRef.current) return
+            if (linkPromptKeyRef.current === key) return
+            if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return
+            setEmojiPicker((prev) => prev?.key === key ? null : prev)
+            handleBlur(day.date, field)
+          }}
+          ref={(el) => {
+            if (el) { textareaRefs.current.set(key, el); autoResize(el) }
+            else textareaRefs.current.delete(key)
+          }}
+        />
+        {renderLinkPromptBar(key, day.date, field)}
+        </>
+      ) : (
+        <div
+          className={styles.mobileDayFieldContent}
+          onClick={() => { if (!isDisabled) setFocusedKey(key) }}
+        >
+          {value ? (
+            <>
+              <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
+              {linkedMealId && (
+                <a
+                  href={`/meals/${linkedMealId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.mealLink}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink size={11} />
+                </a>
+              )}
+            </>
+          ) : (
+            <span className={styles.mobileDayFieldEmpty}>–</span>
+          )}
+        </div>
+      )
+    )
+  }
   const getMobileDays = (): DayData[] => {
     const idx = week.days.findIndex(d => d.date === todayDateStr)
     const start = idx >= 0 ? idx : 0
@@ -969,121 +1086,11 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 <div className={styles.mobileRowGroup}>
                   {getMobileDays().map((day) => {
                     const key = `${day.date}:${field}`
-                    const value = drafts[key] ?? ""
-                    const isDisabled = readOnly || past || saving.has(key)
-                    const isFocused = focusedKey === key
-                    const isSearching = recipeSearch?.key === key
-                    const isMealField = MEAL_FIELDS.has(field)
-                    const linkedMealId = isMealField ? mealIds[key] : null
                     const hasError = cellErrors.has(key)
                     return (
                       <div key={day.date} className={`${styles.mobileDayField} ${hasError ? styles.cellError : ""}`}>
                         <span className={styles.mobileDayFieldLabel}>{rowLabel(field)}</span>
-                        {isSearching ? (
-                          <div className={styles.recipeSearchContainer}>
-                            <input
-                              autoFocus
-                              className={styles.recipeSearchInput}
-                              value={recipeSearch!.query}
-                              placeholder={t.weekBlock.searchMeals}
-                              onChange={(e) =>
-                                setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Escape") {
-                                  setRecipeSearch((prev) => {
-                                    if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
-                                    return null
-                                  })
-                                }
-                              }}
-                              onBlur={() => {
-                                setTimeout(() => {
-                                  setRecipeSearch((prev) => {
-                                    if (prev?.key === key) {
-                                      setDrafts((d) => ({ ...d, [key]: prev.savedText }))
-                                      return null
-                                    }
-                                    return prev
-                                  })
-                                }, 150)
-                              }}
-                            />
-                            {recipeSearch!.results.length > 0 && (
-                              <ul className={styles.recipeDropdown}>
-                                {recipeSearch!.results.map((meal) => (
-                                  <li
-                                    key={meal.id}
-                                    className={styles.recipeDropdownItem}
-                                    onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
-                                  >
-                                    <span className={styles.recipeDropdownName}>{meal.name}</span>
-                                    <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                        ) : isFocused ? (
-                          <>
-                          <textarea
-                            autoFocus
-                            className={styles.cellInput}
-                            value={value}
-                            placeholder={rowPlaceholder(field)}
-                            disabled={isDisabled}
-                            onChange={(e) => {
-                              const v = e.target.value
-                              if (isMealField && v.trimEnd().endsWith("/")) {
-                                const textBeforeCommand = v.trimEnd().slice(0, -1)
-                                setFocusedKey(null)
-                                setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
-                                return
-                              }
-                              setDrafts((prev) => ({ ...prev, [key]: v }))
-                              autoResize(e.target)
-                            }}
-                            onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
-                            onPaste={(e) => handleTextareaPaste(e, key)}
-                            onBlur={(e) => {
-                              if (linkUrlInputRef.current !== null && e.relatedTarget === linkUrlInputRef.current) return
-                              if (linkPromptKeyRef.current === key) return
-                              if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return
-                              setEmojiPicker((prev) => prev?.key === key ? null : prev)
-                              handleBlur(day.date, field)
-                            }}
-                            ref={(el) => {
-                              if (el) { textareaRefs.current.set(key, el); autoResize(el) }
-                              else textareaRefs.current.delete(key)
-                            }}
-                          />
-                          {renderLinkPromptBar(key, day.date, field)}
-                          </>
-                        ) : (
-                          <div
-                            className={styles.mobileDayFieldContent}
-                            onClick={() => { if (!isDisabled) setFocusedKey(key) }}
-                          >
-                            {value ? (
-                              <>
-                                <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
-                                {linkedMealId && (
-                                  <a
-                                    href={`/meals/${linkedMealId}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.mealLink}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <ExternalLink size={11} />
-                                  </a>
-                                )}
-                              </>
-                            ) : (
-                              <span className={styles.mobileDayFieldEmpty}>–</span>
-                            )}
-                          </div>
-                        )}
+                        {renderMobileFieldEditor(day, field)}
                       </div>
                     )
                   })}
@@ -1229,91 +1236,17 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   const key = `${day.date}:${field}`
                   const isToday = day.date === todayDateStr
                   const value = drafts[key] ?? ""
-                  const isDisabled = readOnly || past || saving.has(key)
-                  const isFocused = focusedKey === key
-                  const isSearching = recipeSearch?.key === key
-                  const isMealField = MEAL_FIELDS.has(field)
                   return (
                     <div
                       key={day.date}
                       className={`${styles.mobileWeekTableCell} ${isToday ? styles.mobileWeekTableCellToday : ""}`}
+                      onClick={() => setMobileDayDetail(day.date)}
                     >
-                      {isSearching ? (
-                        <div className={styles.recipeSearchContainer}>
-                          <input
-                            autoFocus
-                            className={styles.recipeSearchInput}
-                            value={recipeSearch!.query}
-                            placeholder={t.weekBlock.searchMeals}
-                            onChange={(e) =>
-                              setRecipeSearch((prev) => prev ? { ...prev, query: e.target.value } : null)
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Escape") {
-                                setRecipeSearch((prev) => {
-                                  if (prev?.key === key) setDrafts((d) => ({ ...d, [key]: prev.savedText }))
-                                  return null
-                                })
-                              }
-                            }}
-                            onBlur={() => {
-                              setTimeout(() => {
-                                setRecipeSearch((prev) => {
-                                  if (prev?.key === key) {
-                                    setDrafts((d) => ({ ...d, [key]: prev.savedText }))
-                                    return null
-                                  }
-                                  return prev
-                                })
-                              }, 150)
-                            }}
-                          />
-                          {recipeSearch!.results.length > 0 && (
-                            <ul className={styles.recipeDropdown}>
-                              {recipeSearch!.results.map((meal) => (
-                                <li
-                                  key={meal.id}
-                                  className={styles.recipeDropdownItem}
-                                  onMouseDown={() => selectMeal(day.date, field as "lunch" | "dinner", meal)}
-                                >
-                                  <span className={styles.recipeDropdownName}>{meal.name}</span>
-                                  <span className={styles.recipeDropdownMeta}>{meal.servings} srv</span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ) : isFocused ? (
-                        <textarea
-                          autoFocus
-                          className={styles.cellInput}
-                          value={value}
-                          placeholder={rowPlaceholder(field)}
-                          disabled={isDisabled}
-                          onChange={(e) => {
-                            const v = e.target.value
-                            if (isMealField && v.trimEnd().endsWith("/")) {
-                              const textBeforeCommand = v.trimEnd().slice(0, -1)
-                              setFocusedKey(null)
-                              setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
-                              return
-                            }
-                            setDrafts((prev) => ({ ...prev, [key]: v }))
-                            autoResize(e.target)
-                          }}
-                          onBlur={() => handleBlur(day.date, field)}
-                          ref={(el) => { if (el) autoResize(el) }}
-                        />
-                      ) : (
-                        <div
-                          className={styles.mobileWeekTableCellText}
-                          onClick={() => { if (!isDisabled) setFocusedKey(key) }}
-                        >
-                          {value
-                            ? <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
-                            : <span style={{ opacity: 0.3 }}>–</span>}
-                        </div>
-                      )}
+                      <div className={styles.mobileWeekTableCellText}>
+                        {value
+                          ? <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ ...pillComponents }}>{linkifyText(value)}</ReactMarkdown>
+                          : <span style={{ opacity: 0.3 }}>–</span>}
+                      </div>
                     </div>
                   )
                 })}
@@ -1397,21 +1330,16 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                   </div>
                 )}
                 {ALL_ROWS.map(({ field }) => {
-                  const value = drafts[`${day.date}:${field}`] ?? ""
-                  if (!value) return null
-                  const isMealField = MEAL_FIELDS.has(field)
-                  const linkedMealId = isMealField ? mealIds[`${day.date}:${field}`] : null
+                  const key = `${day.date}:${field}`
+                  const editable = !(readOnly || past)
+                  // Read-only: hide empty fields to keep the sheet compact.
+                  if (!editable && !drafts[key]) return null
                   return (
-                    <div key={field} className={styles.mobileModalField}>
+                    <div key={field} className={`${styles.mobileModalField} ${cellErrors.has(key) ? styles.cellError : ""}`}>
                       <span className={styles.mobileModalFieldLabel}>{rowLabel(field)}</span>
-                      <div className={`${styles.mobileDayFieldContent} ${styles.mobileModalFieldValue}`}>
-                        <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ a: pillComponents.a }}>{linkifyText(value)}</ReactMarkdown>
+                      <div className={styles.mobileModalFieldEditor}>
+                        {renderMobileFieldEditor(day, field)}
                       </div>
-                      {linkedMealId && (
-                        <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
-                          <ExternalLink size={11} /> {t.weekBlock.viewRecipe}
-                        </a>
-                      )}
                     </div>
                   )
                 })}

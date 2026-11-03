@@ -622,7 +622,9 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
   }
 
   const handleLocationToggle = async (date: string, userId: string, current: WorkLocationValue | null) => {
-    if (readOnly || past) return
+    // readOnly is enforced via the pills' `disabled` prop; the mobile day sheet
+    // deliberately allows edits even in a readOnly WeekBlock (homepage).
+    if (past) return
     const next = nextLocationValue(current)
     const key = `${date}:workloc:${userId}`
     onWorkLocationUpdate?.(date, userId, next)
@@ -1320,7 +1322,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                             label={member.name ?? "?"}
                             value={value}
                             stateLabel={locationStateLabel(value)}
-                            disabled={readOnly || past || saving.has(locKey)}
+                            disabled={past || saving.has(locKey)}
                             onClick={() => handleLocationToggle(day.date, member.id, value)}
                             size={14}
                           />

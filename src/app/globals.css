@@ -37,6 +37,11 @@
   margin: 0;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -80,6 +85,18 @@ button {
   button,
   [role="button"] {
     min-height: 44px;
+  }
+}
+
+/* iOS Safari auto-zooms the whole page when a focused field has a font-size
+   below 16px, and doesn't zoom back out afterwards. Force 16px on touch
+   devices; !important is needed to beat the class selectors in CSS modules. */
+@media (hover: none) and (pointer: coarse) {
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    font-size: 16px !important;
   }
 }
 

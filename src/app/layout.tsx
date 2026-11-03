@@ -26,6 +26,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Stops iOS from auto-zooming on input focus (and getting stuck zoomed in).
+  // iOS still allows manual pinch-zoom, so accessibility is unaffected there.
+  maximumScale: 1,
 };
 
 export default function RootLayout({

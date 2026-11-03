@@ -7,6 +7,7 @@ export type Translations = {
     recipes: string
     shopping: string
     tasks: string
+    thoughts: string
     settings: string
     signOut: string
   }
@@ -203,6 +204,32 @@ export type Translations = {
     deleteTask: string
     deleting: string
   }
+  thoughts: {
+    title: string
+    subtitle: string
+    privateHint: string
+    placeholder: string
+    send: string
+    sending: string
+    sendHint: string
+    added: string
+    failed: string
+    all: string
+    showCompleted: string
+    empty: string
+    emptyDone: string
+    done: string
+    overdue: string
+    editTitle: string
+    titleLabel: string
+    noteLabel: string
+    categoryLabel: string
+    dueDateLabel: string
+    save: string
+    cancel: string
+    delete: string
+    titleRequired: string
+  }
   shopping: {
     title: string
     qty: string
@@ -352,6 +379,7 @@ const en: Translations = {
     recipes: "Recipes",
     shopping: "Shopping",
     tasks: "Tasks",
+    thoughts: "Thoughts",
     settings: "Settings",
     signOut: "Sign out",
   },
@@ -548,6 +576,32 @@ const en: Translations = {
     deleteTask: "Delete",
     deleting: "Deleting…",
   },
+  thoughts: {
+    title: "My thoughts",
+    subtitle: "Dump whatever is on your mind — the assistant sorts it into your list.",
+    privateHint: "Only you can see this list.",
+    placeholder: "e.g. call the dentist tomorrow, idea for Mia's birthday: climbing hall, renew passport by end of month…",
+    send: "Send",
+    sending: "Sorting…",
+    sendHint: "Ctrl+Enter to send",
+    added: "Added {n}:",
+    failed: "Couldn't save that. Please try again.",
+    all: "All",
+    showCompleted: "Show completed",
+    empty: "Nothing here — your head is clear.",
+    emptyDone: "Nothing completed yet.",
+    done: "Done",
+    overdue: "Overdue",
+    editTitle: "Edit item",
+    titleLabel: "Title",
+    noteLabel: "Note",
+    categoryLabel: "Category",
+    dueDateLabel: "Due date",
+    save: "Save",
+    cancel: "Cancel",
+    delete: "Delete",
+    titleRequired: "Title is required",
+  },
   shopping: {
     title: "Shopping List",
     qty: "Qty",
@@ -697,6 +751,7 @@ const es: Translations = {
     recipes: "Recetas",
     shopping: "Compras",
     tasks: "Tareas",
+    thoughts: "Ideas",
     settings: "Ajustes",
     signOut: "Cerrar sesión",
   },
@@ -893,6 +948,32 @@ const es: Translations = {
     deleteTask: "Eliminar",
     deleting: "Eliminando…",
   },
+  thoughts: {
+    title: "Mis ideas",
+    subtitle: "Escribe lo que tengas en mente: el asistente lo ordena en tu lista.",
+    privateHint: "Solo tú puedes ver esta lista.",
+    placeholder: "p. ej. llamar al dentista mañana, idea para el cumpleaños de Mia: rocódromo, renovar pasaporte antes de fin de mes…",
+    send: "Enviar",
+    sending: "Ordenando…",
+    sendHint: "Ctrl+Enter para enviar",
+    added: "Añadido {n}:",
+    failed: "No se pudo guardar. Inténtalo de nuevo.",
+    all: "Todo",
+    showCompleted: "Mostrar completadas",
+    empty: "Nada por aquí: tienes la cabeza despejada.",
+    emptyDone: "Aún no hay nada completado.",
+    done: "Hecho",
+    overdue: "Atrasado",
+    editTitle: "Editar entrada",
+    titleLabel: "Título",
+    noteLabel: "Nota",
+    categoryLabel: "Categoría",
+    dueDateLabel: "Fecha límite",
+    save: "Guardar",
+    cancel: "Cancelar",
+    delete: "Eliminar",
+    titleRequired: "El título es obligatorio",
+  },
   shopping: {
     title: "Lista de compras",
     qty: "Cant.",
@@ -1042,6 +1123,7 @@ const de: Translations = {
     recipes: "Rezepte",
     shopping: "Einkauf",
     tasks: "Aufgaben",
+    thoughts: "Gedanken",
     settings: "Einstellungen",
     signOut: "Abmelden",
   },
@@ -1237,6 +1319,32 @@ const de: Translations = {
     dueDateRequired: "Fälligkeitsdatum ist erforderlich.",
     deleteTask: "Löschen",
     deleting: "Lösche…",
+  },
+  thoughts: {
+    title: "Meine Gedanken",
+    subtitle: "Schreib einfach auf, was dir durch den Kopf geht – der Assistent sortiert es in deine Liste.",
+    privateHint: "Nur du kannst diese Liste sehen.",
+    placeholder: "z. B. morgen Zahnarzt anrufen, Idee für Mias Geburtstag: Kletterhalle, Reisepass bis Monatsende verlängern…",
+    send: "Senden",
+    sending: "Sortiere…",
+    sendHint: "Strg+Enter zum Senden",
+    added: "{n} hinzugefügt:",
+    failed: "Konnte nicht gespeichert werden. Bitte nochmal versuchen.",
+    all: "Alle",
+    showCompleted: "Erledigte anzeigen",
+    empty: "Nichts offen – dein Kopf ist frei.",
+    emptyDone: "Noch nichts erledigt.",
+    done: "Erledigt",
+    overdue: "Überfällig",
+    editTitle: "Eintrag bearbeiten",
+    titleLabel: "Titel",
+    noteLabel: "Notiz",
+    categoryLabel: "Kategorie",
+    dueDateLabel: "Fällig am",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    delete: "Löschen",
+    titleRequired: "Titel ist erforderlich",
   },
   shopping: {
     title: "Einkaufsliste",

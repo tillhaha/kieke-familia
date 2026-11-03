@@ -60,6 +60,7 @@ model User {
   calendarSyncs CalendarSync[]
   taskAssignments    TaskAssignee[]
   apiTokens     ApiToken[]
+  personalTodos PersonalTodo[]
 }
 
 // Personal bearer token for the MCP endpoint (/api/mcp). Only the SHA-256
@@ -316,4 +317,23 @@ model TaskAssignee {
 
   @@id([taskId, userId])
   @@index([userId])
+}
+
+// Private todo list per user, filled by the "Gedanken" assistant which splits
+// free-text brain dumps into categorised items. Never visible to other family
+// members — every query must filter by userId.
+model PersonalTodo {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  note      String?
+  category  String
+  dueDate   DateTime? @db.Date
+  done      Boolean   @default(false)
+  doneAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, done])
 }

@@ -1279,26 +1279,26 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
             <div className={styles.mobileModalBackdrop} onClick={() => setMobileDayDetail(null)}>
               <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
                 <div className={styles.mobileModalHeader}>
-                  <div className={styles.mobileModalNav}>
-                    <button
-                      className={styles.mobileModalNavBtn}
-                      onClick={() => prevDay && setMobileDayDetail(prevDay.date)}
-                      disabled={!prevDay}
-                      aria-label="Previous day"
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-                    <button
-                      className={styles.mobileModalNavBtn}
-                      onClick={() => nextDay && setMobileDayDetail(nextDay.date)}
-                      disabled={!nextDay}
-                      aria-label="Next day"
-                    >
-                      <ChevronRight size={18} />
-                    </button>
+                  <button
+                    className={styles.mobileModalNavBtn}
+                    onClick={() => prevDay && setMobileDayDetail(prevDay.date)}
+                    disabled={!prevDay}
+                    aria-label="Previous day"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <div className={styles.mobileModalTitle}>
+                    <span className={styles.mobileModalWeekday}>{weekday}</span>
+                    <span className={styles.mobileModalDate}>{dayNum}</span>
                   </div>
-                  <span className={styles.mobileModalWeekday}>{weekday}</span>
-                  <span className={styles.mobileModalDate}>{dayNum}</span>
+                  <button
+                    className={styles.mobileModalNavBtn}
+                    onClick={() => nextDay && setMobileDayDetail(nextDay.date)}
+                    disabled={!nextDay}
+                    aria-label="Next day"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
                 </div>
                 {w && (
                   <div className={styles.mobileModalWeather}>

@@ -1063,15 +1063,18 @@ tr:last-child .cell {
 }
 
 .mobileModalHeader {
-  display: flex;
-  align-items: baseline;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
   gap: 0.5rem;
 }
 
-.mobileModalNav {
+/* Weekday + day number, centred between the prev/next buttons */
+.mobileModalTitle {
   display: flex;
-  gap: 0.25rem;
-  align-self: center;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .mobileModalNavBtn {

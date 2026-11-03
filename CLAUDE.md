@@ -52,6 +52,7 @@ Key relationships:
 - `User` → `ImportedCalendar` (iCal feed URLs)
 - `User` → `WorkLocation`, `Activity`, `Travel`
 - `Family` → `Birthday`, `CustodySchedule`
+- `User` → `PersonalTodo` (private per-user todo list; **always scope by `userId`, never by `familyId`** — other family members must not see it)
 
 Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@prisma/adapter-pg` pool adapter.
 
@@ -69,6 +70,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
+| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them) |
 | `/settings` | Profile, location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
@@ -102,6 +104,8 @@ All under `src/app/api/`:
 - `shopping/categories/` — GET/POST; `[id]/` — PATCH/DELETE
 - `shopping/blacklist/` — GET/POST; `[id]/` — DELETE
 - `shopping/generate/` — POST (Anthropic API: generate shopping list from meal plan)
+- `personal-todos/` — GET (own items, `?includeDone=true`), POST `{ text }` (brain dump → Claude splits/categorises via `captureThoughts` in `src/lib/personalTodos.ts`; falls back to one `Inbox` item if the AI call fails); `[id]/` — PATCH/DELETE (owner only, others get 404)
+- `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` (user-scoped)
 - `user/` — GET/PATCH (profile)
 - `weather/` — GET (weather for family city)
 - `auth/[...nextauth]/` — NextAuth handler

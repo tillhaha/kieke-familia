@@ -5,28 +5,29 @@
 // (/api/mcp, Claude Code) or in the URL (/api/mcp/fam_…, claude.ai connectors,
 // which can't send custom headers). Tools are grouped per feature in ./tools.
 import { NextResponse } from "next/server"
-import { type McpTool, type ToolResult, text } from "./types"
+import { type McpAuth, type McpTool, type ToolResult, text } from "./types"
 import { shoppingTools } from "./tools/shopping"
+import { personalTodoTools } from "./tools/personalTodos"
 
 const SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
 
-const TOOLS: McpTool[] = [...shoppingTools]
+const TOOLS: McpTool[] = [...shoppingTools, ...personalTodoTools]
 
 type JsonRpcRequest = { jsonrpc: "2.0"; id?: string | number | null; method: string; params?: Record<string, unknown> }
 
-async function callTool(familyId: string, params: Record<string, unknown> | undefined): Promise<ToolResult> {
+async function callTool(auth: McpAuth, params: Record<string, unknown> | undefined): Promise<ToolResult> {
   const name = params?.name
   const tool = TOOLS.find((t) => t.name === name)
   if (!tool) return text(`Unknown tool: ${String(name)}`, true)
   try {
-    return await tool.handler(familyId, params?.arguments ?? {})
+    return await tool.handler(auth, params?.arguments ?? {})
   } catch (err) {
     console.error(`[mcp] ${tool.name} failed:`, err)
     return text("Something went wrong. Please try again.", true)
   }
 }
 
-async function handleMessage(familyId: string, msg: JsonRpcRequest): Promise<object | null> {
+async function handleMessage(auth: McpAuth, msg: JsonRpcRequest): Promise<object | null> {
   // Notifications (no id) get no response
   if (msg.id === undefined || msg.id === null) return null
   const reply = (result: object) => ({ jsonrpc: "2.0", id: msg.id, result })
@@ -43,7 +44,8 @@ async function handleMessage(familyId: string, msg: JsonRpcRequest): Promise<obj
         protocolVersion,
         capabilities: { tools: {} },
         serverInfo: { name: "familia", version: "1.0.0" },
-        instructions: "Access the family's Familia data. Currently: the shopping list (add, list and remove items).",
+        instructions:
+          "Access Familia data: the family shopping list (add, list and remove items) and the user's private todo list. When the user shares thoughts, todos or ideas to remember, pass them to capture_thoughts — it splits and categorises them itself.",
       })
     }
     case "ping":
@@ -51,7 +53,7 @@ async function handleMessage(familyId: string, msg: JsonRpcRequest): Promise<obj
     case "tools/list":
       return reply({ tools: TOOLS.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) })
     case "tools/call":
-      return reply(await callTool(familyId, msg.params))
+      return reply(await callTool(auth, msg.params))
     default:
       return fail(-32601, `Method not found: ${msg.method}`)
   }
@@ -80,7 +82,7 @@ export async function handleMcpRequest(
     return NextResponse.json({ jsonrpc: "2.0", id: null, error: { code: -32600, message: "Invalid request" } }, { status: 400 })
   }
 
-  const responses = (await Promise.all(messages.map((m) => handleMessage(auth.familyId, m)))).filter((r) => r !== null)
+  const responses = (await Promise.all(messages.map((m) => handleMessage(auth, m)))).filter((r) => r !== null)
   if (responses.length === 0) return new Response(null, { status: 202 })
   return NextResponse.json(Array.isArray(body) ? responses : responses[0])
 }

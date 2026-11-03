@@ -130,13 +130,13 @@ export const shoppingTools: McpTool[] = [
       },
       required: ["items"],
     },
-    handler: addItems,
+    handler: (auth, args) => addItems(auth.familyId, args),
   },
   {
     name: "list_shopping_items",
     description: "List everything currently on the family shopping list, grouped by category. Tags are shown in square brackets.",
     inputSchema: { type: "object", properties: {} },
-    handler: (familyId) => listItems(familyId),
+    handler: (auth) => listItems(auth.familyId),
   },
   {
     name: "remove_shopping_items",
@@ -148,6 +148,6 @@ export const shoppingTools: McpTool[] = [
       },
       required: ["names"],
     },
-    handler: removeItems,
+    handler: (auth, args) => removeItems(auth.familyId, args),
   },
 ]

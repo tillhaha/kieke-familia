@@ -1234,7 +1234,8 @@ tr:last-child .cell {
 }
 
 .mobileModalFieldEditor .cellInput {
-  min-height: 60px;
+  min-height: 44px;
+  font-size: 0.9375rem;
 }
 
 .mobileModalFieldEditor .recipeSearchContainer {

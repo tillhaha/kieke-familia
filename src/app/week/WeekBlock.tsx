@@ -1331,15 +1331,68 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                 )}
                 {ALL_ROWS.map(({ field }) => {
                   const key = `${day.date}:${field}`
-                  const editable = !(readOnly || past)
-                  // Read-only: hide empty fields to keep the sheet compact.
-                  if (!editable && !drafts[key]) return null
+                  const value = drafts[key] ?? ""
+                  const isMealField = MEAL_FIELDS.has(field)
+                  const linkedMealId = isMealField ? mealIds[key] : null
+                  // The sheet is the mobile edit surface, so it stays editable even where the
+                  // surrounding WeekBlock is readOnly (homepage) — only past weeks are locked.
+                  const sheetEditable = !past
+                  if (!sheetEditable && !value) return null
                   return (
                     <div key={field} className={`${styles.mobileModalField} ${cellErrors.has(key) ? styles.cellError : ""}`}>
                       <span className={styles.mobileModalFieldLabel}>{rowLabel(field)}</span>
                       <div className={styles.mobileModalFieldEditor}>
-                        {renderMobileFieldEditor(day, field)}
+                        {!sheetEditable ? (
+                          <div className={styles.mobileDayFieldContent}>
+                            <ReactMarkdown remarkPlugins={[remarkBreaks]} components={{ a: pillComponents.a }}>{linkifyText(value)}</ReactMarkdown>
+                          </div>
+                        ) : recipeSearch?.key === key ? (
+                          renderMobileFieldEditor(day, field)
+                        ) : (
+                          <>
+                            {/* Always-mounted textarea: a direct tap focuses it natively, so iOS
+                                opens the keyboard immediately (programmatic focus would not). */}
+                            <textarea
+                              className={styles.cellInput}
+                              value={value}
+                              placeholder={rowPlaceholder(field)}
+                              disabled={saving.has(key)}
+                              rows={1}
+                              onFocus={() => setFocusedKey(key)}
+                              onChange={(e) => {
+                                const v = e.target.value
+                                if (isMealField && v.trimEnd().endsWith("/")) {
+                                  const textBeforeCommand = v.trimEnd().slice(0, -1)
+                                  setFocusedKey(null)
+                                  setRecipeSearch({ key, query: "", results: [], savedText: textBeforeCommand })
+                                  return
+                                }
+                                setDrafts((prev) => ({ ...prev, [key]: v }))
+                                autoResize(e.target)
+                              }}
+                              onKeyDown={(e) => handleTextareaKeyDown(e, key, field)}
+                              onPaste={(e) => handleTextareaPaste(e, key)}
+                              onBlur={(e) => {
+                                if (linkUrlInputRef.current !== null && e.relatedTarget === linkUrlInputRef.current) return
+                                if (linkPromptKeyRef.current === key) return
+                                if (emojiPickerRef.current?.contains(e.relatedTarget as Node)) return
+                                setEmojiPicker((prev) => prev?.key === key ? null : prev)
+                                handleBlur(day.date, field)
+                              }}
+                              ref={(el) => {
+                                if (el) { textareaRefs.current.set(key, el); autoResize(el) }
+                                else textareaRefs.current.delete(key)
+                              }}
+                            />
+                            {renderLinkPromptBar(key, day.date, field)}
+                          </>
+                        )}
                       </div>
+                      {linkedMealId && (
+                        <a href={`/meals/${linkedMealId}`} target="_blank" rel="noopener noreferrer" className={styles.mealLink}>
+                          <ExternalLink size={11} /> {t.weekBlock.viewRecipe}
+                        </a>
+                      )}
                     </div>
                   )
                 })}

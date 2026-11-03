@@ -1219,3 +1219,28 @@ tr:last-child .cell {
     gap: 0.5rem;
   }
 }
+
+/* Day detail modal: editable field boxes with comfortable tap targets */
+.mobileModalFieldEditor {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.mobileModalFieldEditor .mobileDayFieldContent {
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9375rem;
+}
+
+.mobileModalFieldEditor .cellInput {
+  min-height: 60px;
+}
+
+.mobileModalFieldEditor .recipeSearchContainer {
+  padding: 0.5rem;
+}
+
+.mobileWeekTableCell {
+  cursor: pointer;
+}

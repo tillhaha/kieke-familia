@@ -21,6 +21,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "YourKieke - Shared Family Management",
   description: "A comprehensive platform for family coordination, calendar, and planning.",
+  // Label under the icon when saved to the iOS home screen.
+  appleWebApp: { title: "Kieke" },
 };
 
 export const viewport: Viewport = {

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { cleanCategoryName, ensureCategories, resolveCategoryName } from "@/lib/personalCategories"
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -18,7 +19,7 @@ async function ownTodo(id: string) {
 
 export async function PATCH(request: Request, { params }: Params) {
   const { id } = await params
-  const { error } = await ownTodo(id)
+  const { todo: current, error } = await ownTodo(id)
   if (error) return error
 
   let body: unknown
@@ -38,8 +39,9 @@ export async function PATCH(request: Request, { params }: Params) {
     data.note = typeof note === "string" && note.trim() ? note.trim() : null
   }
   if (category !== undefined) {
-    if (typeof category !== "string" || !category.trim()) return NextResponse.json({ error: "Category cannot be empty" }, { status: 400 })
-    data.category = category.trim().slice(0, 40)
+    if (typeof category !== "string" || !cleanCategoryName(category)) return NextResponse.json({ error: "Category cannot be empty" }, { status: 400 })
+    // Reuse the existing spelling ("arbeit" → "Arbeit") so groups don't split
+    data.category = await resolveCategoryName(current.userId, category)
   }
   if (dueDate !== undefined) {
     if (dueDate === null || dueDate === "") {
@@ -61,6 +63,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
   try {
     const todo = await prisma.personalTodo.update({ where: { id }, data })
+    if (typeof data.category === "string") await ensureCategories(current.userId, [data.category])
     return NextResponse.json({ todo })
   } catch (err) {
     console.error("[PATCH /api/personal-todos/:id]", err)

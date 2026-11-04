@@ -53,6 +53,7 @@ Key relationships:
 - `User` → `WorkLocation`, `Activity`, `Travel`
 - `Family` → `Birthday`, `CustodySchedule`
 - `User` → `PersonalTodo` (private per-user todo list; **always scope by `userId`, never by `familyId`** — other family members must not see it)
+- `User` → `PersonalCategory` (the user's own todo categories/projects with optional `description` that guides the thoughts assistant; `PersonalTodo.category` stores the **name**, so renames/deletes in `personal-categories/[id]` update todos by name; names unique per user, compared case-insensitively in code — helpers in `src/lib/personalCategories.ts`)
 - `User` → `PersonalProfile` (private free-text "About me", 1:1 keyed by `userId`; separate table so it can't leak via queries that include family `User` rows — never add it to such includes)
 
 Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@prisma/adapter-pg` pool adapter.
@@ -71,7 +72,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
-| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). |
+| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). Rows can be dragged (HTML5 DnD, desktop) onto category sections or filter pills to move them; "Categories" pill opens `CategoriesModal.tsx` (add/rename/merge/describe/delete) |
 | `/settings` | Profile (incl. private "About me" — `AboutMeSection.tsx`, used as life context by the thoughts assistant), location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
@@ -106,6 +107,7 @@ All under `src/app/api/`:
 - `shopping/blacklist/` — GET/POST; `[id]/` — DELETE
 - `shopping/generate/` — POST (Anthropic API: generate shopping list from meal plan)
 - `personal-todos/` — GET (own items, `?includeDone=true`), POST `{ text }` (brain dump → Claude splits/categorises via `captureThoughts` in `src/lib/personalTodos.ts`; falls back to one `Inbox` item if the AI call fails); `[id]/` — PATCH/DELETE (owner only, others get 404)
+- `personal-categories/` — GET (all own categories with open counts; lazily creates rows for names only used by todos), POST `{ name, description? }` (409 if exists); `[id]/` — PATCH `{ name?, description? }` (rename moves todos; renaming onto an existing name merges), DELETE (todos move to `Inbox`)
 - `personal-profile/` — GET/PUT `{ text }` (own private profile). `buildLifeContext(userId)` in `src/lib/personalProfile.ts` combines it with name, family members, city and saved birthdays (with computed ages) — passed to `captureThoughts` as prompt context and returned by the `get_personal_profile` MCP tool
 - `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` / `get_personal_profile` (user-scoped)
 - `user/` — GET/PATCH (profile)

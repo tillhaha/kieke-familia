@@ -238,6 +238,17 @@ export type Translations = {
     aboutPlaceholder: string
     aboutSaving: string
     aboutSaved: string
+    manageCategories: string
+    categoriesTitle: string
+    categoriesHint: string
+    categoryNamePlaceholder: string
+    categoryDescriptionPlaceholder: string
+    addCategory: string
+    categoryExists: string
+    deleteCategoryConfirm: string
+    emptyCategory: string
+    dragHint: string
+    close: string
   }
   shopping: {
     title: string
@@ -621,6 +632,17 @@ const en: Translations = {
     aboutPlaceholder: "e.g. I'm Till, product manager, working from home Mon/Fri. Wife Anna (1985), kids Mia (2016) and Leo (2019) — Mia has swimming on Tuesdays. Best friends: Jonas (Berlin), Sarah. I like running and cooking, and I'm renovating the bathroom. Dentist: Dr. Weber.",
     aboutSaving: "Saving…",
     aboutSaved: "Saved",
+    manageCategories: "Categories",
+    categoriesTitle: "Categories & projects",
+    categoriesHint: "Every new thought is filed into one of these. A short description of what belongs in a category helps the assistant get it right.",
+    categoryNamePlaceholder: "New category or project, e.g. Ultra running",
+    categoryDescriptionPlaceholder: "What belongs here? e.g. races, training, gear, nutrition",
+    addCategory: "Add",
+    categoryExists: "This category already exists",
+    deleteCategoryConfirm: "Delete \"{name}\"? Its {n} open item(s) move to Inbox.",
+    emptyCategory: "Nothing here yet — drag items here.",
+    dragHint: "Tip: drag items onto another category to move them.",
+    close: "Close",
   },
   shopping: {
     title: "Shopping List",
@@ -1015,6 +1037,17 @@ const es: Translations = {
     aboutPlaceholder: "p. ej. Soy Till, jefe de producto, teletrabajo lunes y viernes. Mi mujer Anna (1985), hijos Mia (2016) y Leo (2019): Mia tiene natación los martes. Mejores amigos: Jonas (Berlín), Sarah. Me gusta correr y cocinar, y estoy reformando el baño. Dentista: Dr. Weber.",
     aboutSaving: "Guardando…",
     aboutSaved: "Guardado",
+    manageCategories: "Categorías",
+    categoriesTitle: "Categorías y proyectos",
+    categoriesHint: "Cada nuevo pensamiento se archiva en una de ellas. Una breve descripción de lo que pertenece a cada categoría ayuda al asistente a acertar.",
+    categoryNamePlaceholder: "Nueva categoría o proyecto, p. ej. Ultramaratón",
+    categoryDescriptionPlaceholder: "¿Qué va aquí? p. ej. carreras, entrenamiento, equipo, nutrición",
+    addCategory: "Añadir",
+    categoryExists: "Esta categoría ya existe",
+    deleteCategoryConfirm: "¿Eliminar \"{name}\"? Sus {n} elemento(s) abiertos pasan a Inbox.",
+    emptyCategory: "Aún no hay nada: arrastra elementos aquí.",
+    dragHint: "Consejo: arrastra elementos a otra categoría para moverlos.",
+    close: "Cerrar",
   },
   shopping: {
     title: "Lista de compras",
@@ -1409,6 +1442,17 @@ const de: Translations = {
     aboutPlaceholder: "z. B. Ich bin Till, Produktmanager, Homeoffice Mo/Fr. Frau Anna (1985), Kinder Mia (2016) und Leo (2019) – Mia hat dienstags Schwimmen. Beste Freunde: Jonas (Berlin), Sarah. Ich laufe und koche gern und renoviere gerade das Bad. Zahnarzt: Dr. Weber.",
     aboutSaving: "Speichern…",
     aboutSaved: "Gespeichert",
+    manageCategories: "Kategorien",
+    categoriesTitle: "Kategorien & Projekte",
+    categoriesHint: "Jeder neue Gedanke landet in einer davon. Eine kurze Beschreibung, was in eine Kategorie gehört, hilft dem Assistenten, richtig zu sortieren.",
+    categoryNamePlaceholder: "Neue Kategorie oder Projekt, z. B. Ultralauf",
+    categoryDescriptionPlaceholder: "Was gehört hierher? z. B. Wettkämpfe, Training, Ausrüstung, Ernährung",
+    addCategory: "Hinzufügen",
+    categoryExists: "Diese Kategorie gibt es schon",
+    deleteCategoryConfirm: "„{name}“ löschen? Die {n} offenen Einträge wandern in die Inbox.",
+    emptyCategory: "Noch nichts hier – zieh Einträge hierher.",
+    dragHint: "Tipp: Einträge auf eine andere Kategorie ziehen, um sie zu verschieben.",
+    close: "Schließen",
   },
   shopping: {
     title: "Einkaufsliste",

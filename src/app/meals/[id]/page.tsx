@@ -10,6 +10,7 @@ import remarkBreaks from "remark-breaks"
 import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
+import { Button } from "@/components/ui/Button"
 import { Page } from "@/components/ui/Page"
 
 type MealType = "Meal" | "Snack" | "Drink" | "Baked" | "Aufstrich"
@@ -348,13 +349,9 @@ export default function MealDetailPage() {
             </button>
           )}
           {isOwner && (
-            <button
-              className={confirmDelete ? styles.deleteBtnConfirm : styles.deleteBtn}
-              onClick={handleDelete}
-              disabled={deleting}
-            >
+            <Button variant="danger" size="sm" active={confirmDelete} onClick={handleDelete} disabled={deleting}>
               {deleting ? t.meals.deleting : confirmDelete ? t.meals.deleteConfirm : t.meals.delete}
-            </button>
+            </Button>
           )}
         </div>
       </div>

@@ -3,9 +3,10 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo } from "react"
-import { Pencil, Plus, X } from "lucide-react"
+import { Pencil, Plus, X, ShoppingCart } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -222,7 +223,7 @@ export default function ShoppingPage() {
       </div>
 
       {visibleItems.length === 0 ? (
-        <p className={styles.emptyState}>{tagFilter ? t.shopping.noItemsWithTag : t.shopping.noItems}</p>
+        <EmptyState icon={<ShoppingCart size={22} strokeWidth={1.75} />}>{tagFilter ? t.shopping.noItemsWithTag : t.shopping.noItems}</EmptyState>
       ) : (
         <div className={styles.list}>
           {grouped.map(({ category, items: groupItems }) => (

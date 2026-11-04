@@ -111,20 +111,6 @@
   margin-bottom: 2rem;
 }
 
-.noWeek {
-  font-size: var(--text-base);
-  color: var(--secondary);
-}
-
-.noWeekLink {
-  color: var(--primary);
-  text-decoration: none;
-}
-
-.noWeekLink:hover {
-  text-decoration: underline;
-}
-
 /* Credentials login form */
 
 .divider {
@@ -175,6 +161,7 @@
 
 .credentialInput:focus {
   border-color: var(--primary);
+  box-shadow: var(--focus-ring);
 }
 
 .credentialError {
@@ -304,5 +291,14 @@
   .tasksWidget {
     max-width: 100%;
     margin-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .tasksWidgetLink {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 0;
   }
 }

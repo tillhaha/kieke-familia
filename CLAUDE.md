@@ -139,6 +139,10 @@ CSS Modules per page/component. Global styles in `src/app/globals.css`. Fonts: G
 - `PageHeader` — `title`, optional `addon` (e.g. lock icon), `actions` (always top-right; wraps under the title on mobile). Page containers are flex columns with `gap`, so it has no margins.
 - `Button` — `variant` `primary` (main action, max one per area) | `secondary` (outlined) | `ghost` (quiet) | `danger` (destructive, outlined red); `size` `sm|md`; `icon`; `active` (toggled); `fullWidth`; `href` renders a Next `Link`. Defaults to `type="button"`. In modal footers put Delete first with a `margin-right: auto` class, then Cancel (secondary), then Save (primary).
 - `FilterPill` — filter/toggle chips with `active`, optional `count`, `highlight` (drop target); forwards all button props (e.g. drag handlers).
+- `Button iconOnly` — round icon button (pass `aria-label`); `variant="danger" active` = solid red "click again to confirm" state.
+- `EmptyState` — `icon` + message + optional `action`; use for every empty list instead of a bare `<p>`.
+- **Focus**: `globals.css` gives `a`/`button`/`[role=button]` a visible `:focus-visible` outline (zero specificity via `:where`). Bordered inputs must use `border-color: var(--primary); box-shadow: var(--focus-ring);` in their own `:focus` rule (no global input ring, because borderless inline editors exist). Clickable `div` rows get `role="button" tabIndex={0}` + Enter handler.
+- **Touch** (≤768px, `globals.css`): buttons ≥44×44, selects ≥44px tall, checkboxes 22px; list-row hover uses `var(--surface-hover)`.
 - Note: `globals.css` gives every `button` `min-height: 44px` on ≤768px; the shared components set their own mobile heights.
 
 **Breakpoints** (desktop-first — mobile is secondary):

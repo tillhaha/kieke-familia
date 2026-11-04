@@ -4,10 +4,11 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Plus } from "lucide-react"
+import { Plus, CalendarDays } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -158,9 +159,7 @@ export default function WeekPage() {
       {error && <p className={styles.pageError}>{error}</p>}
 
       {weeks.length === 0 ? (
-        <p className={styles.emptyState}>
-          {t.week.noWeeksYet}
-        </p>
+        <EmptyState icon={<CalendarDays size={22} strokeWidth={1.75} />}>{t.week.noWeeksYet}</EmptyState>
       ) : (
         <div className={styles.weeksList}>
           {weeks.map((week) => (

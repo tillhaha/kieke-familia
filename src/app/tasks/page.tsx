@@ -3,10 +3,11 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
-import { Plus } from "lucide-react"
+import { Plus, ListChecks } from "lucide-react"
 import { TaskModal, TaskData } from "./TaskModal"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -52,6 +53,9 @@ function TaskRow({ task, today, setModalTask, toggleDone }: TaskRowProps) {
     <div
       className={`${styles.taskRow} ${task.done ? styles.taskDone : ""}`}
       onClick={() => setModalTask(task)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" && e.target === e.currentTarget) setModalTask(task) }}
     >
       <input
         type="checkbox"
@@ -247,10 +251,10 @@ export default function TasksPage() {
       </div>
 
       {!hasAnyOpen && !showDone && (
-        <p className={styles.empty}>{t.tasks.noOpenTasks}</p>
+        <EmptyState icon={<ListChecks size={22} strokeWidth={1.75} />}>{t.tasks.noOpenTasks}</EmptyState>
       )}
       {!hasAnyOpen && showDone && doneTasks.length === 0 && (
-        <p className={styles.empty}>{t.tasks.noTasksYet}</p>
+        <EmptyState icon={<ListChecks size={22} strokeWidth={1.75} />}>{t.tasks.noTasksYet}</EmptyState>
       )}
 
       <Section label={t.tasks.overdue} tasks={overdue} isOverdue today={today} setModalTask={setModalTask} toggleDone={toggleDone} />

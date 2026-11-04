@@ -15,6 +15,7 @@ type Common = {
   icon?: ReactNode
   active?: boolean // toggled state, e.g. "Select" mode
   fullWidth?: boolean
+  iconOnly?: boolean // round button with just an icon — pass aria-label
   className?: string
   children?: ReactNode
 }
@@ -22,20 +23,21 @@ type Common = {
 type ButtonProps = Common & ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined }
 type LinkProps = Common & { href: string; onClick?: () => void; title?: string }
 
-export function buttonClass({ variant = "secondary", size = "md", active, fullWidth, className }: Common = {}) {
+export function buttonClass({ variant = "secondary", size = "md", active, fullWidth, iconOnly, className }: Common = {}) {
   return [
     styles.btn,
     styles[variant],
     styles[size],
     active ? styles.active : "",
     fullWidth ? styles.fullWidth : "",
+    iconOnly ? styles.iconOnly : "",
     className ?? "",
   ].filter(Boolean).join(" ")
 }
 
 export function Button(props: ButtonProps | LinkProps) {
-  const { variant, size, icon, active, fullWidth, className, children, ...rest } = props
-  const cls = buttonClass({ variant, size, active, fullWidth, className })
+  const { variant, size, icon, active, fullWidth, iconOnly, className, children, ...rest } = props
+  const cls = buttonClass({ variant, size, active, fullWidth, iconOnly, className })
   if (typeof rest.href === "string") {
     const { href, onClick, title } = rest as LinkProps
     return (

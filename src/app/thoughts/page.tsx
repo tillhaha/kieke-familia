@@ -5,9 +5,10 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Lock, Send, Tags, X } from "lucide-react"
+import { Lock, Send, Tags, X, Brain } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -250,6 +251,9 @@ export default function ThoughtsPage() {
         key={todo.id}
         className={`${styles.row} ${todo.done ? styles.rowDone : ""} ${dragId === todo.id ? styles.rowDragging : ""}`}
         onClick={() => setEditing(todo)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" && e.target === e.currentTarget) setEditing(todo) }}
         draggable={!todo.done}
         onDragStart={(e) => {
           e.dataTransfer.setData("text/plain", todo.id)
@@ -363,7 +367,7 @@ export default function ThoughtsPage() {
       </div>
 
       {openTodos.length === 0 ? (
-        <p className={styles.empty}>{filter ? tt.emptyCategory : tt.empty}</p>
+        <EmptyState icon={<Brain size={22} strokeWidth={1.75} />}>{filter ? tt.emptyCategory : tt.empty}</EmptyState>
       ) : (
         <div className={styles.list}>
           {openTodos.map(renderRow)}

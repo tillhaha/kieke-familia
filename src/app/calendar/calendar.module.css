@@ -27,49 +27,10 @@
   gap: 0.375rem;
 }
 
-.navBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--secondary);
-  cursor: pointer;
-  transition: background-color 150ms, color 150ms;
-}
-
-.navBtn:hover {
-  background: var(--surface-hover);
-  color: var(--foreground);
-}
-
 .loadingIndicator {
   font-size: var(--text-xs);
   color: var(--secondary);
   opacity: 0.7;
-}
-
-.addBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--foreground);
-  cursor: pointer;
-  transition: background-color 150ms, border-color 150ms, color 150ms;
-}
-
-.addBtn:hover {
-  background: var(--surface-hover);
-  border-color: var(--primary);
-  color: var(--primary);
 }
 
 /* ── Modal Tabs ──────────────────────────────────────────── */

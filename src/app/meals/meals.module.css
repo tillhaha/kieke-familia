@@ -28,7 +28,7 @@
 }
 
 .listItem:hover {
-  background: var(--surface);
+  background: var(--surface-hover);
 }
 
 .listItemLink {
@@ -165,7 +165,7 @@
   transition: border-color 150ms;
 }
 
-.searchInput:focus { border-color: var(--primary); }
+.searchInput:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 .searchInput::placeholder { color: var(--secondary); opacity: 0.6; }
 
 /* ── Filter bar ──────────────────────────────────────── */
@@ -191,7 +191,7 @@
   appearance: auto;
 }
 
-.filterSelect:focus { border-color: var(--primary); }
+.filterSelect:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 .mealTypeRow {
   display: flex;
@@ -261,13 +261,6 @@
 
 .filterClear:hover { color: var(--foreground); }
 
-.emptyState {
-  font-size: var(--text-base);
-  color: var(--secondary);
-  padding: 2rem 0;
-  text-align: center;
-}
-
 /* ── Detail Page ─────────────────────────────────────── */
 
 .backLink {
@@ -290,7 +283,7 @@
 }
 
 .titleInput {
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   background: transparent;
@@ -303,6 +296,7 @@
 }
 
 .titleInput:focus {
+  box-shadow: none;
   border-bottom: 2px solid var(--primary);
 }
 
@@ -317,10 +311,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 30px; /* = Button size sm */
+  height: 30px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
@@ -337,48 +331,6 @@
   color: #f59e0b;
   border-color: #f59e0b;
 }
-
-.deleteBtn {
-  flex-shrink: 0;
-  padding: 0.4rem 0.875rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--secondary);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms, color 150ms, border-color 150ms;
-  white-space: nowrap;
-}
-
-.deleteBtn:hover {
-  background: var(--danger-soft);
-  color: var(--danger);
-  border-color: var(--danger);
-}
-
-.deleteBtnConfirm {
-  flex-shrink: 0;
-  padding: 0.4rem 0.875rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--danger);
-  background: var(--danger-soft);
-  color: var(--danger);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-  white-space: nowrap;
-}
-
-.deleteBtnConfirm:hover { background: var(--danger-soft); }
-
-  :global([data-theme="dark"]) .deleteBtn:hover { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
-
-  :global([data-theme="dark"]) .deleteBtnConfirm { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
-
-  :global([data-theme="dark"]) .deleteBtnConfirm:hover { background: var(--danger-soft); }
 
 /* ── Field sections ──────────────────────────────────── */
 
@@ -446,7 +398,7 @@
   transition: border-color 150ms;
 }
 
-.servingsInput:focus { border-color: var(--primary); }
+.servingsInput:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 .typeSelect {
   padding: 0.35rem 2rem 0.35rem 0.625rem;
@@ -462,7 +414,7 @@
   min-width: 120px;
 }
 
-.typeSelect:focus { border-color: var(--primary); }
+.typeSelect:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 /* ── Meta row (type + servings + tags) ───────────────── */
 
@@ -635,7 +587,7 @@
   transition: border-color 150ms;
 }
 
-.formInput:focus { border-color: var(--primary); }
+.formInput:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 .formTextarea {
   padding: 0.5rem 0.75rem;
@@ -652,7 +604,7 @@
   transition: border-color 150ms;
 }
 
-.formTextarea:focus { border-color: var(--primary); }
+.formTextarea:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 .formHint {
   font-size: var(--text-xs);
@@ -848,7 +800,7 @@
   box-sizing: border-box;
 }
 
-.modalTextarea:focus { border-color: var(--primary); }
+.modalTextarea:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 .modalTextarea::placeholder { color: var(--secondary); opacity: 0.6; }
 
 .modalFooter {
@@ -1026,7 +978,7 @@
   transition: border-color 150ms;
 }
 
-.batchTextarea:focus { border-color: var(--primary); }
+.batchTextarea:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 .batchTextarea::placeholder { color: var(--secondary); opacity: 0.5; }
 
 /* ── Progress section ───────────────────────────────────── */
@@ -1277,6 +1229,7 @@
 
 .linkPromptInput:focus {
   border-color: var(--primary);
+  box-shadow: var(--focus-ring);
 }
 
 .linkPromptSubmit {
@@ -1319,4 +1272,8 @@
 
 @media (max-width: 768px) {
   .pageTitle { font-size: var(--text-xl); }
+}
+
+@media (max-width: 768px) {
+  .backLink { min-height: 44px; }
 }

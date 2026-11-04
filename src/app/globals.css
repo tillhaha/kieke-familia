@@ -25,6 +25,7 @@
   --danger-soft: #fdecea;
   --success: #16a34a;
   --overlay: rgba(0, 0, 0, 0.4);
+  --focus-ring: 0 0 0 3px rgba(45, 106, 79, 0.18); /* around focused inputs */
 
   --shadow-sm: 0 1px 3px rgba(45, 106, 79, 0.08);
   --shadow-md: 0 4px 16px rgba(45, 106, 79, 0.12);
@@ -77,6 +78,7 @@
   --danger-soft: #3a1f1f;
   --success: #4ade80;
   --overlay: rgba(0, 0, 0, 0.6);
+  --focus-ring: 0 0 0 3px rgba(92, 196, 146, 0.25);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
@@ -163,4 +165,37 @@ button {
    footer room so the FAB never covers its links when scrolled to the end. */
 body:has([data-fab]) footer {
   padding-bottom: 5.5rem;
+}
+
+/* ── Focus ───────────────────────────────────────────────────
+   Keyboard focus is always visible. :where() keeps specificity at zero so
+   component styles can still refine it. Bordered inputs get border-color
+   + box-shadow: var(--focus-ring) in their own module :focus rule. */
+:where(a, button, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+:where(div[role="button"], li[role="button"]):focus-visible {
+  outline-offset: -2px; /* clickable rows sit inside overflow:hidden lists */
+}
+:where(input[type="checkbox"], input[type="radio"]):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ── Touch targets (phones) ───────────────────────────────── */
+@media (max-width: 768px) {
+  button,
+  [role="button"] {
+    min-width: 44px;
+  }
+  select {
+    min-height: 44px;
+  }
+  /* attribute + element beats single-class module rules */
+  input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+  }
 }

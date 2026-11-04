@@ -34,6 +34,9 @@
   font-size: var(--text-md);
 }
 .fullWidth { width: 100%; }
+.iconOnly { padding: 0; }
+.iconOnly.sm { width: 30px; }
+.iconOnly.md { width: 36px; }
 
 /* Variants */
 .primary {
@@ -85,8 +88,18 @@
   color: var(--primary);
 }
 
+/* Danger + active = "click again to confirm" */
+.danger.active,
+.danger.active:hover:not(:disabled) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-primary);
+}
+
 /* Touch: bigger tap targets (overrides the global 44px button min-height for sm) */
 @media (max-width: 768px) {
   .md { height: 44px; min-height: 44px; }
   .sm { height: 36px; min-height: 36px; }
+  .iconOnly.sm { width: 36px; min-width: 36px; }
+  .iconOnly.md { width: 44px; min-width: 44px; }
 }

@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { LogIn, ChevronLeft, ChevronRight } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent, WorkLocationEntry, WorkLocationValue } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
+import { QuickThought } from "@/components/QuickThought"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
 
@@ -262,6 +263,8 @@ export default function Home() {
           <a href="/week" className={styles.noWeekLink}>{t.home.goToWeekPlanning}</a>
         </p>
       )}
+
+      <QuickThought />
     </main>
   )
 }

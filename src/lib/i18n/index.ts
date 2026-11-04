@@ -247,7 +247,6 @@ export type Translations = {
     categoryExists: string
     deleteCategoryConfirm: string
     emptyCategory: string
-    dragHint: string
     close: string
   }
   shopping: {
@@ -641,7 +640,6 @@ const en: Translations = {
     categoryExists: "This category already exists",
     deleteCategoryConfirm: "Delete \"{name}\"? Its {n} open item(s) move to Inbox.",
     emptyCategory: "Nothing here yet — drag items here.",
-    dragHint: "Tip: drag items onto another category to move them.",
     close: "Close",
   },
   shopping: {
@@ -1046,7 +1044,6 @@ const es: Translations = {
     categoryExists: "Esta categoría ya existe",
     deleteCategoryConfirm: "¿Eliminar \"{name}\"? Sus {n} elemento(s) abiertos pasan a Inbox.",
     emptyCategory: "Aún no hay nada: arrastra elementos aquí.",
-    dragHint: "Consejo: arrastra elementos a otra categoría para moverlos.",
     close: "Cerrar",
   },
   shopping: {
@@ -1451,7 +1448,6 @@ const de: Translations = {
     categoryExists: "Diese Kategorie gibt es schon",
     deleteCategoryConfirm: "„{name}“ löschen? Die {n} offenen Einträge wandern in die Inbox.",
     emptyCategory: "Noch nichts hier – zieh Einträge hierher.",
-    dragHint: "Tipp: Einträge auf eine andere Kategorie ziehen, um sie zu verschieben.",
     close: "Schließen",
   },
   shopping: {

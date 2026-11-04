@@ -224,14 +224,11 @@ export default function ThoughtsPage() {
     [todos, catDefs]
   )
 
-  const groups = useMemo(() => {
-    const open = todos.filter((x) => !x.done && (!filter || x.category === filter))
-    const map = new Map<string, Todo[]>()
-    for (const [name] of categories) map.set(name, [])
-    for (const todo of open) map.get(todo.category)?.push(todo)
-    // While dragging, show every category as a drop target; otherwise only non-empty ones (or the filtered one)
-    return [...map.entries()].filter(([name, items]) => items.length > 0 || dragId !== null || name === filter).map(([name, items]) => [name, items.sort(compareTodos)] as const)
-  }, [todos, filter, categories, dragId])
+  // One flat list: next due first, then undated (newest first)
+  const openTodos = useMemo(
+    () => todos.filter((x) => !x.done && (!filter || x.category === filter)).sort(compareTodos),
+    [todos, filter]
+  )
 
   const doneTodos = todos
     .filter((x) => x.done && (!filter || x.category === filter))
@@ -267,15 +264,15 @@ export default function ThoughtsPage() {
           onChange={() => toggleDone(todo)}
           onClick={(e) => e.stopPropagation()}
         />
-        <div className={styles.rowBody}>
-          <span className={styles.rowTitle}>{todo.title}</span>
-          {todo.note && <span className={styles.rowNote}>{todo.note}</span>}
+        <span className={styles.rowTitle}>{todo.title}</span>
+        <div className={styles.rowMeta}>
+          <span className={styles.chip}>{todo.category}</span>
+          {todo.dueDate && (
+            <span className={`${styles.rowDue} ${overdue ? styles.overdue : ""}`}>
+              {overdue ? `${tt.overdue} · ` : ""}{formatDate(todo.dueDate, locale)}
+            </span>
+          )}
         </div>
-        {todo.dueDate && (
-          <span className={`${styles.rowDue} ${overdue ? styles.overdue : ""}`}>
-            {overdue ? `${tt.overdue} · ` : ""}{formatDate(todo.dueDate, locale)}
-          </span>
-        )}
       </div>
     )
   }
@@ -363,26 +360,13 @@ export default function ThoughtsPage() {
         </button>
       </div>
 
-      {groups.length === 0 && <p className={styles.empty}>{tt.empty}</p>}
-
-      {groups.length > 0 && <p className={styles.dragHint}>{tt.dragHint}</p>}
-
-      {groups.map(([name, items]) => (
-        <section
-          key={name}
-          className={`${styles.section} ${dropTarget === name ? styles.sectionDrop : ""}`}
-          {...dropProps(name)}
-        >
-          <div className={styles.sectionLabel}>{name}</div>
-          {items.length > 0 ? (
-            <div className={styles.list}>
-              {items.map(renderRow)}
-            </div>
-          ) : (
-            <div className={styles.dropZone}>{tt.emptyCategory}</div>
-          )}
-        </section>
-      ))}
+      {openTodos.length === 0 ? (
+        <p className={styles.empty}>{filter ? tt.emptyCategory : tt.empty}</p>
+      ) : (
+        <div className={styles.list}>
+          {openTodos.map(renderRow)}
+        </div>
+      )}
 
       {showDone && (
         <section className={styles.section}>

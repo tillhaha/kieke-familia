@@ -247,7 +247,6 @@ export type Translations = {
     categoryExists: string
     deleteCategoryConfirm: string
     emptyCategory: string
-    dragHint: string
     close: string
   }
   shopping: {
@@ -600,7 +599,7 @@ const en: Translations = {
   },
   thoughts: {
     title: "My thoughts",
-    subtitle: "Dump whatever is on your mind — the assistant sorts it into your list.",
+    subtitle: "Dump whatever is on your mind.",
     privateHint: "Only you can see this list.",
     placeholder: "e.g. call the dentist tomorrow, idea for Mia's birthday: climbing hall, renew passport by end of month…",
     send: "Send",
@@ -641,7 +640,6 @@ const en: Translations = {
     categoryExists: "This category already exists",
     deleteCategoryConfirm: "Delete \"{name}\"? Its {n} open item(s) move to Inbox.",
     emptyCategory: "Nothing here yet — drag items here.",
-    dragHint: "Tip: drag items onto another category to move them.",
     close: "Close",
   },
   shopping: {
@@ -1005,7 +1003,7 @@ const es: Translations = {
   },
   thoughts: {
     title: "Mis ideas",
-    subtitle: "Escribe lo que tengas en mente: el asistente lo ordena en tu lista.",
+    subtitle: "Escribe lo que tengas en mente.",
     privateHint: "Solo tú puedes ver esta lista.",
     placeholder: "p. ej. llamar al dentista mañana, idea para el cumpleaños de Mia: rocódromo, renovar pasaporte antes de fin de mes…",
     send: "Enviar",
@@ -1046,7 +1044,6 @@ const es: Translations = {
     categoryExists: "Esta categoría ya existe",
     deleteCategoryConfirm: "¿Eliminar \"{name}\"? Sus {n} elemento(s) abiertos pasan a Inbox.",
     emptyCategory: "Aún no hay nada: arrastra elementos aquí.",
-    dragHint: "Consejo: arrastra elementos a otra categoría para moverlos.",
     close: "Cerrar",
   },
   shopping: {
@@ -1410,7 +1407,7 @@ const de: Translations = {
   },
   thoughts: {
     title: "Meine Gedanken",
-    subtitle: "Schreib einfach auf, was dir durch den Kopf geht – der Assistent sortiert es in deine Liste.",
+    subtitle: "Schreib einfach auf, was dir durch den Kopf geht.",
     privateHint: "Nur du kannst diese Liste sehen.",
     placeholder: "z. B. morgen Zahnarzt anrufen, Idee für Mias Geburtstag: Kletterhalle, Reisepass bis Monatsende verlängern…",
     send: "Senden",
@@ -1451,7 +1448,6 @@ const de: Translations = {
     categoryExists: "Diese Kategorie gibt es schon",
     deleteCategoryConfirm: "„{name}“ löschen? Die {n} offenen Einträge wandern in die Inbox.",
     emptyCategory: "Noch nichts hier – zieh Einträge hierher.",
-    dragHint: "Tipp: Einträge auf eine andere Kategorie ziehen, um sie zu verschieben.",
     close: "Schließen",
   },
   shopping: {

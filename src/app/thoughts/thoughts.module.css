@@ -12,9 +12,12 @@
 
 .header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+.titleLock {
+  display: inline-flex;
+  color: var(--secondary);
 }
 
 .title {
@@ -23,14 +26,6 @@
   letter-spacing: -0.02em;
 }
 
-.privateHint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.75rem;
-  color: var(--secondary);
-  white-space: nowrap;
-}
 
 /* Composer */
 .composer {
@@ -229,7 +224,7 @@
 
 .row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border);
@@ -243,39 +238,30 @@
 .checkbox {
   width: 16px;
   height: 16px;
-  margin-top: 0.15rem;
   flex-shrink: 0;
   cursor: pointer;
   accent-color: var(--primary);
 }
 
-.rowBody {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
 .rowTitle {
+  flex: 1;
+  min-width: 0;
   font-size: 0.9375rem;
   font-weight: 500;
   overflow-wrap: anywhere;
 }
 
-.rowNote {
-  font-size: 0.8125rem;
-  color: var(--secondary);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.rowMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .rowDue {
   font-size: 0.8125rem;
   color: var(--secondary);
   white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
 }
 
 .overdue { color: #d4604a; }
@@ -431,28 +417,6 @@
   color: var(--primary);
   transform: scale(1.05);
 }
-.sectionDrop .list,
-.sectionDrop .dropZone {
-  outline: 2px dashed var(--primary);
-  outline-offset: 2px;
-}
-.sectionDrop .sectionLabel { color: var(--primary); }
-.dropZone {
-  padding: 0.75rem 1rem;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  font-size: 0.8125rem;
-  color: var(--secondary);
-}
-.dragHint {
-  font-size: 0.75rem;
-  color: var(--secondary);
-  margin-top: -0.5rem;
-}
-@media (hover: none) {
-  .dragHint { display: none; }
-}
-
 .catModal {
   max-width: 560px;
   max-height: calc(100vh - 2rem);
@@ -509,17 +473,16 @@
     padding: 1.25rem 0.75rem;
   }
 
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-
   .title { font-size: 1.125rem; }
 
   .composerHint { display: none; }
 
   .rowTitle { font-size: 0.875rem; }
+
+  /* Category pill + date go below the title */
+  .row { flex-wrap: wrap; row-gap: 0.35rem; }
+  .rowTitle { flex-basis: calc(100% - 16px - 0.75rem); }
+  .rowMeta { margin-left: calc(16px + 0.75rem); }
 
   .modal { padding: 1.25rem; }
 

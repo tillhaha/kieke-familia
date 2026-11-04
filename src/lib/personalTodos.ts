@@ -47,7 +47,7 @@ function describeCategories(categories: CategoryInfo[]): string {
 
 async function splitAndCategorize(text: string, categories: CategoryInfo[], today: string, lifeContext: string): Promise<CaptureItem[]> {
   const contextBlock = lifeContext
-    ? `\n\nWhat you know about the person (private, from their profile and the family app):\n<life_context>\n${lifeContext}\n</life_context>\nUse this to understand who and what they mean ("Mama", "her birthday", "the bathroom") and file things better: write titles with the real names, pick fitting categories, add a short note with relevant facts from the context (e.g. "Mia wird 10"), and when a todo clearly hinges on a known date (e.g. a present for a birthday) use that date as dueDate unless the person gave another. Only use facts that are in the context or the brain dump — never invent any. Don't create items from the context itself, only from the brain dump.`
+    ? `\n\nWhat you know about the person (private, from their profile and the family app):\n<life_context>\n${lifeContext}\n</life_context>\nUse this to understand who and what they mean ("Mama", "her birthday", "the bathroom") and file things better: use the real names, pick fitting categories, add relevant facts from the context to the note (e.g. "Mia wird 10"), and when a todo clearly hinges on a known date (e.g. a present for a birthday) use that date as dueDate unless the person gave another. Only use facts that are in the context or the brain dump — never invent any. Don't create items from the context itself, only from the brain dump.`
     : ""
 
   const response = await client.messages.parse({
@@ -57,8 +57,8 @@ async function splitAndCategorize(text: string, categories: CategoryInfo[], toda
     system: `You are a personal assistant that files a person's thoughts into their private todo list.
 The person sends you a quick, unstructured brain dump (any language, often German). Turn it into list items:
 - Split it into separate, self-contained items — one per todo, idea or thought. Don't merge unrelated things, don't split one thing into many.
-- title: short and actionable, in the language the person wrote in (e.g. "Zahnarzttermin vereinbaren"). Keep names, numbers and details.
-- note: extra context worth keeping that doesn't fit the title, otherwise null. Never invent details.
+- title: short and concise — ideally 2–5 words, at most ~6 — so it scans well in a list; actionable where it is a todo; in the language the person wrote in (e.g. "Zahnarzttermin vereinbaren", "Klebeetiketten Ultralauf"). No filler, no trailing punctuation. Put details in the note instead of making the title long.
+- note: one or two short sentences that clarify what is meant or what exactly needs doing — details, names, numbers, quantities, reasons and context from the brain dump (and relevant facts from what you know about the person) that don't fit the title. Write a note whenever it helps someone understand the item later; use null only if the title already says everything. Never invent details that aren't in the brain dump or the context.
 - category: the name of one of the person's categories, spelled exactly as listed. These are their own categories and projects; a description after the colon says what belongs there — follow it. Pick the most specific category that matches what the item is about (e.g. gear for a running race belongs in a running/sport project, not in "Arbeit" just because it is a task). Only create a new category when none fits; then use a short, broad, reusable label (1–2 words) in the person's language (e.g. "Haushalt", "Gesundheit", "Finanzen", "Familie").
 - dueDate: YYYY-MM-DD only if a date or deadline is stated or clearly implied ("morgen", "bis Freitag", "nächste Woche"); resolve relative dates against today. Otherwise null.
 Today is ${today}.${contextBlock}`,

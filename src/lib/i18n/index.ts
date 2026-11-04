@@ -229,6 +229,9 @@ export type Translations = {
     cancel: string
     delete: string
     titleRequired: string
+    quickAdd: string
+    quickTitle: string
+    viewAll: string
   }
   shopping: {
     title: string
@@ -601,6 +604,9 @@ const en: Translations = {
     cancel: "Cancel",
     delete: "Delete",
     titleRequired: "Title is required",
+    quickAdd: "New thought",
+    quickTitle: "New thought",
+    viewAll: "Open my thoughts",
   },
   shopping: {
     title: "Shopping List",
@@ -973,6 +979,9 @@ const es: Translations = {
     cancel: "Cancelar",
     delete: "Eliminar",
     titleRequired: "El título es obligatorio",
+    quickAdd: "Nuevo pensamiento",
+    quickTitle: "Nuevo pensamiento",
+    viewAll: "Ver mis pensamientos",
   },
   shopping: {
     title: "Lista de compras",
@@ -1345,6 +1354,9 @@ const de: Translations = {
     cancel: "Abbrechen",
     delete: "Löschen",
     titleRequired: "Titel ist erforderlich",
+    quickAdd: "Neuer Gedanke",
+    quickTitle: "Neuer Gedanke",
+    viewAll: "Zu meinen Gedanken",
   },
   shopping: {
     title: "Einkaufsliste",

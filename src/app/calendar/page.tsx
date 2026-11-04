@@ -7,6 +7,7 @@ import Link from "next/link"
 import { ChevronLeft, ChevronRight, Plus, Baby, Link2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./calendar.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import CustodyPopover from "./CustodyPopover"
 
@@ -241,7 +242,7 @@ export default function CalendarPage() {
   if (status === "unauthenticated") return <div style={{ padding: "2rem" }}>{t.calendar.signInRequired}</div>
 
   return (
-    <div className={styles.calendarContainer}>
+    <Page width="wide">
       {/* Header */}
       <header className={styles.calendarHeader}>
         <div className={styles.headerLeft}>
@@ -624,6 +625,6 @@ export default function CalendarPage() {
           </form>
         </div>
       )}
-    </div>
+    </Page>
   )
 }

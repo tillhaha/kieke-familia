@@ -1,16 +1,5 @@
 /* src/app/shopping/shopping.module.css */
 
-.container {
-  width: 100%;
-  max-width: 50vw;
-  min-width: 480px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 /* ── Add form ─────────────────────────────────────────── */
 
 .addForm {
@@ -381,11 +370,3 @@
 
 /* ── Mobile ──────────────────────────────────────────── */
 
-@media (max-width: 768px) {
-  .container {
-    max-width: 100%;
-    min-width: 0;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-}

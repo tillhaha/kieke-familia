@@ -63,7 +63,7 @@ export function QuickThought() {
   return (
     <>
       {!open && (
-        <button className={styles.fab} onClick={openSheet} aria-label={tt.quickAdd} title={tt.quickAdd}>
+        <button className={styles.fab} data-fab onClick={openSheet} aria-label={tt.quickAdd} title={tt.quickAdd}>
           <Brain size={22} strokeWidth={2} />
           <span className={styles.fabLabel}>{tt.quickAdd}</span>
         </button>

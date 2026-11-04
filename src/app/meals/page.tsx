@@ -8,6 +8,7 @@ import { CheckSquare, Layers, Plus, Search, Square, Star } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { FilterPill } from "@/components/ui/FilterPill"
@@ -158,7 +159,7 @@ export default function MealsPage() {
   if (status === "loading") return null
 
   return (
-    <div className={`${styles.container} ${selectMode ? styles.containerSelectMode : ""}`}>
+    <Page width="narrow" className={selectMode ? styles.containerSelectMode : ""}>
       <PageHeader
         title={t.meals.title}
         actions={
@@ -169,7 +170,7 @@ export default function MealsPage() {
               icon={<Layers size={14} strokeWidth={2} />}
               onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
             >
-              {selectMode ? "Cancel" : "Select"}
+              {selectMode ? t.meals.cancel : t.meals.select}
             </Button>
             <Button variant="secondary" onClick={() => setBatchOpen(true)}>
               {t.meals.batchImport}
@@ -207,7 +208,7 @@ export default function MealsPage() {
             className={styles.filterClear}
             onClick={() => { setQuery(""); setFilterMealType(""); setFilterDiet(""); setFilterOffice(false); setFilterThirty(false); setFilterFavorite(false) }}
           >
-            Clear
+            {t.meals.clearFilters}
           </button>
         )}
       </div>
@@ -218,7 +219,7 @@ export default function MealsPage() {
           <Search size={14} className={styles.searchIcon} />
           <input
             className={styles.searchInput}
-            placeholder="Search recipes…"
+            placeholder={t.meals.searchPlaceholder}
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
           />
@@ -368,18 +369,18 @@ export default function MealsPage() {
 
           <div className={styles.bulkActions}>
             <Button variant="secondary" onClick={exitSelectMode}>
-              Cancel
+              {t.meals.cancel}
             </Button>
             <Button
               variant="primary"
               disabled={selected.size === 0 || !hasEdits || applying}
               onClick={applyBulkEdits}
             >
-              {applying ? "Saving…" : "Apply"}
+              {applying ? t.meals.saving : t.meals.apply}
             </Button>
           </div>
         </div>
       )}
-    </div>
+    </Page>
   )
 }

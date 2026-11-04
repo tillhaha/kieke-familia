@@ -161,6 +161,12 @@ export type Translations = {
     batchDoneAll: string
     batchDoneMixed: string
     batchDropzoneHint: string
+    select: string
+    cancel: string
+    clearFilters: string
+    searchPlaceholder: string
+    apply: string
+    saving: string
   }
   taskModal: {
     editTitle: string
@@ -554,6 +560,12 @@ const en: Translations = {
     batchDoneAll: "All {total} imported",
     batchDoneMixed: "{imported} imported, {failed} failed",
     batchDropzoneHint: "Drop images or PDFs here or click to choose",
+    select: "Select",
+    cancel: "Cancel",
+    clearFilters: "Clear",
+    searchPlaceholder: "Search recipes…",
+    apply: "Apply",
+    saving: "Saving…",
   },
   taskModal: {
     editTitle: "Edit task",
@@ -958,6 +970,12 @@ const es: Translations = {
     batchDoneAll: "{total} importados",
     batchDoneMixed: "{imported} importados, {failed} fallidos",
     batchDropzoneHint: "Suelta imágenes o PDFs aquí o haz clic",
+    select: "Seleccionar",
+    cancel: "Cancelar",
+    clearFilters: "Limpiar",
+    searchPlaceholder: "Buscar recetas…",
+    apply: "Aplicar",
+    saving: "Guardando…",
   },
   taskModal: {
     editTitle: "Editar tarea",
@@ -1362,6 +1380,12 @@ const de: Translations = {
     batchDoneAll: "Alle {total} importiert",
     batchDoneMixed: "{imported} importiert, {failed} fehlgeschlagen",
     batchDropzoneHint: "Bilder oder PDFs hier ablegen oder klicken",
+    select: "Auswählen",
+    cancel: "Abbrechen",
+    clearFilters: "Zurücksetzen",
+    searchPlaceholder: "Rezepte suchen…",
+    apply: "Übernehmen",
+    saving: "Speichern…",
   },
   taskModal: {
     editTitle: "Aufgabe bearbeiten",

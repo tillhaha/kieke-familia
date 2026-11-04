@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Lock, Send, Tags, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { FilterPill } from "@/components/ui/FilterPill"
@@ -281,7 +282,7 @@ export default function ThoughtsPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <Page width="narrow">
       <PageHeader
         title={tt.title}
         addon={
@@ -402,7 +403,7 @@ export default function ThoughtsPage() {
           onClose={() => setEditing(null)}
         />
       )}
-    </div>
+    </Page>
   )
 }
 

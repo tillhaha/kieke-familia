@@ -7,6 +7,7 @@ import { Plus } from "lucide-react"
 import { TaskModal, TaskData } from "./TaskModal"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { FilterPill } from "@/components/ui/FilterPill"
@@ -219,7 +220,7 @@ export default function TasksPage() {
   const hasAnyOpen = overdue.length > 0 || thisWeek.length > 0 || later.length > 0
 
   return (
-    <div className={styles.page}>
+    <Page width="narrow">
       <PageHeader
         title={t.tasks.title}
         actions={
@@ -276,6 +277,6 @@ export default function TasksPage() {
           onClose={() => setModalTask(undefined)}
         />
       )}
-    </div>
+    </Page>
   )
 }

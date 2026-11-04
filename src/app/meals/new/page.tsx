@@ -6,6 +6,7 @@ import Link from "next/link"
 import { ChevronLeft, Sparkles, X, ImagePlus, Camera, FileText } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 
 type ScreenshotEntry = { dataUrl: string; name: string }
@@ -225,7 +226,7 @@ export default function NewMealPage() {
   }
 
   return (
-    <div className={styles.detailContainer}>
+    <Page width="narrow">
       <Link href="/meals" className={styles.backLink}>
         <ChevronLeft size={14} /> {t.meals.backLink}
       </Link>
@@ -434,6 +435,6 @@ export default function NewMealPage() {
           </div>
         </div>
       )}
-    </div>
+    </Page>
   )
 }

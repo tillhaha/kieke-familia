@@ -1,14 +1,5 @@
 /* src/app/thoughts/thoughts.module.css */
-.page {
-  width: 100%;
-  max-width: 50vw;
-  min-width: 480px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
+
 .titleLock {
   display: inline-flex;
   color: var(--secondary);
@@ -366,11 +357,6 @@
 }
 
 @media (max-width: 768px) {
-  .page {
-    max-width: 100%;
-    min-width: 0;
-    padding: 1.25rem 0.75rem;
-  }
 
   .composerHint { display: none; }
 

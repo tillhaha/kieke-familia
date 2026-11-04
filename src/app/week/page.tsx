@@ -8,6 +8,7 @@ import { Plus } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 
@@ -144,7 +145,7 @@ export default function WeekPage() {
   if (status === "loading" || loading) return null
 
   return (
-    <div className={styles.container}>
+    <Page width="wide">
       <PageHeader
         title={t.week.title}
         actions={
@@ -186,6 +187,6 @@ export default function WeekPage() {
           ))}
         </div>
       )}
-    </div>
+    </Page>
   )
 }

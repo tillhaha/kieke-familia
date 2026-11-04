@@ -151,11 +151,9 @@ Add breakpoint overrides at the bottom of each CSS module. Never modify desktop 
 
 **Overflow/scroll on mobile**: flex items default to `min-width: auto` and will overflow instead of scrolling. When adding `overflow-x: auto` to a flex container, also set `min-width: 0` on the flex item. The calendar uses a dedicated `.calendarScrollWrapper` div for this reason.
 
-**Content column width:**
-- Homepage (`.main`): `max-width: 1100px; margin: 0 auto` — full-width container. The tasks widget inside is `max-width: 50%`; the `WeekBlock` fills the full container.
-- Tasks (`.page`) and Shopping (`.container`): `max-width: 50vw; min-width: 480px` — scales to half the viewport on desktop, resets to `max-width: 100%; min-width: 0` on mobile.
-- Settings (`.container`): CSS Grid `grid-template-columns: 180px 1fr` with `width: 100%; max-width: 1100px; margin: 0 auto`. The `width: 100%` is required — omitting it causes the flex child to shrink-wrap its content, making `margin: 0 auto` shift the layout whenever section content changes width.
-- Meals pages use `max-width: 720px` centered.
+**Page layout:** wrap every page in `<Page width="narrow|wide">` (`src/components/ui/Page.tsx`) instead of a page-specific container. Two widths only: **narrow 720px** (Tasks, Shopping, Thoughts, Recipes list/new/detail) and **wide 1200px** (Home, Week Planner, Calendar — aligned with navbar/footer). Same padding everywhere (desktop `--space-7` top / `--space-6` sides, ≤1023px `--space-4` sides, ≤768px `--space-5` top / `--space-3` sides) and children are spaced by the container's `gap` (`--space-5`, mobile `--space-4`) — don't add top/bottom margins to direct children. Exceptions: Settings keeps its own grid container (also 1200px, same padding; stacked `.section`s get a divider via `.section + .section`), Imprint/Privacy keep their prose container (720px, same padding), Onboarding is a centred card. The homepage tasks widget is `max-width: 50%` on desktop.
+
+**Floating action button**: `QuickThought` marks its FAB with `data-fab`; `globals.css` then pads the footer (`body:has([data-fab]) footer`) so the FAB never covers the footer links.
 
 **Flex children + `margin: 0 auto`**: applying `margin: 0 auto` to a flex child overrides `align-self: stretch`, causing it to shrink-wrap its content on first render then jump wide when real content loads. Always add `width: 100%` alongside `max-width` + `margin: 0 auto` on any direct flex child of `appShell`. All page containers already follow this pattern.
 

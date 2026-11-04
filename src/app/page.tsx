@@ -9,6 +9,7 @@ import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { QuickThought } from "@/components/QuickThought"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 
 type FamilyTask = TaskData
@@ -205,7 +206,7 @@ export default function Home() {
     hour < 12 ? t.home.goodMorning : hour < 17 ? t.home.goodAfternoon : t.home.goodEvening
 
   return (
-    <main className={styles.main}>
+    <Page width="wide">
       <div className={styles.hero}>
         <h1 className={styles.greeting}>
           {greeting}, {firstName}
@@ -264,7 +265,7 @@ export default function Home() {
       )}
 
       <QuickThought />
-    </main>
+    </Page>
   )
 }
 

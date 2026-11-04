@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { Pencil, Plus, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { FilterPill } from "@/components/ui/FilterPill"
@@ -180,7 +181,7 @@ export default function ShoppingPage() {
   if (status === "loading" || loading) return null
 
   return (
-    <div className={styles.container}>
+    <Page width="narrow">
       <PageHeader title={t.shopping.title} />
 
       <form className={styles.addForm} onSubmit={handleAdd}>
@@ -286,6 +287,6 @@ export default function ShoppingPage() {
           onSave={(changes) => handleEditSave(editingItem.id, changes)}
         />
       )}
-    </div>
+    </Page>
   )
 }

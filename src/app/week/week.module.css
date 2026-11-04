@@ -1,20 +1,8 @@
 /* src/app/week/week.module.css */
 
-.container {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
 .generateBtn {
   align-self: flex-start;
 }
-
-
 
 .weeksList {
   display: flex;
@@ -1079,14 +1067,9 @@ tr:last-child .cell {
   margin-top: 0.5rem;
 }
 
-
 /* ── Tablet ──────────────────────────────────────────── */
 
 @media (max-width: 1023px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
 
   .cornerCell,
   .rowLabel {
@@ -1108,11 +1091,6 @@ tr:last-child .cell {
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  .container {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    gap: 1rem;
-  }
 
   .tableWrapper {
     display: none;

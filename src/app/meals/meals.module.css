@@ -1,15 +1,5 @@
 /* src/app/meals/meals.module.css */
 
-.container {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
 .pageTitle {
   font-size: var(--text-2xl);
   font-weight: 700;
@@ -279,16 +269,6 @@
 }
 
 /* ── Detail Page ─────────────────────────────────────── */
-
-.detailContainer {
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
-}
 
 .backLink {
   display: inline-flex;
@@ -1319,16 +1299,6 @@
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  .container {
-    min-width: 0;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
-  .detailContainer {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
 
   .detailHeader {
     flex-direction: column;
@@ -1346,3 +1316,7 @@
   }
 }
 .saveBtnPlacement { align-self: flex-start; }
+
+@media (max-width: 768px) {
+  .pageTitle { font-size: var(--text-xl); }
+}

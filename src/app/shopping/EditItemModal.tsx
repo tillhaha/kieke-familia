@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { Button } from "@/components/ui/Button"
 import { categoryLabel } from "@/lib/shoppingCategories"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
@@ -110,8 +111,8 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
         {error && <p className={styles.addError}>{error}</p>}
 
         <div className={styles.modalFooter}>
-          <button type="button" className={styles.modalCancelBtn} onClick={onClose}>{t.shopping.cancel}</button>
-          <button type="submit" className={styles.addBtn} disabled={saving || !name.trim()}>{t.shopping.save}</button>
+          <Button variant="secondary" onClick={onClose}>{t.shopping.cancel}</Button>
+          <Button type="submit" variant="primary" disabled={saving || !name.trim()}>{t.shopping.save}</Button>
         </div>
       </form>
     </div>

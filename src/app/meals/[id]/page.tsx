@@ -10,6 +10,7 @@ import remarkBreaks from "remark-breaks"
 import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
+import { Page } from "@/components/ui/Page"
 
 type MealType = "Meal" | "Snack" | "Drink" | "Baked" | "Aufstrich"
 type Diet = "Vegetarian" | "Meat" | "Fish"
@@ -316,11 +317,11 @@ export default function MealDetailPage() {
   }
 
   if (loading) return null
-  if (notFound) return <div className={styles.detailContainer}><p>{t.meals.notFound}</p></div>
+  if (notFound) return <Page width="narrow"><p>{t.meals.notFound}</p></Page>
   if (!meal) return null
 
   return (
-    <div className={styles.detailContainer}>
+    <Page width="narrow">
       <Link href="/meals" className={styles.backLink}>
         <ChevronLeft size={14} /> {t.meals.backLink}
       </Link>
@@ -633,6 +634,6 @@ export default function MealDetailPage() {
           </div>
         )}
       </div>
-    </div>
+    </Page>
   )
 }

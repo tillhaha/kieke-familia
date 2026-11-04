@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type ImportedCalendar = { id: string; url: string; name: string; color: string; createdAt: string }
 
@@ -123,13 +124,12 @@ export function ImportedCalendarsSection() {
               className={styles.colorPicker}
             />
           </label>
-          <button
+          <Button variant="primary"
             type="submit"
-            className={styles.saveBtn}
             disabled={addState === "adding"}
           >
             {addState === "adding" ? t.settings.adding : t.settings.addCalendar}
-          </button>
+          </Button>
         </div>
         {addState === "error" && addError && (
           <p className={styles.saveError}>{addError}</p>

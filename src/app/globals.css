@@ -158,3 +158,9 @@ button {
  *   768px  tablet portrait / existing mobile breakpoint
  *   1024px tablet landscape / small desktop
  * ─────────────────────────────────────────────────────── */
+
+/* A floating action button (QuickThought) is fixed bottom-right: give the
+   footer room so the FAB never covers its links when scrolled to the end. */
+body:has([data-fab]) footer {
+  padding-bottom: 5.5rem;
+}

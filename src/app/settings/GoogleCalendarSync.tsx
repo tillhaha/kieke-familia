@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type GoogleCalendar = { id: string; name: string; color: string | null }
 type SelectedCalendar = { calendarId: string; name: string; color: string | null }
@@ -147,9 +148,9 @@ export function GoogleCalendarSync() {
       {!availableError && available.length > 0 && (
         <>
           {saveError && <p className={styles.saveError}>{t.settings.failedSaveRetry}</p>}
-          <button onClick={handleSave} disabled={saveDisabled} className={styles.saveBtn}>
+          <Button variant="primary" onClick={handleSave} disabled={saveDisabled}>
             {saveBtnLabel}
-          </button>
+          </Button>
         </>
       )}
     </div>

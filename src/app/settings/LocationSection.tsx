@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 export function LocationSection() {
   const { t } = useTranslation()
@@ -68,13 +69,12 @@ export function LocationSection() {
 
       {error && <p className={styles.saveError}>{error}</p>}
 
-      <button
-        className={styles.saveBtn}
+      <Button variant="primary"
         onClick={handleSave}
         disabled={saving || city.trim() === initialCity.trim()}
       >
         {saving ? t.settings.saving : saved ? t.settings.saved : t.settings.save}
-      </button>
+      </Button>
     </div>
   )
 }

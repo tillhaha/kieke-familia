@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 import shopStyles from "../shopping/shopping.module.css"
 import { categoryLabel } from "@/lib/shoppingCategories"
 
@@ -104,13 +105,13 @@ export function ShoppingSection() {
                   onChange={(e) => setEditingCatName(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") handleRenameCategory(cat.id) }}
                 />
-                <button className={shopStyles.manageSaveBtn} onClick={() => handleRenameCategory(cat.id)}>{t.settings.save}</button>
+                <Button variant="secondary" size="sm" onClick={() => handleRenameCategory(cat.id)}>{t.settings.save}</Button>
                 <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.cancel} onClick={() => { setEditingCatId(null); setEditingCatName("") }}><X size={13} /></button>
               </>
             ) : (
               <>
                 <span className={shopStyles.manageRowName}>{categoryLabel(cat.name, t)}</span>
-                <button className={shopStyles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(categoryLabel(cat.name, t)) }}>{t.settings.rename}</button>
+                <Button variant="secondary" size="sm" onClick={() => { setEditingCatId(cat.id); setEditingCatName(categoryLabel(cat.name, t)) }}>{t.settings.rename}</Button>
                 <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.remove} onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
               </>
             )}
@@ -125,7 +126,7 @@ export function ShoppingSection() {
           onChange={(e) => setNewCatName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleAddCategory() }}
         />
-        <button className={shopStyles.manageSaveBtn} onClick={handleAddCategory}>{t.settings.add}</button>
+        <Button variant="secondary" size="sm" onClick={handleAddCategory}>{t.settings.add}</Button>
       </div>
 
       <h3 className={styles.subTitle}>{t.settings.blacklistTitle}</h3>
@@ -146,7 +147,7 @@ export function ShoppingSection() {
           onChange={(e) => setNewBlacklistTerm(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") handleAddBlacklist() }}
         />
-        <button className={shopStyles.manageSaveBtn} onClick={handleAddBlacklist}>{t.settings.add}</button>
+        <Button variant="secondary" size="sm" onClick={handleAddBlacklist}>{t.settings.add}</Button>
       </div>
     </div>
   )

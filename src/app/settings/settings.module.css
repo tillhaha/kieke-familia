@@ -6,10 +6,10 @@
   display: grid;
   grid-template-columns: 180px 1fr;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px; /* same as Page wide / navbar */
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
-  gap: 2rem;
+  padding: var(--space-7) var(--space-6) var(--space-8);
+  gap: var(--space-7);
   min-height: calc(100vh - 57px);
 }
 
@@ -71,6 +71,13 @@
 
 .section {
   max-width: 560px;
+}
+
+/* Stacked sections (e.g. Profile → About me → Google Calendar) */
+.section + .section {
+  margin-top: var(--space-7);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border);
 }
 
 .sectionTitle {
@@ -167,27 +174,6 @@
 
 /* ── Save Button ─────────────────────────────────────────── */
 
-.saveBtn {
-  padding: 0.5rem 1.25rem;
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--text-base);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms, opacity 150ms;
-}
-
-.saveBtn:hover:not(:disabled) {
-  background: var(--primary-hover);
-}
-
-.saveBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .saveError {
   font-size: var(--text-md);
   color: var(--danger);
@@ -222,7 +208,6 @@
   margin-bottom: 1rem;
 }
 
-
   :global([data-theme="dark"]) .errorBox {
     background: var(--danger-soft);
     border-color: var(--danger);
@@ -232,7 +217,6 @@
   :global([data-theme="dark"]) .saveError {
     color: var(--danger);
   }
-
 
 .retryBtn {
   flex-shrink: 0;
@@ -305,24 +289,6 @@
   flex-wrap: wrap;
 }
 
-.cancelBtn {
-  padding: 0.4rem 0.875rem;
-  background: transparent;
-  color: var(--secondary);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 150ms, color 150ms;
-  white-space: nowrap;
-}
-
-.cancelBtn:hover {
-  border-color: var(--foreground);
-  color: var(--foreground);
-}
-
 .memberInactive {
   opacity: 0.5;
 }
@@ -358,23 +324,6 @@
   border-radius: var(--radius-sm);
 }
 
-.activateBtn {
-  padding: 0.4rem 0.875rem;
-  background: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms, color 150ms;
-  white-space: nowrap;
-}
-
-.activateBtn:hover {
-  background: var(--accent-soft);
-}
-
 /* ── Tablet ──────────────────────────────────────────── */
 
 @media (max-width: 1023px) {
@@ -405,7 +354,7 @@
   }
 
   .content {
-    padding: 0 0.75rem 2rem;
+    padding: 0 var(--space-3) var(--space-7);
   }
 
   .fieldInput {
@@ -416,7 +365,7 @@
 
   .mobileIndex {
     display: block;
-    padding: 1.25rem 0.75rem 0;
+    padding: var(--space-5) var(--space-3) 0;
   }
 
   .mobileIndex.mobileIndexHidden {
@@ -723,13 +672,11 @@
   cursor: pointer;
 }
 
-
   :global([data-theme="dark"]) .deleteBtn:hover,
 :global([data-theme="dark"]) .confirmDeleteBtn {
     border-color: var(--danger);
     color: var(--danger);
   }
-
 
 /* ── Appearance (theme toggle) ───────────────────────────── */
 

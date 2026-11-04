@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type GoogleCalendar = { id: string; name: string; color: string | null }
 type SelectedCalendar = { calendarId: string; name: string; color: string | null }
@@ -202,9 +203,9 @@ export function GoogleSection() {
       {!availableError && available.length > 0 && (
         <>
           {saveError && <p className={styles.saveError}>{t.settings.failedSaveRetry}</p>}
-          <button onClick={handleSave} disabled={saveDisabled} className={styles.saveBtn}>
+          <Button variant="primary" onClick={handleSave} disabled={saveDisabled}>
             {saveBtnLabel}
-          </button>
+          </Button>
         </>
       )}
 
@@ -262,13 +263,12 @@ export function GoogleSection() {
                 className={styles.colorPicker}
               />
             </label>
-            <button
+            <Button variant="primary"
               type="submit"
-              className={styles.saveBtn}
               disabled={addState === "adding"}
             >
               {addState === "adding" ? t.settings.adding : t.settings.addCalendar}
-            </button>
+            </Button>
           </div>
           {addState === "error" && addError && (
             <p className={styles.saveError}>{addError}</p>

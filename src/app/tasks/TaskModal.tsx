@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
+import { Button } from "@/components/ui/Button"
 
 type Member = { id: string; name: string | null }
 
@@ -132,14 +133,14 @@ export function TaskModal({ task, members, onSave, onDelete, onClose }: Props) {
 
         <div className={styles.modalFooter}>
           {isEdit && onDelete && (
-            <button className={styles.deleteBtn} onClick={handleDelete} disabled={deleting}>
+            <Button variant="danger" className={styles.pushLeft} onClick={handleDelete} disabled={deleting}>
               {deleting ? t.taskModal.deleting : t.taskModal.delete}
-            </button>
+            </Button>
           )}
-          <button className={styles.cancelBtn} onClick={onClose}>{t.taskModal.cancel}</button>
-          <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>
+          <Button variant="secondary" onClick={onClose}>{t.taskModal.cancel}</Button>
+          <Button variant="primary" onClick={handleSave} disabled={saving}>
             {saving ? t.taskModal.saving : t.taskModal.save}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

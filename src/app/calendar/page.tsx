@@ -7,6 +7,8 @@ import Link from "next/link"
 import { ChevronLeft, ChevronRight, Plus, Baby, Link2 } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./calendar.module.css"
+import { Page } from "@/components/ui/Page"
+import { Button } from "@/components/ui/Button"
 import CustodyPopover from "./CustodyPopover"
 
 type ModalType = "NONE" | "CUSTODY"
@@ -240,7 +242,7 @@ export default function CalendarPage() {
   if (status === "unauthenticated") return <div style={{ padding: "2rem" }}>{t.calendar.signInRequired}</div>
 
   return (
-    <div className={styles.calendarContainer}>
+    <Page width="wide">
       {/* Header */}
       <header className={styles.calendarHeader}>
         <div className={styles.headerLeft}>
@@ -271,9 +273,9 @@ export default function CalendarPage() {
           <button onClick={prevMonth} className={styles.navBtn} aria-label="Previous month">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={() => setCurrentDate(new Date())} className={styles.todayBtn}>
+          <Button variant="secondary" size="sm" onClick={() => setCurrentDate(new Date())}>
             {t.calendar.today}
-          </button>
+          </Button>
           <button onClick={nextMonth} className={styles.navBtn} aria-label="Next month">
             <ChevronRight size={16} />
           </button>
@@ -323,7 +325,7 @@ export default function CalendarPage() {
       {calendarError && (
         <div className={styles.errorBanner}>
           <span>{t.calendar.couldNotLoad} {calendarError}</span>
-          <button onClick={fetchEvents} className={styles.retryBtn}>{t.calendar.retry}</button>
+          <Button variant="secondary" size="sm" onClick={fetchEvents}>{t.calendar.retry}</Button>
         </div>
       )}
 
@@ -416,7 +418,7 @@ export default function CalendarPage() {
             {eventDetail.calendarName && (
               <div className={styles.eventModalMeta}>{eventDetail.calendarName}</div>
             )}
-            <button className={styles.eventModalClose} onClick={() => setEventDetail(null)}>{t.calendar.close}</button>
+            <Button variant="secondary" onClick={() => setEventDetail(null)}>{t.calendar.close}</Button>
           </div>
         </div>
       )}
@@ -613,16 +615,16 @@ export default function CalendarPage() {
             {modalError && <p className={styles.modalError}>{modalError}</p>}
 
             <div className={styles.modalActions}>
-              <button type="button" className={styles.cancelBtn} onClick={closeModal}>
+              <Button variant="secondary" onClick={closeModal}>
                 {t.calendar.cancel}
-              </button>
-              <button type="submit" className={cConflictPending ? styles.deleteBtnConfirm : styles.saveBtn}>
+              </Button>
+              <Button type="submit" variant={cConflictPending ? "danger" : "primary"}>
                 {cConflictPending ? t.calendar.overwrite : t.calendar.saveSchedule}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
       )}
-    </div>
+    </Page>
   )
 }

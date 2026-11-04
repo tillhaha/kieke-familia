@@ -7,6 +7,10 @@ import { Plus } from "lucide-react"
 import { TaskModal, TaskData } from "./TaskModal"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./tasks.module.css"
+import { Page } from "@/components/ui/Page"
+import { Button } from "@/components/ui/Button"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { FilterPill } from "@/components/ui/FilterPill"
 
 type Member = { id: string; name: string | null }
 
@@ -216,14 +220,15 @@ export default function TasksPage() {
   const hasAnyOpen = overdue.length > 0 || thisWeek.length > 0 || later.length > 0
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{t.tasks.title}</h1>
-        <button className={styles.newBtn} onClick={() => setModalTask(null)}>
-          <Plus size={14} strokeWidth={2.5} />
-          {t.tasks.newTask}
-        </button>
-      </div>
+    <Page width="narrow">
+      <PageHeader
+        title={t.tasks.title}
+        actions={
+          <Button variant="primary" icon={<Plus size={15} strokeWidth={2.5} />} onClick={() => setModalTask(null)}>
+            {t.tasks.newTask}
+          </Button>
+        }
+      />
 
       <div className={styles.filterBar}>
         <select
@@ -236,12 +241,9 @@ export default function TasksPage() {
             <option key={m.id} value={m.id}>{m.name ?? m.id}</option>
           ))}
         </select>
-        <button
-          className={`${styles.filterToggle} ${showDone ? styles.filterToggleActive : ""}`}
-          onClick={handleShowDoneToggle}
-        >
+        <FilterPill active={showDone} onClick={handleShowDoneToggle}>
           {t.tasks.showCompleted}
-        </button>
+        </FilterPill>
       </div>
 
       {!hasAnyOpen && !showDone && (
@@ -275,6 +277,6 @@ export default function TasksPage() {
           onClose={() => setModalTask(undefined)}
         />
       )}
-    </div>
+    </Page>
   )
 }

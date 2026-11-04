@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Copy, Check } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
+import { Button } from "@/components/ui/Button"
 
 type Step = "choose" | "create" | "join" | "created"
 
@@ -137,9 +138,9 @@ export default function OnboardingPage() {
                 <p className={styles.hint}>{t.onboarding.cityHint}</p>
               </div>
               {error && <p className={styles.error}>{error}</p>}
-              <button type="submit" disabled={loading} className={styles.primaryBtn}>
+              <Button variant="primary" fullWidth type="submit" disabled={loading}>
                 {loading ? t.onboarding.creating : t.onboarding.createButton}
-              </button>
+              </Button>
             </form>
           </>
         )}
@@ -164,9 +165,9 @@ export default function OnboardingPage() {
                 />
               </div>
               {error && <p className={styles.error}>{error}</p>}
-              <button type="submit" disabled={loading || joinCode.length !== 10} className={styles.primaryBtn}>
+              <Button variant="primary" fullWidth type="submit" disabled={loading || joinCode.length !== 10}>
                 {loading ? t.onboarding.joining : t.onboarding.joinButton}
-              </button>
+              </Button>
             </form>
           </>
         )}
@@ -183,9 +184,9 @@ export default function OnboardingPage() {
               </button>
             </div>
             <p className={styles.codeHint}>{t.onboarding.codeHint}</p>
-            <button className={styles.primaryBtn} onClick={() => router.push("/")}>
+            <Button variant="primary" fullWidth onClick={() => router.push("/")}>
               {t.onboarding.goHome}
-            </button>
+            </Button>
           </>
         )}
 

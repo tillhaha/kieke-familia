@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 import { Lock } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 const MAX_LENGTH = 10000
 
@@ -84,9 +85,9 @@ export function AboutMeSection() {
 
       {error && <p className={styles.saveError}>{error}</p>}
 
-      <button className={styles.saveBtn} onClick={save} disabled={saving || !dirty}>
+      <Button variant="primary" onClick={save} disabled={saving || !dirty}>
         {saving ? tt.aboutSaving : justSaved && !dirty ? tt.aboutSaved : tt.save}
-      </button>
+      </Button>
     </div>
   )
 }

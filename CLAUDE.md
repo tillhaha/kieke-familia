@@ -133,6 +133,14 @@ Deployed via Coolify (self-hosted Docker, not Vercel — despite the README's de
 ### Styling
 CSS Modules per page/component. Global styles in `src/app/globals.css`. Fonts: Geist Sans + Geist Mono via `next/font/google`.
 
+**Design tokens** (`globals.css`): always use them instead of raw values — type `var(--text-2xs … --text-3xl)` (11/12/13/14/15/16/18/22/28px), radius `var(--radius-sm|--radius|--radius-lg|--radius-full)`, spacing `var(--space-1 … --space-8)`, colours `--background --surface --surface-hover --foreground --secondary (muted text) --border --primary --primary-hover --on-primary (text on primary bg) --accent-soft --accent-border --danger --danger-soft --success --overlay`. Light/dark values live in `:root` / `[data-theme="dark"]` (dark = neutral greys with green highlights; muted text ≥4.5:1).
+
+**Shared UI components** (`src/components/ui/`): use these instead of page-specific button/header CSS.
+- `PageHeader` — `title`, optional `addon` (e.g. lock icon), `actions` (always top-right; wraps under the title on mobile). Page containers are flex columns with `gap`, so it has no margins.
+- `Button` — `variant` `primary` (main action, max one per area) | `secondary` (outlined) | `ghost` (quiet) | `danger` (destructive, outlined red); `size` `sm|md`; `icon`; `active` (toggled); `fullWidth`; `href` renders a Next `Link`. Defaults to `type="button"`. In modal footers put Delete first with a `margin-right: auto` class, then Cancel (secondary), then Save (primary).
+- `FilterPill` — filter/toggle chips with `active`, optional `count`, `highlight` (drop target); forwards all button props (e.g. drag handlers).
+- Note: `globals.css` gives every `button` `min-height: 44px` on ≤768px; the shared components set their own mobile heights.
+
 **Breakpoints** (desktop-first — mobile is secondary):
 ```
 480px   phones          @media (max-width: 480px)
@@ -143,11 +151,9 @@ Add breakpoint overrides at the bottom of each CSS module. Never modify desktop 
 
 **Overflow/scroll on mobile**: flex items default to `min-width: auto` and will overflow instead of scrolling. When adding `overflow-x: auto` to a flex container, also set `min-width: 0` on the flex item. The calendar uses a dedicated `.calendarScrollWrapper` div for this reason.
 
-**Content column width:**
-- Homepage (`.main`): `max-width: 1100px; margin: 0 auto` — full-width container. The tasks widget inside is `max-width: 50%`; the `WeekBlock` fills the full container.
-- Tasks (`.page`) and Shopping (`.container`): `max-width: 50vw; min-width: 480px` — scales to half the viewport on desktop, resets to `max-width: 100%; min-width: 0` on mobile.
-- Settings (`.container`): CSS Grid `grid-template-columns: 180px 1fr` with `width: 100%; max-width: 1100px; margin: 0 auto`. The `width: 100%` is required — omitting it causes the flex child to shrink-wrap its content, making `margin: 0 auto` shift the layout whenever section content changes width.
-- Meals pages use `max-width: 720px` centered.
+**Page layout:** wrap every page in `<Page width="narrow|wide">` (`src/components/ui/Page.tsx`) instead of a page-specific container. Two widths only: **narrow 720px** (Tasks, Shopping, Thoughts, Recipes list/new/detail) and **wide 1200px** (Home, Week Planner, Calendar — aligned with navbar/footer). Same padding everywhere (desktop `--space-7` top / `--space-6` sides, ≤1023px `--space-4` sides, ≤768px `--space-5` top / `--space-3` sides) and children are spaced by the container's `gap` (`--space-5`, mobile `--space-4`) — don't add top/bottom margins to direct children. Exceptions: Settings keeps its own grid container (also 1200px, same padding; stacked `.section`s get a divider via `.section + .section`), Imprint/Privacy keep their prose container (720px, same padding), Onboarding is a centred card. The homepage tasks widget is `max-width: 50%` on desktop.
+
+**Floating action button**: `QuickThought` marks its FAB with `data-fab`; `globals.css` then pads the footer (`body:has([data-fab]) footer`) so the FAB never covers the footer links.
 
 **Flex children + `margin: 0 auto`**: applying `margin: 0 auto` to a flex child overrides `align-self: stretch`, causing it to shrink-wrap its content on first render then jump wide when real content loads. Always add `width: 100%` alongside `max-width` + `margin: 0 auto` on any direct flex child of `appShell`. All page containers already follow this pattern.
 

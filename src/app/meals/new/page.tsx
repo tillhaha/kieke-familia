@@ -6,6 +6,8 @@ import Link from "next/link"
 import { ChevronLeft, Sparkles, X, ImagePlus, Camera, FileText } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
+import { Page } from "@/components/ui/Page"
+import { Button } from "@/components/ui/Button"
 
 type ScreenshotEntry = { dataUrl: string; name: string }
 
@@ -224,7 +226,7 @@ export default function NewMealPage() {
   }
 
   return (
-    <div className={styles.detailContainer}>
+    <Page width="narrow">
       <Link href="/meals" className={styles.backLink}>
         <ChevronLeft size={14} /> {t.meals.backLink}
       </Link>
@@ -232,14 +234,12 @@ export default function NewMealPage() {
       <div className={styles.detailHeader}>
         <h1 className={styles.pageTitle}>{t.meals.newRecipe}</h1>
         <div className={styles.detailHeaderActions}>
-          <button type="button" className={styles.aiImportBtn} onClick={() => setModalOpen(true)}>
-            <Sparkles size={13} />
+          <Button variant="secondary" size="sm" icon={<Sparkles size={13} />} onClick={() => setModalOpen(true)}>
             {t.meals.aiImport}
-          </button>
-          <button type="button" className={styles.aiImportBtn} onClick={() => setPhotoModalOpen(true)}>
-            <Camera size={13} />
+          </Button>
+          <Button variant="secondary" size="sm" icon={<Camera size={13} />} onClick={() => setPhotoModalOpen(true)}>
             {t.meals.photoImport}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -330,9 +330,9 @@ export default function NewMealPage() {
 
         {error && <p className={styles.errorMsg}>{error}</p>}
 
-        <button type="submit" className={styles.saveBtn} disabled={saving || !name.trim()}>
+        <Button type="submit" variant="primary" className={styles.saveBtnPlacement} disabled={saving || !name.trim()}>
           {saving ? t.meals.savingRecipe : t.meals.saveRecipe}
-        </button>
+        </Button>
       </form>
 
       {modalOpen && (
@@ -355,14 +355,13 @@ export default function NewMealPage() {
             />
 
             <div className={styles.modalFooter}>
-              <button
-                type="button"
-                className={styles.parseBtn}
+              <Button
+                variant="primary"
                 onClick={handleParse}
                 disabled={parsing || !importText.trim()}
               >
                 {parsing ? t.meals.importing : t.meals.import}
-              </button>
+              </Button>
               {parseError && <span className={styles.parseError}>{parseError}</span>}
             </div>
           </div>
@@ -424,19 +423,18 @@ export default function NewMealPage() {
             )}
 
             <div className={styles.modalFooter}>
-              <button
-                type="button"
-                className={styles.parseBtn}
+              <Button
+                variant="primary"
                 onClick={handlePhotoParse}
                 disabled={photoParsing || screenshots.length === 0}
               >
                 {photoParsing ? t.meals.importing : t.meals.import}
-              </button>
+              </Button>
               {photoParseError && <span className={styles.parseError}>{photoParseError}</span>}
             </div>
           </div>
         </div>
       )}
-    </div>
+    </Page>
   )
 }

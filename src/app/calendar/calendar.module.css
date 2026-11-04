@@ -56,24 +56,6 @@
   color: var(--foreground);
 }
 
-.todayBtn {
-  height: 32px;
-  padding: 0 0.75rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--secondary);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms, color 150ms;
-}
-
-.todayBtn:hover {
-  background: var(--surface-hover);
-  color: var(--foreground);
-}
-
 .loadingIndicator {
   font-size: var(--text-xs);
   color: var(--secondary);
@@ -205,7 +187,6 @@
   border-color: #90a8c0;
 }
 
-
   :global([data-theme="dark"]) .filterBirthday.filterBtnActive {
     background: #3a1025;
     color: #d49aad;
@@ -236,7 +217,6 @@
     border-color: #304858;
   }
 
-
 /* ── Error Banner ────────────────────────────────────────── */
 
 .errorBanner {
@@ -252,30 +232,11 @@
   font-size: var(--text-md);
 }
 
-
   :global([data-theme="dark"]) .errorBanner {
     background: var(--danger-soft);
     border-color: var(--danger);
     color: var(--danger);
   }
-
-
-.retryBtn {
-  flex-shrink: 0;
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--danger);
-  background: transparent;
-  color: inherit;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.retryBtn:hover {
-  background: rgba(0, 0, 0, 0.06);
-}
 
 /* ── Calendar Grid ───────────────────────────────────────── */
 
@@ -428,7 +389,6 @@
   color: #1a2a3a;
 }
 
-
   :global([data-theme="dark"]) .googleEvent {
     background: #1a3028;
     color: #7abf90;
@@ -448,7 +408,6 @@
     background: #1e2e3a;
     color: #c8dce8;
   }
-
 
 /* ── Modal ───────────────────────────────────────────────── */
 
@@ -528,38 +487,6 @@
   margin-top: 1.5rem;
 }
 
-.cancelBtn {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--secondary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.cancelBtn:hover {
-  background: var(--surface-hover);
-}
-
-.saveBtn {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.saveBtn:hover {
-  background: var(--primary-hover);
-}
-
 /* ── No Calendars Prompt ─────────────────────────────────── */
 
 .noCalendarsPrompt {
@@ -622,7 +549,6 @@
   margin: 0.75rem 0 0;
 }
 
-
   :global([data-theme="dark"]) .deleteBtn:hover {
     background: var(--danger-soft);
     color: var(--danger);
@@ -642,7 +568,6 @@
   :global([data-theme="dark"]) .modalError {
     color: var(--danger);
   }
-
 
 /* ── Span continuations (Option A: negative-margin bars) ─── */
 
@@ -678,7 +603,6 @@
   color: var(--foreground);
 }
 
-
   :global([data-theme="dark"]) .custodyHomeEvent {
     background: #1a4860;
     color: #a8d8f0;
@@ -688,7 +612,6 @@
     background: #501a58;
     color: #e0a8f0;
   }
-
 
 /* Popover (portal — fixed position, appended to document.body) */
 .custodyPopover {
@@ -750,7 +673,6 @@
   background: #e8d5e8;
 }
 
-
   :global([data-theme="dark"]) .custodyPopoverBtnActive.custodyHomeEvent {
     background: #102030;
   }
@@ -763,18 +685,15 @@
     color: var(--danger);
   }
 
-
 .custodyPopoverError {
   font-size: var(--text-2xs);
   color: var(--danger);
   margin-top: 2px;
 }
 
-
   :global([data-theme="dark"]) .custodyPopoverError {
     color: var(--danger);
   }
-
 
 /* ── Tablet ──────────────────────────────────────────── */
 
@@ -886,16 +805,4 @@
 .eventModalMeta {
   font-size: var(--text-md);
   color: var(--secondary);
-}
-
-.eventModalClose {
-  margin-top: 0.75rem;
-  padding: 0.625rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  font-size: var(--text-md);
-  font-family: inherit;
-  cursor: pointer;
-  color: var(--foreground);
 }

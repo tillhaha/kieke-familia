@@ -4,6 +4,7 @@ import { useState } from "react"
 import { X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./meals.module.css"
+import { Button } from "@/components/ui/Button"
 
 type ItemStatus =
   | { status: "pending" }
@@ -191,14 +192,13 @@ export default function BatchImportModal({ onClose, onRefresh }: Props) {
         {/* Bottom row */}
         <div className={styles.batchBottomRow}>
           <span className={styles.batchCountLabel}>{n > 0 ? countLabel : ""}</span>
-          <button
-            type="button"
-            className={styles.parseBtn}
+          <Button
+            variant="primary"
             onClick={runTextImport}
             disabled={importing || n === 0}
           >
             {t.meals.importAll}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

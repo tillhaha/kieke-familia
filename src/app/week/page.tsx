@@ -8,6 +8,8 @@ import { Plus } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
+import { Button } from "@/components/ui/Button"
+import { PageHeader } from "@/components/ui/PageHeader"
 
 export default function WeekPage() {
   const { status } = useSession()
@@ -143,19 +145,16 @@ export default function WeekPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>{t.week.title}</h1>
-        <button
-          className={styles.planBtn}
-          onClick={handlePlanNextWeek}
-          disabled={planning}
-        >
-          <Plus size={14} strokeWidth={2.5} />
-          {planning ? t.week.planning : t.week.planNextWeek}
-        </button>
-      </div>
+      <PageHeader
+        title={t.week.title}
+        actions={
+          <Button variant="primary" icon={<Plus size={15} strokeWidth={2.5} />} onClick={handlePlanNextWeek} disabled={planning}>
+            {planning ? t.week.planning : t.week.planNextWeek}
+          </Button>
+        }
+      />
 
-      {error && <p style={{ color: "var(--primary)", fontSize: "0.875rem" }}>{error}</p>}
+      {error && <p className={styles.pageError}>{error}</p>}
 
       {weeks.length === 0 ? (
         <p className={styles.emptyState}>

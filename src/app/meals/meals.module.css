@@ -10,35 +10,11 @@
   gap: 1.25rem;
 }
 
-.pageHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .pageTitle {
   font-size: var(--text-2xl);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-
-.newBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-full);
-  border: none;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 150ms;
-}
-
-.newBtn:hover { opacity: 0.88; }
 
 /* ── Card Grid ───────────────────────────────────────── */
 
@@ -418,13 +394,11 @@
 
 .deleteBtnConfirm:hover { background: var(--danger-soft); }
 
-
   :global([data-theme="dark"]) .deleteBtn:hover { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
 
   :global([data-theme="dark"]) .deleteBtnConfirm { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
 
   :global([data-theme="dark"]) .deleteBtnConfirm:hover { background: var(--danger-soft); }
-
 
 /* ── Field sections ──────────────────────────────────── */
 
@@ -706,32 +680,14 @@
   opacity: 0.8;
 }
 
-.saveBtn {
-  align-self: flex-start;
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-full);
-  border: none;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 150ms;
-}
-
-.saveBtn:hover { opacity: 0.88; }
-.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .errorMsg {
   font-size: var(--text-md);
   color: var(--danger);
 }
 
-
   :global([data-theme="dark"]) .errorMsg {
     color: var(--danger);
   }
-
 
 /* ── Recipe image ────────────────────────────────────── */
 
@@ -838,27 +794,6 @@
 
 /* ── AI Import button ────────────────────────────────── */
 
-.aiImportBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.45rem 0.875rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--foreground);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 150ms, background-color 150ms;
-  white-space: nowrap;
-}
-
-.aiImportBtn:hover {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-}
-
 /* ── Modal overlay ───────────────────────────────────── */
 
 .modalBackdrop {
@@ -942,69 +877,18 @@
   gap: 0.75rem;
 }
 
-.parseBtn {
-  padding: 0.5rem 1.125rem;
-  border-radius: var(--radius-full);
-  border: none;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 150ms;
-}
-
-.parseBtn:hover { opacity: 0.88; }
-.parseBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .parseError {
   font-size: var(--text-sm);
   color: var(--danger);
 }
 
-
   :global([data-theme="dark"]) .parseError {
     color: var(--danger);
   }
 
-
 /* ── Page header actions (wraps New Recipe + Batch import) ── */
 
-.pageHeaderActions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* ── Select mode ──────────────────────────────────────── */
-
-.selectBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.45rem 0.875rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--foreground);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 150ms, background-color 150ms, color 150ms;
-  white-space: nowrap;
-}
-
-.selectBtn:hover {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-  color: var(--primary);
-}
-
-.selectBtnActive {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-  color: var(--primary);
-}
 
 .containerSelectMode {
   padding-bottom: 5rem; /* leave room for the fixed bulk bar */
@@ -1135,64 +1019,7 @@
   margin-left: auto;
 }
 
-.bulkCancelBtn {
-  padding: 0.4rem 0.875rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--secondary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 150ms, color 150ms;
-}
-
-.bulkCancelBtn:hover {
-  border-color: var(--foreground);
-  color: var(--foreground);
-}
-
-.bulkApplyBtn {
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-full);
-  border: none;
-  background: var(--primary);
-  color: var(--on-primary);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 150ms;
-}
-
-.bulkApplyBtn:hover { opacity: 0.88; }
-
-.bulkApplyBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 /* ── Batch import button (ghost/secondary) ─────────────── */
-
-.batchBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.45rem 0.875rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--foreground);
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 150ms, background-color 150ms;
-  white-space: nowrap;
-}
-
-.batchBtn:hover {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-}
 
 /* ── Batch modal internals ──────────────────────────────── */
 
@@ -1518,3 +1345,4 @@
     flex-wrap: wrap;
   }
 }
+.saveBtnPlacement { align-self: flex-start; }

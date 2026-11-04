@@ -136,28 +136,6 @@
   font-family: var(--font-geist-mono), monospace;
 }
 
-.primaryBtn {
-  padding: 0.75rem 1.25rem;
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  border-radius: var(--radius);
-  font-size: var(--text-base);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 150ms;
-  width: 100%;
-}
-
-.primaryBtn:hover:not(:disabled) {
-  background: var(--primary-hover);
-}
-
-.primaryBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .error {
   font-size: var(--text-md);
   color: var(--danger);
@@ -222,11 +200,9 @@
   line-height: 1.5;
 }
 
-
   :global([data-theme="dark"]) .error {
     color: var(--danger);
   }
-
 
 @media (max-width: 768px) {
   .card {

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { Copy, Check } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type ApiToken = { id: string; name: string; prefix: string; createdAt: string; lastUsedAt: string | null }
 
@@ -158,9 +159,9 @@ export function ApiTokensSection() {
             onChange={(e) => setNewName(e.target.value)}
             required
           />
-          <button type="submit" className={styles.saveBtn} disabled={creating || !newName.trim()}>
+          <Button variant="primary" type="submit" disabled={creating || !newName.trim()}>
             {creating ? t.settings.creating : t.settings.createToken}
-          </button>
+          </Button>
         </div>
         {error && <p className={styles.saveError}>{error}</p>}
       </form>

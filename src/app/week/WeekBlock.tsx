@@ -9,6 +9,7 @@ import { Baby, ChevronLeft, ChevronRight, ExternalLink, Link, Pencil, Sun, Cloud
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { EMOJI_CATEGORIES } from "./emojiData"
 import styles from "./week.module.css"
+import { Button } from "@/components/ui/Button"
 
 export type DayWeather = {
   low: number
@@ -696,14 +697,13 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
         )}
       </h2>
       {onGenerateShopping && !readOnly && (
-        <button
-          className={styles.generateBtn}
+        <Button variant="secondary" size="sm" className={styles.generateBtn}
           onClick={handleGenerateShopping}
           disabled={generating}
         >
           <ShoppingCart size={13} strokeWidth={2} />
           {generating ? t.weekBlock.adding : t.weekBlock.addToShoppingList}
-        </button>
+        </Button>
       )}
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
@@ -1262,7 +1262,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
           <div className={styles.mobileModalBackdrop} onClick={() => setMobilePillDetail(null)}>
             <div className={styles.mobileModal} onClick={e => e.stopPropagation()}>
               <p className={styles.mobileModalFieldValue}>{mobilePillDetail}</p>
-              <button className={styles.mobileModalClose} onClick={() => setMobilePillDetail(null)}>{t.weekBlock.close}</button>
+              <Button variant="secondary" fullWidth className={styles.mobileModalClose} onClick={() => setMobilePillDetail(null)}>{t.weekBlock.close}</Button>
             </div>
           </div>
         )}
@@ -1418,7 +1418,7 @@ export function WeekBlock({ week, onDayUpdate, weather, custodyEntries, calendar
                     ))}
                   </div>
                 )}
-                <button className={styles.mobileModalClose} onClick={() => setMobileDayDetail(null)}>{t.weekBlock.close}</button>
+                <Button variant="secondary" fullWidth className={styles.mobileModalClose} onClick={() => setMobileDayDetail(null)}>{t.weekBlock.close}</Button>
               </div>
             </div>
           )

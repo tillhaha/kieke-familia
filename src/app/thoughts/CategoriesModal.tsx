@@ -8,6 +8,7 @@ import { useState, useEffect } from "react"
 import { Trash2, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
+import { Button } from "@/components/ui/Button"
 
 export type CategoryDef = { id: string; name: string; description: string | null; count: number }
 
@@ -113,9 +114,9 @@ export function CategoriesModal({ categories, onChanged, onClose }: Props) {
             placeholder={tt.categoryDescriptionPlaceholder}
             maxLength={300}
           />
-          <button type="submit" className={styles.saveBtn} disabled={busy || !newName.trim()}>
+          <Button type="submit" variant="primary" className={styles.catAddBtn} disabled={busy || !newName.trim()}>
             {tt.addCategory}
-          </button>
+          </Button>
         </form>
 
         {error && <p className={styles.error}>{error}</p>}
@@ -159,7 +160,7 @@ function CategoryRow({
       <div className={styles.catRowFields}>
         <div className={styles.catRowTop}>
           <input className={`${styles.input} ${styles.catNameInput}`} value={name} onChange={(e) => setName(e.target.value)} maxLength={40} />
-          <span className={styles.pillCount}>{cat.count}</span>
+          <span className={styles.catCount}>{cat.count}</span>
         </div>
         <input
           className={`${styles.input} ${styles.catDescInput}`}
@@ -171,9 +172,9 @@ function CategoryRow({
       </div>
       <div className={styles.catRowActions}>
         {(nameChanged || descChanged) && (
-          <button type="submit" className={styles.saveBtn} disabled={busy || !name.trim()}>
+          <Button type="submit" variant="primary" size="sm" disabled={busy || !name.trim()}>
             {tt.save}
-          </button>
+          </Button>
         )}
         <button type="button" className={styles.iconBtn} onClick={onDelete} disabled={busy} aria-label={tt.delete} title={tt.delete}>
           <Trash2 size={15} />

@@ -6,6 +6,9 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { Pencil, Plus, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { Button } from "@/components/ui/Button"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { FilterPill } from "@/components/ui/FilterPill"
 import { categoryLabel } from "@/lib/shoppingCategories"
 import EditItemModal, { type ItemChanges } from "./EditItemModal"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
@@ -178,9 +181,7 @@ export default function ShoppingPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>{t.shopping.title}</h1>
-      </div>
+      <PageHeader title={t.shopping.title} />
 
       <form className={styles.addForm} onSubmit={handleAdd}>
         <input
@@ -197,29 +198,25 @@ export default function ShoppingPage() {
           onChange={(e) => setName(e.target.value)}
           autoComplete="off"
         />
-        <button type="submit" className={styles.addBtn} disabled={!name.trim()}>
-          <Plus size={14} strokeWidth={2.5} />
+        <Button type="submit" variant="primary" icon={<Plus size={15} strokeWidth={2.5} />} disabled={!name.trim()}>
           {t.shopping.add}
-        </button>
+        </Button>
       </form>
       {addError && <p className={styles.addError}>{addError}</p>}
 
       <div className={styles.tagFilter}>
-        <button
-          className={`${styles.tagFilterPill} ${tagFilter === null ? styles.tagFilterPillActive : ""}`}
-          onClick={() => setTagFilter(null)}
-        >
+        <FilterPill active={tagFilter === null} onClick={() => setTagFilter(null)}>
           {t.shopping.allItems}
-        </button>
+        </FilterPill>
         {SHOPPING_TAGS.map((tag) => (
-          <button
+          <FilterPill
             key={tag}
-            className={`${styles.tagFilterPill} ${tagFilter === tag ? styles.tagFilterPillActive : ""}`}
+            active={tagFilter === tag}
+            count={items.filter((i) => i.tags.includes(tag)).length}
             onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
           >
             {tag}
-            <span className={styles.tagFilterCount}>{items.filter((i) => i.tags.includes(tag)).length}</span>
-          </button>
+          </FilterPill>
         ))}
       </div>
 
@@ -276,13 +273,9 @@ export default function ShoppingPage() {
       )}
 
       <div className={styles.footer}>
-        <button
-          className={styles.clearBtn}
-          onClick={handleClearList}
-          disabled={clearing || items.length === 0}
-        >
+        <Button variant="danger" size="sm" onClick={handleClearList} disabled={clearing || items.length === 0}>
           {t.shopping.clearList}
-        </button>
+        </Button>
       </div>
 
       {editingItem && (

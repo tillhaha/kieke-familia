@@ -8,6 +8,9 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Lock, Send, Tags, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
+import { Button } from "@/components/ui/Button"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { FilterPill } from "@/components/ui/FilterPill"
 import { CategoriesModal, type CategoryDef } from "./CategoriesModal"
 
 type Todo = {
@@ -279,12 +282,14 @@ export default function ThoughtsPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>{tt.title}</h1>
-        <span className={styles.titleLock} title={tt.privateHint} aria-label={tt.privateHint} role="img">
-          <Lock size={16} strokeWidth={2.25} />
-        </span>
-      </div>
+      <PageHeader
+        title={tt.title}
+        addon={
+          <span className={styles.titleLock} title={tt.privateHint} aria-label={tt.privateHint} role="img">
+            <Lock size={16} strokeWidth={2.25} />
+          </span>
+        }
+      />
 
       <div className={styles.composer}>
         <p className={styles.subtitle}>{tt.subtitle}</p>
@@ -306,10 +311,9 @@ export default function ThoughtsPage() {
         />
         <div className={styles.composerFooter}>
           <span className={styles.composerHint}>{tt.sendHint}</span>
-          <button className={styles.sendBtn} onClick={send} disabled={sending || !text.trim()}>
-            <Send size={14} strokeWidth={2.25} />
+          <Button variant="primary" icon={<Send size={14} strokeWidth={2.25} />} onClick={send} disabled={sending || !text.trim()}>
             {sending ? tt.sending : tt.send}
-          </button>
+          </Button>
         </div>
         {error && <p className={styles.error}>{error}</p>}
         {lastAdded.length > 0 && (
@@ -334,29 +338,27 @@ export default function ThoughtsPage() {
       </div>
 
       <div className={styles.filterBar}>
-        <button className={`${styles.pill} ${filter === "" ? styles.pillActive : ""}`} onClick={() => setFilter("")}>
+        <FilterPill active={filter === ""} onClick={() => setFilter("")}>
           {tt.all}
-        </button>
+        </FilterPill>
         {categories.map(([name, count]) => (
-          <button
+          <FilterPill
             key={name}
-            className={`${styles.pill} ${filter === name ? styles.pillActive : ""} ${dropTarget === name ? styles.pillDrop : ""}`}
+            active={filter === name}
+            highlight={dropTarget === name}
+            count={count}
             onClick={() => setFilter(filter === name ? "" : name)}
             {...dropProps(name)}
           >
-            {name} <span className={styles.pillCount}>{count}</span>
-          </button>
+            {name}
+          </FilterPill>
         ))}
-        <button className={`${styles.pill} ${styles.pillManage}`} onClick={() => setManaging(true)} title={tt.categoriesTitle}>
-          <Tags size={13} strokeWidth={2} />
+        <Button variant="ghost" size="sm" icon={<Tags size={13} strokeWidth={2} />} onClick={() => setManaging(true)} title={tt.categoriesTitle}>
           {tt.manageCategories}
-        </button>
-        <button
-          className={`${styles.pill} ${styles.pillToggle} ${showDone ? styles.pillActive : ""}`}
-          onClick={handleShowDoneToggle}
-        >
+        </Button>
+        <FilterPill className={styles.pushRight} active={showDone} onClick={handleShowDoneToggle}>
           {tt.showCompleted}
-        </button>
+        </FilterPill>
       </div>
 
       {openTodos.length === 0 ? (
@@ -480,11 +482,11 @@ function EditModal({ todo, categories, onSave, onDelete, onClose }: EditModalPro
         </div>
         {error && <p className={styles.error}>{error}</p>}
         <div className={styles.modalFooter}>
-          <button type="button" className={styles.deleteBtn} onClick={() => run(onDelete)} disabled={busy}>
+          <Button variant="danger" className={styles.pushLeft} onClick={() => run(onDelete)} disabled={busy}>
             {tt.delete}
-          </button>
-          <button type="button" className={styles.cancelBtn} onClick={onClose}>{tt.cancel}</button>
-          <button type="submit" className={styles.saveBtn} disabled={busy}>{tt.save}</button>
+          </Button>
+          <Button variant="secondary" onClick={onClose}>{tt.cancel}</Button>
+          <Button type="submit" variant="primary" disabled={busy}>{tt.save}</Button>
         </div>
       </form>
     </div>

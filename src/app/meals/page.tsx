@@ -8,6 +8,9 @@ import { CheckSquare, Layers, Plus, Search, Square, Star } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
+import { Button } from "@/components/ui/Button"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { FilterPill } from "@/components/ui/FilterPill"
 
 type MealSummary = {
   id: string
@@ -156,30 +159,27 @@ export default function MealsPage() {
 
   return (
     <div className={`${styles.container} ${selectMode ? styles.containerSelectMode : ""}`}>
-      <div className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>{t.meals.title}</h1>
-        <div className={styles.pageHeaderActions}>
-          <button
-            type="button"
-            className={`${styles.selectBtn} ${selectMode ? styles.selectBtnActive : ""}`}
-            onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
-          >
-            <Layers size={14} strokeWidth={2} />
-            {selectMode ? "Cancel" : "Select"}
-          </button>
-          <button
-            type="button"
-            className={styles.batchBtn}
-            onClick={() => setBatchOpen(true)}
-          >
-            {t.meals.batchImport}
-          </button>
-          <Link href="/meals/new" className={styles.newBtn}>
-            <Plus size={14} strokeWidth={2.5} />
-            {t.meals.newRecipe}
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title={t.meals.title}
+        actions={
+          <>
+            <Button
+              variant="ghost"
+              active={selectMode}
+              icon={<Layers size={14} strokeWidth={2} />}
+              onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
+            >
+              {selectMode ? "Cancel" : "Select"}
+            </Button>
+            <Button variant="secondary" onClick={() => setBatchOpen(true)}>
+              {t.meals.batchImport}
+            </Button>
+            <Button variant="primary" href="/meals/new" icon={<Plus size={15} strokeWidth={2.5} />}>
+              {t.meals.newRecipe}
+            </Button>
+          </>
+        }
+      />
 
       {/* Meal type pills */}
       <div className={styles.mealTypeRow}>
@@ -192,14 +192,13 @@ export default function MealsPage() {
             ["Baked", t.meals.typeBaked],
             ["Aufstrich", t.meals.typeAufstrich],
           ] as const).map(([value, label]) => (
-            <button
+            <FilterPill
               key={value || "all"}
-              type="button"
-              className={`${styles.filterToggle} ${filterMealType === value ? styles.filterToggleActive : ""}`}
+              active={filterMealType === value}
               onClick={() => setFilterMealType(value)}
             >
               {label}
-            </button>
+            </FilterPill>
           ))}
         </div>
 
@@ -237,19 +236,13 @@ export default function MealsPage() {
           <option value="Meat">{t.meals.dietMeat}</option>
         </select>
 
-        <button
-          className={`${styles.filterToggle} ${filterOffice ? styles.filterToggleActive : ""}`}
-          onClick={() => setFilterOffice((v) => !v)}
-        >
+        <FilterPill active={filterOffice} onClick={() => setFilterOffice((v) => !v)}>
           {t.meals.officeFilter}
-        </button>
+        </FilterPill>
 
-        <button
-          className={`${styles.filterToggle} ${filterThirty ? styles.filterToggleActive : ""}`}
-          onClick={() => setFilterThirty((v) => !v)}
-        >
+        <FilterPill active={filterThirty} onClick={() => setFilterThirty((v) => !v)}>
           {t.meals.quickFilter}
-        </button>
+        </FilterPill>
 
         <button
           className={`${styles.filterToggle} ${styles.filterToggleStar} ${filterFavorite ? styles.filterToggleActive : ""}`}
@@ -374,16 +367,16 @@ export default function MealsPage() {
           </div>
 
           <div className={styles.bulkActions}>
-            <button className={styles.bulkCancelBtn} onClick={exitSelectMode}>
+            <Button variant="secondary" onClick={exitSelectMode}>
               Cancel
-            </button>
-            <button
-              className={styles.bulkApplyBtn}
+            </Button>
+            <Button
+              variant="primary"
               disabled={selected.size === 0 || !hasEdits || applying}
               onClick={applyBulkEdits}
             >
               {applying ? "Saving…" : "Apply"}
-            </button>
+            </Button>
           </div>
         </div>
       )}

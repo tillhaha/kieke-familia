@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useState } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 export function ProfileSection() {
   const { data: session, update } = useSession()
@@ -57,13 +58,12 @@ export function ProfileSection() {
 
       {error && <p className={styles.saveError}>{error}</p>}
 
-      <button
-        className={styles.saveBtn}
+      <Button variant="primary"
         onClick={handleSave}
         disabled={saving || name.trim() === currentName}
       >
         {saving ? t.settings.saving : saved ? t.settings.saved : t.settings.save}
-      </button>
+      </Button>
     </div>
   )
 }

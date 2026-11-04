@@ -9,6 +9,7 @@ import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { QuickThought } from "@/components/QuickThought"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
+import { Button } from "@/components/ui/Button"
 
 type FamilyTask = TaskData
 
@@ -181,10 +182,10 @@ export default function Home() {
           <h1 className={styles.signInTitle}>{t.home.welcomeTitle}</h1>
           <p className={styles.signInSubtitle}>{t.home.welcomeSubtitle}</p>
 
-          <button onClick={() => signIn("google", { callbackUrl: "/" })} className={styles.signInBtn}>
+          <Button variant="primary" fullWidth onClick={() => signIn("google", { callbackUrl: "/" })}>
             <LogIn size={16} />
             {t.home.signInWithGoogle}
-          </button>
+          </Button>
 
           <div className={styles.divider}>
             <span className={styles.dividerText}>{t.home.or}</span>
@@ -225,22 +226,20 @@ export default function Home() {
 
       {allWeeks.length > 0 && (
         <div className={styles.weekNav}>
-          <button
-            className={styles.weekNavBtn}
+          <Button variant="secondary" size="sm"
             onClick={() => setWeekIndex((i) => i + 1)}
             disabled={weekIndex === allWeeks.length - 1}
           >
             <ChevronLeft size={15} strokeWidth={2} />
             {t.home.previous}
-          </button>
-          <button
-            className={styles.weekNavBtn}
+          </Button>
+          <Button variant="secondary" size="sm"
             onClick={() => setWeekIndex((i) => i - 1)}
             disabled={weekIndex === 0}
           >
             {t.home.next}
             <ChevronRight size={15} strokeWidth={2} />
-          </button>
+          </Button>
         </div>
       )}
       {week ? (
@@ -363,9 +362,9 @@ function CredentialsForm() {
         />
       </div>
       {error && <p className={styles.credentialError}>{error}</p>}
-      <button type="submit" disabled={loading} className={styles.signInBtn}>
+      <Button variant="primary" fullWidth type="submit" disabled={loading}>
         {loading ? t.home.signingIn : t.home.signIn}
-      </button>
+      </Button>
     </form>
   )
 }

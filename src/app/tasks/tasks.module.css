@@ -10,18 +10,6 @@
   gap: 1.25rem;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.title {
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
 .filterBar {
   display: flex;
   align-items: center;
@@ -43,47 +31,6 @@
 }
 
 .filterSelect:focus { border-color: var(--primary); }
-
-.filterToggle {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--secondary);
-  font-size: var(--text-sm);
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 150ms, background-color 150ms, color 150ms;
-  white-space: nowrap;
-}
-
-.filterToggle:hover { border-color: var(--primary); color: var(--foreground); }
-
-.filterToggleActive {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-  color: var(--primary);
-  font-weight: 500;
-}
-
-.newBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  border-radius: var(--radius-full);
-  padding: 0.5rem 1rem;
-  font-size: var(--text-md);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 150ms;
-}
-
-.newBtn:hover {
-  opacity: 0.85;
-}
 
 .section {
   display: flex;
@@ -170,12 +117,10 @@
   color: var(--danger);
 }
 
-
   :global([data-theme="dark"]) .sectionLabel.overdue,
 :global([data-theme="dark"]) .taskMeta.overdue {
     color: var(--danger);
   }
-
 
 .taskDone .taskName {
   text-decoration: line-through;
@@ -278,51 +223,13 @@
   border-color: var(--foreground);
 }
 
+.pushLeft { margin-right: auto; }
+
 .modalFooter {
   display: flex;
   gap: 0.75rem;
   margin-top: 1.5rem;
   justify-content: flex-end;
-}
-
-.saveBtn {
-  background: var(--foreground);
-  color: var(--background);
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 1.1rem;
-  font-size: var(--text-md);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.saveBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cancelBtn {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 1.1rem;
-  font-size: var(--text-md);
-  cursor: pointer;
-  color: var(--foreground);
-}
-
-.deleteBtn {
-  background: none;
-  border: none;
-  color: var(--danger);
-  font-size: var(--text-md);
-  cursor: pointer;
-  margin-right: auto;
-  padding: 0.5rem 0;
-}
-
-.deleteBtn:hover {
-  text-decoration: underline;
 }
 
 .error {
@@ -340,10 +247,6 @@
 
   .filterBar {
     flex-wrap: wrap;
-  }
-
-  .title {
-    font-size: var(--text-xl);
   }
 
   .taskName {

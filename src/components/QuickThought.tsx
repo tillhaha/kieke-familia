@@ -8,6 +8,7 @@ import Link from "next/link"
 import { Brain, Check, Lock, Send, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./QuickThought.module.css"
+import { Button } from "@/components/ui/Button"
 
 type Added = { id: string; title: string; category: string }
 
@@ -116,10 +117,9 @@ export function QuickThought() {
             )}
             <div className={styles.footer}>
               <Link href="/thoughts" className={styles.viewAll}>{tt.viewAll}</Link>
-              <button className={styles.sendBtn} onClick={send} disabled={sending || !text.trim()}>
-                <Send size={14} strokeWidth={2.25} />
+              <Button variant="primary" icon={<Send size={14} strokeWidth={2.25} />} onClick={send} disabled={sending || !text.trim()}>
                 {sending ? tt.sending : tt.send}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

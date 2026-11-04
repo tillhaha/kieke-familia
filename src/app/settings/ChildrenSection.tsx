@@ -4,6 +4,7 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback } from "react"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type Member = { id: string; name: string; username: string }
 
@@ -118,27 +119,24 @@ export function ChildrenSection() {
                         className={styles.fieldInput}
                       />
                       {resetError && <p className={styles.saveError}>{resetError}</p>}
-                      <button
+                      <Button variant="primary"
                         onClick={() => handleResetPassword(m.id)}
                         disabled={resetting || resetPassword.length < 8}
-                        className={styles.saveBtn}
                       >
                         {resetting ? "Saving…" : "Save"}
-                      </button>
-                      <button
+                      </Button>
+                      <Button variant="secondary"
                         onClick={() => { setResetId(null); setResetPassword(""); setResetError("") }}
-                        className={styles.cancelBtn}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
-                    <button
+                    <Button variant="secondary"
                       onClick={() => { setResetId(m.id); setResetPassword(""); setResetError("") }}
-                      className={styles.cancelBtn}
                     >
                       Reset password
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}
@@ -186,13 +184,12 @@ export function ChildrenSection() {
               />
             </div>
             {createError && <p className={styles.saveError}>{createError}</p>}
-            <button
+            <Button variant="primary"
               type="submit"
               disabled={creating}
-              className={styles.saveBtn}
             >
               {creating ? "Creating…" : "Create account"}
-            </button>
+            </Button>
           </form>
         </>
       )}

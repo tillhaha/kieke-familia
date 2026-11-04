@@ -133,6 +133,14 @@ Deployed via Coolify (self-hosted Docker, not Vercel — despite the README's de
 ### Styling
 CSS Modules per page/component. Global styles in `src/app/globals.css`. Fonts: Geist Sans + Geist Mono via `next/font/google`.
 
+**Design tokens** (`globals.css`): always use them instead of raw values — type `var(--text-2xs … --text-3xl)` (11/12/13/14/15/16/18/22/28px), radius `var(--radius-sm|--radius|--radius-lg|--radius-full)`, spacing `var(--space-1 … --space-8)`, colours `--background --surface --surface-hover --foreground --secondary (muted text) --border --primary --primary-hover --on-primary (text on primary bg) --accent-soft --accent-border --danger --danger-soft --success --overlay`. Light/dark values live in `:root` / `[data-theme="dark"]` (dark = neutral greys with green highlights; muted text ≥4.5:1).
+
+**Shared UI components** (`src/components/ui/`): use these instead of page-specific button/header CSS.
+- `PageHeader` — `title`, optional `addon` (e.g. lock icon), `actions` (always top-right; wraps under the title on mobile). Page containers are flex columns with `gap`, so it has no margins.
+- `Button` — `variant` `primary` (main action, max one per area) | `secondary` (outlined) | `ghost` (quiet) | `danger` (destructive, outlined red); `size` `sm|md`; `icon`; `active` (toggled); `fullWidth`; `href` renders a Next `Link`. Defaults to `type="button"`. In modal footers put Delete first with a `margin-right: auto` class, then Cancel (secondary), then Save (primary).
+- `FilterPill` — filter/toggle chips with `active`, optional `count`, `highlight` (drop target); forwards all button props (e.g. drag handlers).
+- Note: `globals.css` gives every `button` `min-height: 44px` on ≤768px; the shared components set their own mobile heights.
+
 **Breakpoints** (desktop-first — mobile is secondary):
 ```
 480px   phones          @media (max-width: 480px)

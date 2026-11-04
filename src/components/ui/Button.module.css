@@ -1,0 +1,92 @@
+/* src/components/ui/Button.module.css */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 150ms, border-color 150ms, color 150ms, transform 100ms;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.btn:disabled { cursor: not-allowed; }
+
+/* Sizes */
+.sm {
+  height: 30px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+.md {
+  height: 36px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-md);
+}
+.fullWidth { width: 100%; }
+
+/* Variants */
+.primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.primary:hover:not(:disabled) { background: var(--primary-hover); }
+.primary:disabled {
+  background: var(--surface-hover);
+  border-color: var(--border);
+  color: var(--secondary);
+}
+
+.secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--surface-hover);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--secondary);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.danger {
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.danger:hover:not(:disabled) { background: var(--danger-soft); }
+
+.secondary:disabled,
+.ghost:disabled,
+.danger:disabled { opacity: 0.5; }
+
+/* Toggled (e.g. select mode) */
+.active,
+.active:hover:not(:disabled) {
+  background: var(--accent-soft);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Touch: bigger tap targets (overrides the global 44px button min-height for sm) */
+@media (max-width: 768px) {
+  .md { height: 44px; min-height: 44px; }
+  .sm { height: 36px; min-height: 36px; }
+}

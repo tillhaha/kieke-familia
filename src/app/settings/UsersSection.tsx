@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Copy, Check } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
+import { Button } from "@/components/ui/Button"
 
 type Member = {
   id: string
@@ -202,13 +203,12 @@ export function UsersSection() {
               onChange={(e) => setFamilyName(e.target.value)}
               placeholder={t.settings.familyNamePlaceholder}
             />
-            <button
-              className={styles.saveBtn}
+            <Button variant="primary"
               onClick={handleSaveName}
               disabled={savingName || !familyName.trim() || familyName.trim() === initialFamilyName.trim()}
             >
               {savingName ? "…" : nameSaved ? t.settings.saved : t.settings.save}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -226,9 +226,9 @@ export function UsersSection() {
                 </button>
               </>
             ) : (
-              <button className={styles.saveBtn} onClick={handleGenerateCode} disabled={generatingCode}>
+              <Button variant="primary" onClick={handleGenerateCode} disabled={generatingCode}>
                 {generatingCode ? t.settings.generating : t.settings.generate}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -269,13 +269,12 @@ export function UsersSection() {
                         <option value="ADMIN">{t.settings.roleAdmin}</option>
                       </select>
                       {rolePending && rolePending !== m.role && (
-                        <button
-                          className={styles.saveBtn}
+                        <Button variant="primary"
                           onClick={() => handleRoleChange(m.id)}
                           disabled={savingId === m.id}
                         >
                           {savingId === m.id ? "…" : t.settings.save}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   ) : (
@@ -283,13 +282,14 @@ export function UsersSection() {
                   )}
 
                   {isAdmin && !isSelf && (
-                    <button
-                      className={m.active ? styles.cancelBtn : styles.activateBtn}
+                    <Button
+                      variant="secondary"
+                      active={!m.active}
                       onClick={() => handleToggleActive(m)}
                       disabled={savingId === m.id}
                     >
                       {m.active ? t.settings.deactivate : t.settings.activate}
-                    </button>
+                    </Button>
                   )}
 
                   {canManage && m.username && !isSelf && (
@@ -303,27 +303,24 @@ export function UsersSection() {
                           className={styles.fieldInput}
                         />
                         {resetError && <p className={styles.saveError}>{resetError}</p>}
-                        <button
-                          className={styles.saveBtn}
+                        <Button variant="primary"
                           onClick={() => handleResetPassword(m.id)}
                           disabled={resetting || resetPassword.length < 8}
                         >
                           {resetting ? "…" : t.settings.save}
-                        </button>
-                        <button
-                          className={styles.cancelBtn}
+                        </Button>
+                        <Button variant="secondary"
                           onClick={() => { setResetId(null); setResetPassword(""); setResetError("") }}
                         >
                           {t.settings.cancel}
-                        </button>
+                        </Button>
                       </>
                     ) : (
-                      <button
-                        className={styles.cancelBtn}
+                      <Button variant="secondary"
                         onClick={() => { setResetId(m.id); setResetPassword(""); setResetError("") }}
                       >
                         {t.settings.resetPassword}
-                      </button>
+                      </Button>
                     )
                   )}
                 </div>
@@ -334,9 +331,9 @@ export function UsersSection() {
       )}
 
       {canManage && (
-        <button className={styles.saveBtn} style={{ width: "fit-content" }} onClick={() => setShowAddModal(true)}>
+        <Button variant="primary" style={{ width: "fit-content" }} onClick={() => setShowAddModal(true)}>
           {t.settings.addMember}
-        </button>
+        </Button>
       )}
 
       {showAddModal && (
@@ -362,10 +359,10 @@ export function UsersSection() {
               </div>
               {createError && <p className={styles.saveError}>{createError}</p>}
               <div className={styles.modalFooter}>
-                <button type="button" className={styles.cancelBtn} onClick={closeAddModal}>{t.settings.cancel}</button>
-                <button type="submit" disabled={creating} className={styles.saveBtn}>
+                <Button variant="secondary" onClick={closeAddModal}>{t.settings.cancel}</Button>
+                <Button variant="primary" type="submit" disabled={creating}>
                   {creating ? t.settings.creating : t.settings.addMemberTitle}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

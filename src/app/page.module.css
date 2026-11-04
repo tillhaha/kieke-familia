@@ -118,25 +118,6 @@
   margin-bottom: 2rem;
 }
 
-.signInBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  border-radius: var(--radius-full);
-  font-size: var(--text-base);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.signInBtn:hover {
-  background: var(--primary-hover);
-}
-
 .noWeek {
   font-size: var(--text-base);
   color: var(--secondary);
@@ -209,11 +190,9 @@
   margin: 0;
 }
 
-
   :global([data-theme="dark"]) .credentialError {
     color: var(--danger);
   }
-
 
 /* Tasks widget */
 .tasksWidget {
@@ -311,42 +290,15 @@
   text-decoration: underline;
 }
 
-
   :global([data-theme="dark"]) .tasksWidgetMeta.overdue {
     color: var(--danger);
   }
-
 
 /* Week navigation */
 .weekNav {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.75rem;
-}
-
-.weekNavBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.375rem 0.75rem;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--secondary);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: color 150ms, border-color 150ms;
-}
-
-.weekNavBtn:hover:not(:disabled) {
-  color: var(--foreground);
-  border-color: var(--foreground);
-}
-
-.weekNavBtn:disabled {
-  opacity: 0.3;
-  cursor: default;
 }
 
 /* Mobile */

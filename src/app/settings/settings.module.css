@@ -170,7 +170,7 @@
   max-width: 320px;
 }
 
-.fieldInput:focus { border-color: var(--primary); }
+.fieldInput:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 
 /* ── Save Button ─────────────────────────────────────────── */
 

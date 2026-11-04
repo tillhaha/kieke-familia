@@ -4,10 +4,11 @@
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
-import { CheckSquare, Layers, Plus, Search, Square, Star } from "lucide-react"
+import { CheckSquare, Layers, Plus, Search, Square, Star, ChefHat } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -256,7 +257,7 @@ export default function MealsPage() {
       </div>
 
       {loading ? null : meals.length === 0 ? (
-        <p className={styles.emptyState}>{hasFilters ? t.meals.noRecipesMatch : t.meals.noRecipesYet}</p>
+        <EmptyState icon={<ChefHat size={22} strokeWidth={1.75} />}>{hasFilters ? t.meals.noRecipesMatch : t.meals.noRecipesYet}</EmptyState>
       ) : (
         <div className={styles.list}>
           {meals.map((meal) => {

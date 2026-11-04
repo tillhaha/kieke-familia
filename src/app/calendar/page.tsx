@@ -249,7 +249,7 @@ export default function CalendarPage() {
           <h1 className={styles.monthTitle}>
             {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
           </h1>
-          <button
+          <Button variant="secondary" size="sm" iconOnly
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]
               const sixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split("T")[0]
@@ -263,22 +263,21 @@ export default function CalendarPage() {
               setModalError(null)
               setModal("CUSTODY")
             }}
-            className={styles.addBtn}
             aria-label={t.calendar.custodyModalTitle}
           >
             <Plus size={16} />
-          </button>
+          </Button>
         </div>
         <div className={styles.headerControls}>
-          <button onClick={prevMonth} className={styles.navBtn} aria-label="Previous month">
+          <Button variant="secondary" size="sm" iconOnly onClick={prevMonth} aria-label="Previous month">
             <ChevronLeft size={16} />
-          </button>
+          </Button>
           <Button variant="secondary" size="sm" onClick={() => setCurrentDate(new Date())}>
             {t.calendar.today}
           </Button>
-          <button onClick={nextMonth} className={styles.navBtn} aria-label="Next month">
+          <Button variant="secondary" size="sm" iconOnly onClick={nextMonth} aria-label="Next month">
             <ChevronRight size={16} />
-          </button>
+          </Button>
           {loading && <span className={styles.loadingIndicator}>{t.calendar.updating}</span>}
         </div>
       </header>

@@ -3,12 +3,13 @@
 
 import { useSession, signIn } from "next-auth/react"
 import { useState, useEffect, useCallback, useRef } from "react"
-import { LogIn, ChevronLeft, ChevronRight } from "lucide-react"
+import { LogIn, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent, WorkLocationEntry, WorkLocationValue } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { QuickThought } from "@/components/QuickThought"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
 
@@ -258,10 +259,12 @@ export default function Home() {
           editHref={`/week#week-${week.startDate}`}
         />
       ) : (
-        <p className={styles.noWeek}>
-          {t.home.noWeekYet}{" "}
-          <a href="/week" className={styles.noWeekLink}>{t.home.goToWeekPlanning}</a>
-        </p>
+        <EmptyState
+          icon={<CalendarDays size={22} strokeWidth={1.75} />}
+          action={<Button variant="secondary" size="sm" href="/week">{t.home.goToWeekPlanning}</Button>}
+        >
+          {t.home.noWeekYet}
+        </EmptyState>
       )}
 
       <QuickThought />

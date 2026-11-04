@@ -10,13 +10,6 @@
   gap: 2.5rem;
 }
 
-.emptyState {
-  font-size: var(--text-base);
-  color: var(--secondary);
-  padding: 2rem 0;
-  text-align: center;
-}
-
 /* ── Week Block ───────────────────────────────────────── */
 
 .weekBlock {
@@ -38,6 +31,10 @@
 .weekEditLink {
   display: flex;
   align-items: center;
+  /* larger hit area without moving the icon */
+  padding: var(--space-2);
+  margin: calc(-1 * var(--space-2));
+  border-radius: var(--radius-full);
   color: var(--secondary);
   opacity: 0.4;
   transition: opacity 150ms;
@@ -399,6 +396,7 @@ tr:last-child .cell {
 
 .linkPromptInput:focus {
   border-color: var(--primary);
+  box-shadow: var(--focus-ring);
 }
 
 .linkPromptSubmit {
@@ -1147,4 +1145,13 @@ tr:last-child .cell {
 .pageError {
   color: var(--danger);
   font-size: var(--text-md);
+}
+
+@media (max-width: 768px) {
+  /* no hover on touch: keep the edit icon visible, 44px target */
+  .weekEditLink {
+    opacity: 0.8;
+    padding: 15px;
+    margin: -15px;
+  }
 }

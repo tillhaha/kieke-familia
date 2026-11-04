@@ -95,7 +95,7 @@
   outline: none;
   transition: border-color 150ms;
 }
-.input:focus { border-color: var(--primary); }
+.input:focus { border-color: var(--primary); box-shadow: var(--focus-ring); }
 .input:disabled { opacity: 0.6; }
 
 .error {

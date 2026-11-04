@@ -18,7 +18,7 @@
 }
 
 .sidebarTitle {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -30,7 +30,7 @@
 .releaseNote {
   margin-top: 1.5rem;
   padding: 0 0.75rem;
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: var(--secondary);
   opacity: 0.6;
 }
@@ -41,11 +41,11 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: none;
   background: transparent;
   color: var(--secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   text-align: left;
   cursor: pointer;
@@ -74,14 +74,14 @@
 }
 
 .sectionTitle {
-  font-size: 1.125rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-bottom: 0.25rem;
 }
 
 .sectionDesc {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   color: var(--secondary);
   margin-bottom: 1.5rem;
   line-height: 1.5;
@@ -125,7 +125,7 @@
 
 .calendarName {
   flex: 1;
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
 }
 
 .checkbox {
@@ -145,7 +145,7 @@
 }
 
 .fieldLabel {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--secondary);
 }
@@ -153,10 +153,10 @@
 .fieldInput {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
   transition: border-color 150ms;
@@ -170,10 +170,10 @@
 .saveBtn {
   padding: 0.5rem 1.25rem;
   background: var(--primary);
-  color: white;
+  color: var(--on-primary);
   border: none;
-  border-radius: 6px;
-  font-size: 0.9375rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 150ms, opacity 150ms;
@@ -189,8 +189,8 @@
 }
 
 .saveError {
-  font-size: 0.875rem;
-  color: #c0392b;
+  font-size: var(--text-md);
+  color: var(--danger);
   margin-bottom: 0.75rem;
 }
 
@@ -198,12 +198,12 @@
 
 .spinner {
   color: var(--secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   padding: 1rem 0;
 }
 
 .emptyMsg {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   color: var(--secondary);
   padding: 1.5rem 0;
 }
@@ -214,34 +214,34 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  background: #fdecea;
-  border: 1px solid #c0392b;
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
   border-radius: var(--radius);
-  color: #c0392b;
-  font-size: 0.875rem;
+  color: var(--danger);
+  font-size: var(--text-md);
   margin-bottom: 1rem;
 }
 
 
   :global([data-theme="dark"]) .errorBox {
-    background: #2d0a0a;
-    border-color: #c0392b;
-    color: #e07070;
+    background: var(--danger-soft);
+    border-color: var(--danger);
+    color: var(--danger);
   }
 
   :global([data-theme="dark"]) .saveError {
-    color: #e07070;
+    color: var(--danger);
   }
 
 
 .retryBtn {
   flex-shrink: 0;
   padding: 0.3rem 0.75rem;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   border: 1px solid currentColor;
   background: transparent;
   color: inherit;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   opacity: 0.8;
@@ -255,7 +255,7 @@
 /* ── Users Section ───────────────────────────────────────── */
 
 .subTitle {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-weight: 600;
   margin: 1.5rem 0 0.75rem;
 }
@@ -289,12 +289,12 @@
 }
 
 .memberName {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-weight: 500;
 }
 
 .memberUsername {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
@@ -310,8 +310,8 @@
   background: transparent;
   color: var(--secondary);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 150ms, color 150ms;
@@ -330,7 +330,7 @@
 .memberSelf {
   font-weight: 400;
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
 }
 
 .roleRow {
@@ -342,20 +342,20 @@
 .roleSelect {
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   cursor: pointer;
 }
 
 .roleBadge {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   padding: 0.2rem 0.5rem;
   background: var(--surface-hover);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .activateBtn {
@@ -363,8 +363,8 @@
   background: transparent;
   color: var(--primary);
   border: 1px solid var(--primary);
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 150ms, color 150ms;
@@ -428,7 +428,7 @@
   }
 
   .mobileIndexTitle {
-    font-size: 1.375rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 1rem;
@@ -466,7 +466,7 @@
   .mobileAvatar {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -476,13 +476,13 @@
 
   .mobileIndexLabel {
     flex: 1;
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
     font-weight: 500;
     color: var(--foreground);
   }
 
   .mobileIndexStatus {
-    font-size: 0.875rem;
+    font-size: var(--text-md);
     color: var(--secondary);
     margin-right: 0.125rem;
   }
@@ -502,7 +502,7 @@
     background: none;
     border: none;
     color: var(--primary);
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
@@ -525,7 +525,7 @@
 
 .modal {
   background: var(--background);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   width: 100%;
   max-width: 420px;
@@ -533,7 +533,7 @@
 }
 
 .modalTitle {
-  font-size: 1.1rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   margin-bottom: 1.25rem;
 }
@@ -558,7 +558,7 @@
 }
 
 .fieldHint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   margin-bottom: 0.5rem;
 }
@@ -591,13 +591,13 @@
 }
 
 .joinCodeLabel {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 600;
   margin-bottom: 0.25rem;
 }
 
 .joinCodeHint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   margin-bottom: 0.75rem;
 }
@@ -615,7 +615,7 @@
 
 .joinCode {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 1.25rem;
+  font-size: var(--text-2xl);
   letter-spacing: 0.12em;
   font-weight: 600;
 }
@@ -623,7 +623,7 @@
 .copyBtn {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   padding: 0.25rem 0.375rem;
   cursor: pointer;
   color: var(--secondary);
@@ -646,13 +646,13 @@
 }
 
 .importedTitle {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-weight: 600;
   margin: 0 0 0.25rem;
 }
 
 .importedUrlText {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -679,7 +679,7 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   color: var(--secondary);
   white-space: nowrap;
 }
@@ -688,7 +688,7 @@
   width: 2rem;
   height: 1.75rem;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 0.1rem;
   cursor: pointer;
   background: none;
@@ -698,27 +698,27 @@
   flex-shrink: 0;
   padding: 0.2rem 0.6rem;
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   transition: border-color 150ms, color 150ms;
 }
 
 .deleteBtn:hover {
-  border-color: #c0392b;
-  color: #c0392b;
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .confirmDeleteBtn {
   flex-shrink: 0;
   padding: 0.2rem 0.6rem;
-  border: 1px solid #c0392b;
-  border-radius: 5px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #c0392b;
-  font-size: 0.8125rem;
+  color: var(--danger);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
 }
@@ -726,8 +726,8 @@
 
   :global([data-theme="dark"]) .deleteBtn:hover,
 :global([data-theme="dark"]) .confirmDeleteBtn {
-    border-color: #e07070;
-    color: #e07070;
+    border-color: var(--danger);
+    color: var(--danger);
   }
 
 
@@ -744,11 +744,11 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.25rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
@@ -782,7 +782,7 @@
 
 .tokenValue {
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   word-break: break-all;
   flex: 1;
   min-width: 0;

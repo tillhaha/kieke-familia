@@ -11,7 +11,7 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 2.5rem;
   width: 100%;
   max-width: 440px;
@@ -19,7 +19,7 @@
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -27,7 +27,7 @@
 }
 
 .subtitle {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   color: var(--secondary);
   line-height: 1.5;
   margin-bottom: 2rem;
@@ -37,7 +37,7 @@
   background: none;
   border: none;
   color: var(--secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   cursor: pointer;
   padding: 0;
   margin-bottom: 1.25rem;
@@ -75,13 +75,13 @@
 }
 
 .choiceLabel {
-  font-size: 1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--foreground);
 }
 
 .choiceDesc {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .hint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
@@ -118,7 +118,7 @@
   border-radius: var(--radius);
   background: var(--background);
   color: var(--foreground);
-  font-size: 1rem;
+  font-size: var(--text-lg);
   font-family: inherit;
   outline: none;
   transition: border-color 150ms;
@@ -130,7 +130,7 @@
 }
 
 .codeInput {
-  font-size: 1.5rem;
+  font-size: var(--text-3xl);
   letter-spacing: 0.2em;
   text-align: center;
   font-family: var(--font-geist-mono), monospace;
@@ -139,10 +139,10 @@
 .primaryBtn {
   padding: 0.75rem 1.25rem;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
   transition: background 150ms;
@@ -159,8 +159,8 @@
 }
 
 .error {
-  font-size: 0.875rem;
-  color: #c0392b;
+  font-size: var(--text-md);
+  color: var(--danger);
 }
 
 /* Success / created state */
@@ -174,7 +174,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   margin-bottom: 1.25rem;
 }
@@ -193,7 +193,7 @@
 .generatedCode {
   flex: 1;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 1.75rem;
+  font-size: var(--text-3xl);
   letter-spacing: 0.15em;
   font-weight: 600;
 }
@@ -201,7 +201,7 @@
 .copyBtn {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 0.375rem 0.5rem;
   cursor: pointer;
   color: var(--secondary);
@@ -216,7 +216,7 @@
 }
 
 .codeHint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   margin-bottom: 1.5rem;
   line-height: 1.5;
@@ -224,7 +224,7 @@
 
 
   :global([data-theme="dark"]) .error {
-    color: #e07070;
+    color: var(--danger);
   }
 
 
@@ -234,6 +234,6 @@
   }
 
   .generatedCode {
-    font-size: 1.375rem;
+    font-size: var(--text-2xl);
   }
 }

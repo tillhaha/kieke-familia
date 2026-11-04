@@ -1,34 +1,86 @@
 /* src/app/globals.css */
 
+/* ── Design tokens ───────────────────────────────────────────
+   Use these instead of raw values in CSS modules:
+   colours  var(--background|surface|foreground|secondary|primary|on-primary|danger…)
+   type     var(--text-2xs … --text-3xl)
+   radius   var(--radius-sm|--radius|--radius-lg|--radius-full)
+   spacing  var(--space-1 … --space-8)
+   ─────────────────────────────────────────────────────────── */
 :root {
+  color-scheme: light;
+
   --background: #f8faf8;
   --foreground: #1a2e22;
   --primary: #2d6a4f;
   --primary-hover: #245a42;
-  --secondary: #5a8a6a;
+  --on-primary: #ffffff;          /* text/icons on a --primary background */
+  --secondary: #4f7a5f;           /* muted text — ≥4.5:1 on background */
   --border: #d8e8dc;
   --surface: #ffffff;
   --surface-hover: #eef6f1;
   --accent-soft: #e8f4ee;
   --accent-border: #c0ddc8;
-  --radius: 8px;
+  --danger: #c0392b;
+  --danger-soft: #fdecea;
+  --success: #16a34a;
+  --overlay: rgba(0, 0, 0, 0.4);
+
   --shadow-sm: 0 1px 3px rgba(45, 106, 79, 0.08);
   --shadow-md: 0 4px 16px rgba(45, 106, 79, 0.12);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.16);
+
+  /* Type scale */
+  --text-2xs: 0.6875rem;  /* 11px — badges, uppercase labels */
+  --text-xs: 0.75rem;     /* 12px — meta, hints */
+  --text-sm: 0.8125rem;   /* 13px — secondary text, pills */
+  --text-md: 0.875rem;    /* 14px — buttons, compact text */
+  --text-base: 0.9375rem; /* 15px — body, list items */
+  --text-lg: 1rem;        /* 16px — inputs on mobile (no iOS zoom), emphasis */
+  --text-xl: 1.125rem;    /* 18px — section & modal titles */
+  --text-2xl: 1.375rem;   /* 22px — page titles */
+  --text-3xl: 1.75rem;    /* 28px — hero / greeting */
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-full: 999px;
+
+  /* Spacing (4px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
 }
 
+/* Dark: neutral greys with green highlights */
 [data-theme="dark"] {
-  --background: #0f1a13;
-  --foreground: #d4ead8;
-  --primary: #52b788;
-  --primary-hover: #3d9e70;
-  --secondary: #3d6a4a;
-  --border: #1e3328;
-  --surface: #142010;
-  --surface-hover: #1e3328;
-  --accent-soft: #1e3328;
-  --accent-border: #2d5040;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+
+  --background: #131514;
+  --foreground: #e7ebe8;
+  --primary: #5cc492;
+  --primary-hover: #74d0a4;
+  --on-primary: #0b1a12;
+  --secondary: #8c968f;
+  --border: #343a36;
+  --surface: #1c1f1d;
+  --surface-hover: #262a27;
+  --accent-soft: #1f2d25;
+  --accent-border: #2f4d3c;
+  --danger: #f08080;
+  --danger-soft: #3a1f1f;
+  --success: #4ade80;
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -59,6 +111,7 @@ body {
   font-family: var(--font-geist-sans), -apple-system, Arial, Helvetica, sans-serif;
   line-height: 1.6;
   font-size: 16px;
+  accent-color: var(--primary); /* checkboxes, radios, range inputs */
   display: flex;
   flex-direction: column;
   min-height: 100vh;

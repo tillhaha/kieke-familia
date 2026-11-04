@@ -71,8 +71,8 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
-| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). Collapsible "About me" profile card (`AboutMe.tsx`) at the top |
-| `/settings` | Profile, location, Google Calendar sync selection, family management, shopping categories/blacklist |
+| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). |
+| `/settings` | Profile (incl. private "About me" — `AboutMeSection.tsx`, used as life context by the thoughts assistant), location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
 - `WeekBlock` (`src/app/week/WeekBlock.tsx`) — shared week display used on both `/` (read-only) and `/week` (editable); supports a `/recipe` slash command in lunch/dinner cells to link a meal from the library. On mobile (≤768px) the table is hidden and replaced by Day / 3-Day / Week pill-switcher views. The **Day/3-Day view uses a row-first layout** — outer loop is `ALL_ROWS`, inner loop is `getMobileDays()`, each field rendered as a `.mobileRowGroup` (flex row with `align-items: stretch`) so all day cells in a row share the same height. The Week view is a mini-table (`grid-template-columns: 40px repeat(7, 1fr)`) with icon label column. Pill tap-to-detail uses shared `pillComponents` + `mobilePillDetail` state (bottom-sheet modal). The "Add to shopping list" button renders as a sibling below the `weekHeader` h2, not inside it.

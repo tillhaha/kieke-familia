@@ -45,7 +45,7 @@ async function handleMessage(auth: McpAuth, msg: JsonRpcRequest): Promise<object
         capabilities: { tools: {} },
         serverInfo: { name: "familia", version: "1.0.0" },
         instructions:
-          "Access Familia data: the family shopping list (add, list and remove items) and the user's private todo list. When the user shares thoughts, todos or ideas to remember, pass them to capture_thoughts — it splits and categorises them itself.",
+          "Access Familia data: the family shopping list (add, list and remove items) and the user's private todo list. When the user shares thoughts, todos or ideas to remember, pass them to capture_thoughts — it splits and categorises them itself. Call get_personal_profile for context about the user's life (people, hobbies, routines) before personal planning or tasks.",
       })
     }
     case "ping":

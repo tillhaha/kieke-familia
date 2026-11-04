@@ -3,6 +3,7 @@
 // userId — other family members' items are never reachable.
 import { prisma } from "@/lib/prisma"
 import { captureThoughts } from "@/lib/personalTodos"
+import { buildLifeContext } from "@/lib/personalProfile"
 import { z } from "zod"
 import { type McpTool, type ToolResult, text } from "../types"
 
@@ -61,7 +62,20 @@ async function complete(userId: string, args: unknown): Promise<ToolResult> {
   return text(missing.length ? `${summary}\nUnknown ids: ${missing.join(", ")}` : summary)
 }
 
+async function profile(userId: string): Promise<ToolResult> {
+  const context = await buildLifeContext(userId)
+  const today = new Date().toISOString().slice(0, 10)
+  return text(context ? `Today is ${today}.\n\n${context}` : "No profile information yet. The user can write an \"About me\" on the Thoughts page in Familia.")
+}
+
 export const personalTodoTools: McpTool[] = [
+  {
+    name: "get_personal_profile",
+    description:
+      "Get private context about the user's life: their own \"About me\" text (who they are, hobbies, friends and family, routines) plus what the family app knows (name, family members, city, birthdays with ages). Read this before helping with personal tasks, planning, gifts or messages so you understand who and what they mean.",
+    inputSchema: { type: "object", properties: {} },
+    handler: (auth) => profile(auth.userId),
+  },
   {
     name: "capture_thoughts",
     description:

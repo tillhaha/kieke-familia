@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { Lock, Send, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
+import { AboutMe } from "./AboutMe"
 
 type Todo = {
   id: string
@@ -208,6 +209,8 @@ export default function ThoughtsPage() {
           {tt.privateHint}
         </span>
       </div>
+
+      <AboutMe />
 
       <div className={styles.composer}>
         <p className={styles.subtitle}>{tt.subtitle}</p>

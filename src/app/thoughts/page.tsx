@@ -281,9 +281,8 @@ export default function ThoughtsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>{tt.title}</h1>
-        <span className={styles.privateHint}>
-          <Lock size={12} strokeWidth={2.25} />
-          {tt.privateHint}
+        <span className={styles.titleLock} title={tt.privateHint} aria-label={tt.privateHint} role="img">
+          <Lock size={16} strokeWidth={2.25} />
         </span>
       </div>
 

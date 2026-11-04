@@ -12,9 +12,12 @@
 
 .header {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+.titleLock {
+  display: inline-flex;
+  color: var(--secondary);
 }
 
 .title {
@@ -23,14 +26,6 @@
   letter-spacing: -0.02em;
 }
 
-.privateHint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.75rem;
-  color: var(--secondary);
-  white-space: nowrap;
-}
 
 /* Composer */
 .composer {
@@ -476,12 +471,6 @@
     max-width: 100%;
     min-width: 0;
     padding: 1.25rem 0.75rem;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
   }
 
   .title { font-size: 1.125rem; }

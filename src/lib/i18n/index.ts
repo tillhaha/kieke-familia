@@ -599,7 +599,7 @@ const en: Translations = {
   },
   thoughts: {
     title: "My thoughts",
-    subtitle: "Dump whatever is on your mind — the assistant sorts it into your list.",
+    subtitle: "Dump whatever is on your mind.",
     privateHint: "Only you can see this list.",
     placeholder: "e.g. call the dentist tomorrow, idea for Mia's birthday: climbing hall, renew passport by end of month…",
     send: "Send",
@@ -1003,7 +1003,7 @@ const es: Translations = {
   },
   thoughts: {
     title: "Mis ideas",
-    subtitle: "Escribe lo que tengas en mente: el asistente lo ordena en tu lista.",
+    subtitle: "Escribe lo que tengas en mente.",
     privateHint: "Solo tú puedes ver esta lista.",
     placeholder: "p. ej. llamar al dentista mañana, idea para el cumpleaños de Mia: rocódromo, renovar pasaporte antes de fin de mes…",
     send: "Enviar",
@@ -1407,7 +1407,7 @@ const de: Translations = {
   },
   thoughts: {
     title: "Meine Gedanken",
-    subtitle: "Schreib einfach auf, was dir durch den Kopf geht – der Assistent sortiert es in deine Liste.",
+    subtitle: "Schreib einfach auf, was dir durch den Kopf geht.",
     privateHint: "Nur du kannst diese Liste sehen.",
     placeholder: "z. B. morgen Zahnarzt anrufen, Idee für Mias Geburtstag: Kletterhalle, Reisepass bis Monatsende verlängern…",
     send: "Senden",

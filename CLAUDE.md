@@ -53,6 +53,7 @@ Key relationships:
 - `User` → `WorkLocation`, `Activity`, `Travel`
 - `Family` → `Birthday`, `CustodySchedule`
 - `User` → `PersonalTodo` (private per-user todo list; **always scope by `userId`, never by `familyId`** — other family members must not see it)
+- `User` → `PersonalProfile` (private free-text "About me", 1:1 keyed by `userId`; separate table so it can't leak via queries that include family `User` rows — never add it to such includes)
 
 Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@prisma/adapter-pg` pool adapter.
 
@@ -70,7 +71,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
-| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them) |
+| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). Collapsible "About me" profile card (`AboutMe.tsx`) at the top |
 | `/settings` | Profile, location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components
@@ -105,7 +106,8 @@ All under `src/app/api/`:
 - `shopping/blacklist/` — GET/POST; `[id]/` — DELETE
 - `shopping/generate/` — POST (Anthropic API: generate shopping list from meal plan)
 - `personal-todos/` — GET (own items, `?includeDone=true`), POST `{ text }` (brain dump → Claude splits/categorises via `captureThoughts` in `src/lib/personalTodos.ts`; falls back to one `Inbox` item if the AI call fails); `[id]/` — PATCH/DELETE (owner only, others get 404)
-- `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` (user-scoped)
+- `personal-profile/` — GET/PUT `{ text }` (own private profile). `buildLifeContext(userId)` in `src/lib/personalProfile.ts` combines it with name, family members, city and saved birthdays (with computed ages) — passed to `captureThoughts` as prompt context and returned by the `get_personal_profile` MCP tool
+- `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` / `get_personal_profile` (user-scoped)
 - `user/` — GET/PATCH (profile)
 - `weather/` — GET (weather for family city)
 - `auth/[...nextauth]/` — NextAuth handler

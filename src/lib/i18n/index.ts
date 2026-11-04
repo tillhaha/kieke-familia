@@ -232,6 +232,12 @@ export type Translations = {
     quickAdd: string
     quickTitle: string
     viewAll: string
+    aboutTitle: string
+    aboutEmpty: string
+    aboutHint: string
+    aboutPlaceholder: string
+    aboutSaving: string
+    aboutSaved: string
   }
   shopping: {
     title: string
@@ -607,6 +613,12 @@ const en: Translations = {
     quickAdd: "New thought",
     quickTitle: "New thought",
     viewAll: "Open my thoughts",
+    aboutTitle: "About me",
+    aboutEmpty: "Tell the assistant who you are — it will file your thoughts better.",
+    aboutHint: "Private, only for you and your assistant. Write freely: who you are, work, hobbies, routines, friends and family. Tip: write birth years instead of ages (\"Mia (2016)\") so they stay correct. Your family members, city and the birthdays saved in the calendar are included automatically.",
+    aboutPlaceholder: "e.g. I'm Till, product manager, working from home Mon/Fri. Wife Anna (1985), kids Mia (2016) and Leo (2019) — Mia has swimming on Tuesdays. Best friends: Jonas (Berlin), Sarah. I like running and cooking, and I'm renovating the bathroom. Dentist: Dr. Weber.",
+    aboutSaving: "Saving…",
+    aboutSaved: "Saved",
   },
   shopping: {
     title: "Shopping List",
@@ -982,6 +994,12 @@ const es: Translations = {
     quickAdd: "Nuevo pensamiento",
     quickTitle: "Nuevo pensamiento",
     viewAll: "Ver mis pensamientos",
+    aboutTitle: "Sobre mí",
+    aboutEmpty: "Cuéntale al asistente quién eres: así ordenará mejor tus pensamientos.",
+    aboutHint: "Privado, solo para ti y tu asistente. Escribe libremente: quién eres, trabajo, aficiones, rutinas, amigos y familia. Consejo: escribe años de nacimiento en lugar de edades (\"Mia (2016)\") para que sigan siendo correctas. Tus familiares, tu ciudad y los cumpleaños guardados en el calendario se incluyen automáticamente.",
+    aboutPlaceholder: "p. ej. Soy Till, jefe de producto, teletrabajo lunes y viernes. Mi mujer Anna (1985), hijos Mia (2016) y Leo (2019): Mia tiene natación los martes. Mejores amigos: Jonas (Berlín), Sarah. Me gusta correr y cocinar, y estoy reformando el baño. Dentista: Dr. Weber.",
+    aboutSaving: "Guardando…",
+    aboutSaved: "Guardado",
   },
   shopping: {
     title: "Lista de compras",
@@ -1357,6 +1375,12 @@ const de: Translations = {
     quickAdd: "Neuer Gedanke",
     quickTitle: "Neuer Gedanke",
     viewAll: "Zu meinen Gedanken",
+    aboutTitle: "Über mich",
+    aboutEmpty: "Erzähl dem Assistenten, wer du bist – dann sortiert er deine Gedanken besser.",
+    aboutHint: "Privat, nur für dich und deinen Assistenten. Schreib frei: wer du bist, Arbeit, Hobbys, Routinen, Freunde und Familie. Tipp: Geburtsjahre statt Alter angeben („Mia (2016)“), dann stimmt es auch nächstes Jahr noch. Deine Familienmitglieder, euer Wohnort und die im Kalender gespeicherten Geburtstage werden automatisch berücksichtigt.",
+    aboutPlaceholder: "z. B. Ich bin Till, Produktmanager, Homeoffice Mo/Fr. Frau Anna (1985), Kinder Mia (2016) und Leo (2019) – Mia hat dienstags Schwimmen. Beste Freunde: Jonas (Berlin), Sarah. Ich laufe und koche gern und renoviere gerade das Bad. Zahnarzt: Dr. Weber.",
+    aboutSaving: "Speichern…",
+    aboutSaved: "Gespeichert",
   },
   shopping: {
     title: "Einkaufsliste",

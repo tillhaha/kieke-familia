@@ -417,6 +417,52 @@
 
 .deleteBtn:hover { text-decoration: underline; }
 
+/* About me (private profile) */
+.about {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.aboutEmpty {
+  border-style: dashed;
+  border-color: var(--primary);
+}
+.aboutToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  text-align: left;
+  cursor: pointer;
+}
+.aboutIcon { flex-shrink: 0; color: var(--primary); }
+.aboutTitle { flex-shrink: 0; font-weight: 600; }
+.aboutPreview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: var(--secondary);
+}
+.aboutChevron { flex-shrink: 0; margin-left: auto; color: var(--secondary); transition: transform 150ms; }
+.aboutChevronOpen { transform: rotate(180deg); }
+.aboutBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0 1rem 1rem;
+}
+.aboutInput { min-height: 160px; }
+.aboutSavedHint { font-size: 0.8125rem; color: var(--primary); }
+
 @media (max-width: 768px) {
   .page {
     max-width: 100%;

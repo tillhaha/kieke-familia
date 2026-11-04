@@ -6,6 +6,7 @@ import Anthropic from "@anthropic-ai/sdk"
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
+import { buildLifeContext } from "@/lib/personalProfile"
 import type { PersonalTodo } from "@prisma/client"
 
 const client = new Anthropic()
@@ -42,7 +43,11 @@ export async function listCategories(userId: string): Promise<string[]> {
   return rows.map((r) => r.category)
 }
 
-async function splitAndCategorize(text: string, categories: string[], today: string): Promise<CaptureItem[]> {
+async function splitAndCategorize(text: string, categories: string[], today: string, lifeContext: string): Promise<CaptureItem[]> {
+  const contextBlock = lifeContext
+    ? `\n\nWhat you know about the person (private, from their profile and the family app):\n<life_context>\n${lifeContext}\n</life_context>\nUse this to understand who and what they mean ("Mama", "her birthday", "the bathroom") and file things better: write titles with the real names, pick fitting categories, add a short note with relevant facts from the context (e.g. "Mia wird 10"), and when a todo clearly hinges on a known date (e.g. a present for a birthday) use that date as dueDate unless the person gave another. Only use facts that are in the context or the brain dump — never invent any. Don't create items from the context itself, only from the brain dump.`
+    : ""
+
   const response = await client.messages.parse({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 2048,
@@ -54,7 +59,7 @@ The person sends you a quick, unstructured brain dump (any language, often Germa
 - note: extra context worth keeping that doesn't fit the title, otherwise null. Never invent details.
 - category: a short label (1–2 words) in the person's language. Strongly prefer one of their existing categories when it fits; only create a new one when none does. Use broad, reusable categories (e.g. "Arbeit", "Haushalt", "Gesundheit", "Einkaufen", "Ideen", "Finanzen", "Familie") rather than very specific ones.
 - dueDate: YYYY-MM-DD only if a date or deadline is stated or clearly implied ("morgen", "bis Freitag", "nächste Woche"); resolve relative dates against today. Otherwise null.
-Today is ${today}.`,
+Today is ${today}.${contextBlock}`,
     messages: [
       {
         role: "user",
@@ -87,12 +92,18 @@ export async function captureThoughts(userId: string, text: string): Promise<Per
   const trimmed = text.trim()
   if (!trimmed) return []
 
-  const categories = await listCategories(userId)
+  const [categories, lifeContext] = await Promise.all([
+    listCategories(userId),
+    buildLifeContext(userId).catch((err) => {
+      console.error("[personalTodos] life context error:", err)
+      return ""
+    }),
+  ])
   const today = new Date().toISOString().slice(0, 10)
 
   let items: CaptureItem[]
   try {
-    items = await splitAndCategorize(trimmed, categories, today)
+    items = await splitAndCategorize(trimmed, categories, today, lifeContext)
   } catch (err) {
     console.error("[personalTodos] Claude capture error:", err)
     items = []

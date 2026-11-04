@@ -61,6 +61,7 @@ model User {
   taskAssignments    TaskAssignee[]
   apiTokens     ApiToken[]
   personalTodos PersonalTodo[]
+  personalProfile PersonalProfile?
 }
 
 // Personal bearer token for the MCP endpoint (/api/mcp). Only the SHA-256
@@ -336,4 +337,15 @@ model PersonalTodo {
   updatedAt DateTime  @updatedAt
 
   @@index([userId, done])
+}
+
+// Private free-text "About me" used as life context for the thoughts assistant
+// (and exposed to the owner's own MCP clients). Kept in its own table so it
+// can never leak through queries that include family members' User rows.
+// Always scope by userId.
+model PersonalProfile {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text      String   @db.Text
+  updatedAt DateTime @updatedAt
 }

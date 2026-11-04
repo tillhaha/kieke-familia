@@ -17,7 +17,7 @@
 }
 
 .pageTitle {
-  font-size: 1.375rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -27,11 +27,11 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary);
-  color: white;
-  font-size: 0.875rem;
+  color: var(--on-primary);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
@@ -78,12 +78,12 @@
 }
 
 .listItemName {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-weight: 500;
 }
 
 .listItemMeta {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   flex-shrink: 0;
 }
@@ -100,7 +100,7 @@
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: color 150ms;
   padding: 0;
 }
@@ -140,13 +140,13 @@
 }
 
 .cardName {
-  font-size: 1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .cardDesc {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   line-height: 1.45;
   display: -webkit-box;
@@ -156,7 +156,7 @@
 }
 
 .cardMeta {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--secondary);
   margin-top: auto;
   padding-top: 0.5rem;
@@ -190,10 +190,10 @@
   width: 100%;
   padding: 0.5rem 0.75rem 0.5rem 2rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
   transition: border-color 150ms;
@@ -214,10 +214,10 @@
 .filterSelect {
   padding: 0.375rem 1.75rem 0.375rem 0.625rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   outline: none;
   cursor: pointer;
@@ -244,10 +244,10 @@
 .filterToggle {
   padding: 0.375rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   cursor: pointer;
   transition: border-color 150ms, background-color 150ms, color 150ms;
@@ -284,7 +284,7 @@
   border: none;
   background: transparent;
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   cursor: pointer;
   text-decoration: underline;
@@ -296,7 +296,7 @@
 .filterClear:hover { color: var(--foreground); }
 
 .emptyState {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   color: var(--secondary);
   padding: 2rem 0;
   text-align: center;
@@ -318,7 +318,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   text-decoration: none;
   transition: color 150ms;
@@ -334,7 +334,7 @@
 }
 
 .titleInput {
-  font-size: 1.5rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   letter-spacing: -0.02em;
   background: transparent;
@@ -364,7 +364,7 @@
   width: 34px;
   height: 34px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
@@ -385,11 +385,11 @@
 .deleteBtn {
   flex-shrink: 0;
   padding: 0.4rem 0.875rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: transparent;
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 150ms, color 150ms, border-color 150ms;
@@ -397,33 +397,33 @@
 }
 
 .deleteBtn:hover {
-  background: #fdecea;
-  color: #c0392b;
-  border-color: #c0392b;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .deleteBtnConfirm {
   flex-shrink: 0;
   padding: 0.4rem 0.875rem;
-  border-radius: 6px;
-  border: 1px solid #c0392b;
-  background: #fdecea;
-  color: #c0392b;
-  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   transition: background-color 150ms;
   white-space: nowrap;
 }
 
-.deleteBtnConfirm:hover { background: #fbd5d5; }
+.deleteBtnConfirm:hover { background: var(--danger-soft); }
 
 
-  :global([data-theme="dark"]) .deleteBtn:hover { background: #2d0a0a; color: #e07070; border-color: #e07070; }
+  :global([data-theme="dark"]) .deleteBtn:hover { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
 
-  :global([data-theme="dark"]) .deleteBtnConfirm { background: #2d0a0a; border-color: #e07070; color: #e07070; }
+  :global([data-theme="dark"]) .deleteBtnConfirm { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
 
-  :global([data-theme="dark"]) .deleteBtnConfirm:hover { background: #3d1010; }
+  :global([data-theme="dark"]) .deleteBtnConfirm:hover { background: var(--danger-soft); }
 
 
 /* ── Field sections ──────────────────────────────────── */
@@ -435,7 +435,7 @@
 }
 
 .fieldLabel {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -457,7 +457,7 @@
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: color 150ms, background 150ms;
   opacity: 0.6;
 }
@@ -483,10 +483,10 @@
   width: 60px;
   padding: 0.35rem 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
   transition: border-color 150ms;
@@ -497,10 +497,10 @@
 .typeSelect {
   padding: 0.35rem 2rem 0.35rem 0.625rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
   cursor: pointer;
@@ -526,7 +526,7 @@
 }
 
 .metaLabel {
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -545,7 +545,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   color: var(--foreground);
   cursor: pointer;
   user-select: none;
@@ -565,16 +565,16 @@
   width: 100%;
   padding: 0.375rem 0.625rem;
   border: 1px solid var(--primary);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
 }
 
 .sourceLink {
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   color: var(--primary);
   word-break: break-all;
   text-decoration: none;
@@ -587,7 +587,7 @@
 .editableField {
   cursor: text;
   min-height: 2.5rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   transition: background-color 150ms;
   padding: 0.375rem 0;
 }
@@ -599,10 +599,10 @@
   width: 100%;
   padding: 0.5rem 0.625rem;
   border: 1px solid var(--primary);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   line-height: 1.5;
   resize: vertical;
@@ -619,10 +619,10 @@
 .ingredientRow em { font-style: italic; }
 .ingredientRow code {
   font-family: monospace;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   background: var(--surface);
   padding: 0.1em 0.3em;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── Markdown content ────────────────────────────────── */
@@ -636,17 +636,17 @@
   margin: 0.5rem 0 0.25rem;
   letter-spacing: -0.01em;
 }
-.markdown h1 { font-size: 1.25rem; }
-.markdown h2 { font-size: 1.0625rem; }
-.markdown h3 { font-size: 0.9375rem; }
+.markdown h1 { font-size: var(--text-2xl); }
+.markdown h2 { font-size: var(--text-xl); }
+.markdown h3 { font-size: var(--text-base); }
 .markdown ul, .markdown ol { margin: 0.25rem 0; padding-left: 1.25rem; }
 .markdown li { margin: 0.15rem 0; }
 .markdown code {
   font-family: monospace;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   background: var(--surface);
   padding: 0.1em 0.3em;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 /* ── New recipe form ─────────────────────────────────── */
@@ -664,7 +664,7 @@
 }
 
 .formLabel {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--secondary);
 }
@@ -672,10 +672,10 @@
 .formInput {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   outline: none;
   transition: border-color 150ms;
@@ -686,10 +686,10 @@
 .formTextarea {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   line-height: 1.5;
   resize: vertical;
@@ -701,7 +701,7 @@
 .formTextarea:focus { border-color: var(--primary); }
 
 .formHint {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--secondary);
   opacity: 0.8;
 }
@@ -709,11 +709,11 @@
 .saveBtn {
   align-self: flex-start;
   padding: 0.5rem 1.25rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary);
-  color: white;
-  font-size: 0.875rem;
+  color: var(--on-primary);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 150ms;
@@ -723,13 +723,13 @@
 .saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .errorMsg {
-  font-size: 0.875rem;
-  color: #c0392b;
+  font-size: var(--text-md);
+  color: var(--danger);
 }
 
 
   :global([data-theme="dark"]) .errorMsg {
-    color: #e07070;
+    color: var(--danger);
   }
 
 
@@ -763,11 +763,11 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.35rem 0.625rem;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   border: none;
   background: rgba(0, 0, 0, 0.55);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 500;
   cursor: pointer;
   backdrop-filter: blur(4px);
@@ -777,7 +777,7 @@
 .imageActionBtn:hover { background: rgba(0, 0, 0, 0.75); }
 
 .imageError {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--error, #e53e3e);
   margin: 0.25rem 0 0;
 }
@@ -797,7 +797,7 @@
 .imagePlaceholder:hover { background: var(--surface-hover); }
 
 .imagePlaceholderText {
-  font-size: 0.875rem;
+  font-size: var(--text-md);
 }
 
 /* ── New recipe image preview ────────────────────────── */
@@ -843,11 +843,11 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.45rem 0.875rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 150ms, background-color 150ms;
@@ -892,7 +892,7 @@
 }
 
 .modalTitle {
-  font-size: 1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -907,7 +907,7 @@
   background: transparent;
   color: var(--secondary);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   transition: background-color 150ms, color 150ms;
 }
 
@@ -920,10 +920,10 @@
   width: 100%;
   padding: 0.625rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.9375rem;
+  font-size: var(--text-base);
   font-family: inherit;
   line-height: 1.5;
   resize: vertical;
@@ -944,11 +944,11 @@
 
 .parseBtn {
   padding: 0.5rem 1.125rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary);
-  color: white;
-  font-size: 0.875rem;
+  color: var(--on-primary);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 150ms;
@@ -958,13 +958,13 @@
 .parseBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .parseError {
-  font-size: 0.8125rem;
-  color: #c0392b;
+  font-size: var(--text-sm);
+  color: var(--danger);
 }
 
 
   :global([data-theme="dark"]) .parseError {
-    color: #e07070;
+    color: var(--danger);
   }
 
 
@@ -983,11 +983,11 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.45rem 0.875rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: transparent;
   color: var(--foreground);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 150ms, background-color 150ms, color 150ms;
@@ -1055,7 +1055,7 @@
 }
 
 .bulkCount {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--foreground);
   white-space: nowrap;
@@ -1079,10 +1079,10 @@
 .bulkChip {
   padding: 0.3rem 0.625rem;
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   background: var(--surface);
   color: var(--secondary);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   cursor: pointer;
   transition: border-color 120ms, background 120ms, color 120ms;
@@ -1109,9 +1109,9 @@
 }
 
 .bulkChipFalse {
-  border-color: #dc2626;
+  border-color: var(--danger);
   background: #fef2f2;
-  color: #dc2626;
+  color: var(--danger);
   font-weight: 500;
 }
 
@@ -1122,9 +1122,9 @@
 }
 
 :global([data-theme="dark"]) .bulkChipFalse {
-  background: #2d0a0a;
-  color: #f87171;
-  border-color: #f87171;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .bulkActions {
@@ -1137,11 +1137,11 @@
 
 .bulkCancelBtn {
   padding: 0.4rem 0.875rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: transparent;
   color: var(--secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 150ms, color 150ms;
@@ -1154,11 +1154,11 @@
 
 .bulkApplyBtn {
   padding: 0.4rem 1rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: none;
   background: var(--primary);
-  color: #fff;
-  font-size: 0.875rem;
+  color: var(--on-primary);
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: opacity 150ms;
@@ -1178,11 +1178,11 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.45rem 0.875rem;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: transparent;
   color: var(--foreground);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: border-color 150ms, background-color 150ms;
@@ -1197,7 +1197,7 @@
 /* ── Batch modal internals ──────────────────────────────── */
 
 .batchHint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   margin: 0;
 }
@@ -1207,10 +1207,10 @@
   box-sizing: border-box;
   padding: 0.625rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--foreground);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: monospace;
   line-height: 1.5;
   resize: vertical;
@@ -1231,21 +1231,21 @@
 }
 
 .batchProgressLabel {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
 .batchBar {
   height: 4px;
   background: var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .batchBarFill {
   height: 100%;
   background: #6366f1;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   transition: width 200ms ease;
 }
 
@@ -1260,19 +1260,19 @@
 }
 
 .batchStatusItem {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   line-height: 1.4;
   word-break: break-all;
 }
 
 .batchStatusPending { color: var(--secondary); }
 .batchStatusSuccess { color: #4ade80; }
-.batchStatusFail    { color: #f87171; }
+.batchStatusFail    { color: var(--danger); }
 
 /* ── Summary line ───────────────────────────────────────── */
 
 .batchSummary {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--foreground);
 }
@@ -1287,7 +1287,7 @@
 }
 
 .batchCountLabel {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
@@ -1297,14 +1297,14 @@
   display: flex;
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   width: fit-content;
 }
 
 .batchTab {
   padding: 0.375rem 0.875rem;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   background: transparent;
   border: none;
@@ -1324,12 +1324,12 @@
 
 .batchTabActive {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 .batchTabActive:hover {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 /* ── Dropzone ────────────────────────────────────────────── */
@@ -1341,7 +1341,7 @@
   justify-content: center;
   gap: 0.5rem;
   border: 2px dashed var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 2rem 1rem;
   cursor: pointer;
   transition: border-color 150ms, background 150ms;
@@ -1356,7 +1356,7 @@
 }
 
 .batchDropzoneHint {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   pointer-events: none;
 }
@@ -1373,7 +1373,7 @@
   position: relative;
   width: 72px;
   height: 72px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid var(--border);
   flex-shrink: 0;
@@ -1460,10 +1460,10 @@
   min-width: 0;
   padding: 0.2rem 0.4rem;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--background);
   color: var(--foreground);
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   font-family: inherit;
   outline: none;
 }
@@ -1476,10 +1476,10 @@
   flex-shrink: 0;
   padding: 0.2rem 0.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--primary);
-  color: #fff;
-  font-size: 0.6875rem;
+  color: var(--on-primary);
+  font-size: var(--text-2xs);
   font-family: inherit;
   cursor: pointer;
   line-height: 1.4;

@@ -16,7 +16,7 @@
 }
 
 .copy {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
 }
 
@@ -26,7 +26,7 @@
 }
 
 .link {
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--secondary);
   text-decoration: none;
   transition: color 150ms;

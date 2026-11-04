@@ -7,12 +7,18 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { buildLifeContext } from "@/lib/personalProfile"
+import {
+  FALLBACK_CATEGORY,
+  cleanCategoryName,
+  ensureCategories,
+  listCategoriesWithCounts,
+  type CategoryInfo,
+} from "@/lib/personalCategories"
 import type { PersonalTodo } from "@prisma/client"
 
 const client = new Anthropic()
 
-export const FALLBACK_CATEGORY = "Inbox"
-const MAX_CATEGORY_LENGTH = 40
+export { FALLBACK_CATEGORY }
 
 const CaptureSchema = z.object({
   items: z.array(
@@ -33,17 +39,13 @@ function parseDate(value: string | null): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
-export async function listCategories(userId: string): Promise<string[]> {
-  const rows = await prisma.personalTodo.groupBy({
-    by: ["category"],
-    where: { userId },
-    _count: { _all: true },
-    orderBy: { _count: { category: "desc" } },
-  })
-  return rows.map((r) => r.category)
+// "- Ultralauf: races, training, gear" — one line per category for the prompt
+function describeCategories(categories: CategoryInfo[]): string {
+  if (categories.length === 0) return "(none yet)"
+  return categories.map((c) => `- ${c.name}${c.description ? `: ${c.description}` : ""}`).join("\n")
 }
 
-async function splitAndCategorize(text: string, categories: string[], today: string, lifeContext: string): Promise<CaptureItem[]> {
+async function splitAndCategorize(text: string, categories: CategoryInfo[], today: string, lifeContext: string): Promise<CaptureItem[]> {
   const contextBlock = lifeContext
     ? `\n\nWhat you know about the person (private, from their profile and the family app):\n<life_context>\n${lifeContext}\n</life_context>\nUse this to understand who and what they mean ("Mama", "her birthday", "the bathroom") and file things better: write titles with the real names, pick fitting categories, add a short note with relevant facts from the context (e.g. "Mia wird 10"), and when a todo clearly hinges on a known date (e.g. a present for a birthday) use that date as dueDate unless the person gave another. Only use facts that are in the context or the brain dump — never invent any. Don't create items from the context itself, only from the brain dump.`
     : ""
@@ -57,13 +59,14 @@ The person sends you a quick, unstructured brain dump (any language, often Germa
 - Split it into separate, self-contained items — one per todo, idea or thought. Don't merge unrelated things, don't split one thing into many.
 - title: short and actionable, in the language the person wrote in (e.g. "Zahnarzttermin vereinbaren"). Keep names, numbers and details.
 - note: extra context worth keeping that doesn't fit the title, otherwise null. Never invent details.
-- category: a short label (1–2 words) in the person's language. Strongly prefer one of their existing categories when it fits; only create a new one when none does. Use broad, reusable categories (e.g. "Arbeit", "Haushalt", "Gesundheit", "Einkaufen", "Ideen", "Finanzen", "Familie") rather than very specific ones.
+- category: the name of one of the person's categories, spelled exactly as listed. These are their own categories and projects; a description after the colon says what belongs there — follow it. Pick the most specific category that matches what the item is about (e.g. gear for a running race belongs in a running/sport project, not in "Arbeit" just because it is a task). Only create a new category when none fits; then use a short, broad, reusable label (1–2 words) in the person's language (e.g. "Haushalt", "Gesundheit", "Finanzen", "Familie").
 - dueDate: YYYY-MM-DD only if a date or deadline is stated or clearly implied ("morgen", "bis Freitag", "nächste Woche"); resolve relative dates against today. Otherwise null.
 Today is ${today}.${contextBlock}`,
     messages: [
       {
         role: "user",
-        content: `Existing categories: ${categories.length ? categories.join(", ") : "(none yet)"}
+        content: `My categories:
+${describeCategories(categories)}
 
 Brain dump:
 ${text}`,
@@ -71,11 +74,11 @@ ${text}`,
     ],
   })
 
-  const existing = new Map(categories.map((c) => [c.toLowerCase(), c]))
+  const existing = new Map(categories.map((c) => [c.name.toLowerCase(), c.name]))
   return (response.parsed_output?.items ?? [])
     .filter((i) => i.title.trim())
     .map((i) => {
-      const raw = i.category.trim().slice(0, MAX_CATEGORY_LENGTH) || FALLBACK_CATEGORY
+      const raw = cleanCategoryName(i.category) || FALLBACK_CATEGORY
       return {
         title: i.title.trim(),
         note: i.note?.trim() || null,
@@ -93,7 +96,7 @@ export async function captureThoughts(userId: string, text: string): Promise<Per
   if (!trimmed) return []
 
   const [categories, lifeContext] = await Promise.all([
-    listCategories(userId),
+    listCategoriesWithCounts(userId),
     buildLifeContext(userId).catch((err) => {
       console.error("[personalTodos] life context error:", err)
       return ""
@@ -112,5 +115,10 @@ export async function captureThoughts(userId: string, text: string): Promise<Per
     items = [{ title: trimmed.slice(0, 200), note: trimmed.length > 200 ? trimmed : null, category: FALLBACK_CATEGORY, dueDate: null }]
   }
 
-  return prisma.$transaction(items.map((item) => prisma.personalTodo.create({ data: { userId, ...item } })))
+  const created = await prisma.$transaction(items.map((item) => prisma.personalTodo.create({ data: { userId, ...item } })))
+  // New categories the assistant made up become real (editable) categories
+  await ensureCategories(userId, items.map((i) => i.category)).catch((err) =>
+    console.error("[personalTodos] ensureCategories error:", err)
+  )
+  return created
 }

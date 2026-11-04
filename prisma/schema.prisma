@@ -62,6 +62,7 @@ model User {
   apiTokens     ApiToken[]
   personalTodos PersonalTodo[]
   personalProfile PersonalProfile?
+  personalCategories PersonalCategory[]
 }
 
 // Personal bearer token for the MCP endpoint (/api/mcp). Only the SHA-256
@@ -348,4 +349,19 @@ model PersonalProfile {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   text      String   @db.Text
   updatedAt DateTime @updatedAt
+}
+
+// The user's own categories/projects for the private todo list. PersonalTodo
+// stores the category by name; rows here add an optional description that
+// tells the thoughts assistant what belongs in it, and keep empty categories
+// around. Names are unique per user (compared case-insensitively in code).
+model PersonalCategory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, name])
 }

@@ -7,6 +7,7 @@ import { User, Download, Home, ShoppingCart, Globe, Palette, Plug, ChevronRight,
 import { GoogleCalendarSync } from "./GoogleCalendarSync"
 import { ImportedCalendarsSection } from "./ImportedCalendarsSection"
 import { ProfileSection } from "./ProfileSection"
+import { AboutMeSection } from "./AboutMeSection"
 import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
 import { ShoppingSection } from "./ShoppingSection"
@@ -113,6 +114,7 @@ export default function SettingsPage() {
           {activeSection === "profile" && (
             <>
               <ProfileSection />
+              <AboutMeSection />
               <GoogleCalendarSync />
             </>
           )}

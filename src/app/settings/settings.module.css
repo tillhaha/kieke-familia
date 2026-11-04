@@ -563,6 +563,25 @@
   margin-bottom: 0.5rem;
 }
 
+/* ── About me ────────────────────────────────────────────── */
+
+.aboutLock {
+  display: inline-block;
+  vertical-align: -1px;
+  margin-right: 0.35rem;
+}
+
+.aboutInput {
+  display: block;
+  width: 100%;
+  max-width: none;
+  min-height: 200px;
+  margin-bottom: 1rem;
+  line-height: 1.45;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
 /* ── Join code ────────────────────────────────────────────── */
 
 .joinCodeBlock {

@@ -5,10 +5,10 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { Lock, Send, X } from "lucide-react"
+import { Lock, Send, Tags, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./thoughts.module.css"
-import { AboutMe } from "./AboutMe"
+import { CategoriesModal, type CategoryDef } from "./CategoriesModal"
 
 type Todo = {
   id: string
@@ -55,6 +55,11 @@ export default function ThoughtsPage() {
   const [filter, setFilter] = useState("")
   const [showDone, setShowDone] = useState(false)
   const [editing, setEditing] = useState<Todo | null>(null)
+  const [catDefs, setCatDefs] = useState<CategoryDef[]>([])
+  const [managing, setManaging] = useState(false)
+  // Drag & drop between categories (desktop)
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [dropTarget, setDropTarget] = useState<string | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const fetchTodos = useCallback(async (includeDone: boolean) => {
@@ -68,10 +73,21 @@ export default function ThoughtsPage() {
     }
   }, [])
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const r = await fetch("/api/personal-categories")
+      if (!r.ok) return
+      const data = await r.json()
+      setCatDefs(data.categories ?? [])
+    } catch {
+      // keep previous state
+    }
+  }, [])
+
   useEffect(() => {
     if (status !== "authenticated") return
-    fetchTodos(false).finally(() => setLoading(false))
-  }, [status, fetchTodos])
+    Promise.all([fetchTodos(false), fetchCategories()]).finally(() => setLoading(false))
+  }, [status, fetchTodos, fetchCategories])
 
   async function send() {
     if (!text.trim() || sending) return
@@ -89,6 +105,7 @@ export default function ThoughtsPage() {
       setTodos((prev) => [...added, ...prev])
       setLastAdded(added)
       setText("")
+      fetchCategories()
       textareaRef.current?.focus()
     } catch {
       setError(tt.failed)
@@ -134,6 +151,49 @@ export default function ThoughtsPage() {
     setTodos((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
     setLastAdded((prev) => prev.map((x) => (x.id === updated.id ? updated : x)))
     setEditing(null)
+    if (updated.category !== editing.category) fetchCategories()
+  }
+
+  async function moveTodo(id: string, category: string) {
+    const todo = todos.find((x) => x.id === id)
+    if (!todo || todo.category === category) return
+    setError("")
+    setTodos((prev) => prev.map((x) => (x.id === id ? { ...x, category } : x)))
+    const updated = await patch(id, { category })
+    if (!updated) {
+      setTodos((prev) => prev.map((x) => (x.id === id ? { ...x, category: todo.category } : x)))
+      setError(tt.failed)
+      return
+    }
+    setTodos((prev) => prev.map((x) => (x.id === id ? updated : x)))
+    setLastAdded((prev) => prev.map((x) => (x.id === id ? updated : x)))
+  }
+
+  // Props that make an element a drop target for dragged rows
+  function dropProps(category: string) {
+    return {
+      onDragOver: (e: React.DragEvent) => {
+        if (!dragId) return
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+        if (dropTarget !== category) setDropTarget(category)
+      },
+      onDragLeave: (e: React.DragEvent) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+        setDropTarget((cur) => (cur === category ? null : cur))
+      },
+      onDrop: (e: React.DragEvent) => {
+        e.preventDefault()
+        const id = dragId ?? e.dataTransfer.getData("text/plain")
+        setDragId(null)
+        setDropTarget(null)
+        if (id) moveTodo(id, category)
+      },
+    }
+  }
+
+  async function handleCategoriesChanged() {
+    await Promise.all([fetchCategories(), fetchTodos(showDone)])
   }
 
   async function deleteTodo() {
@@ -151,21 +211,27 @@ export default function ThoughtsPage() {
     await fetchTodos(next)
   }
 
+  // Own categories (also empty ones) plus any name still only used by a todo
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
+    for (const def of catDefs) counts.set(def.name, 0)
     for (const todo of todos) if (!todo.done) counts.set(todo.category, (counts.get(todo.category) ?? 0) + 1)
     return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  }, [todos])
+  }, [todos, catDefs])
 
-  const allCategories = useMemo(() => [...new Set(todos.map((x) => x.category))].sort(), [todos])
+  const allCategories = useMemo(
+    () => [...new Set([...catDefs.map((c) => c.name), ...todos.map((x) => x.category)])].sort((a, b) => a.localeCompare(b)),
+    [todos, catDefs]
+  )
 
   const groups = useMemo(() => {
     const open = todos.filter((x) => !x.done && (!filter || x.category === filter))
     const map = new Map<string, Todo[]>()
     for (const [name] of categories) map.set(name, [])
     for (const todo of open) map.get(todo.category)?.push(todo)
-    return [...map.entries()].filter(([, items]) => items.length > 0).map(([name, items]) => [name, items.sort(compareTodos)] as const)
-  }, [todos, filter, categories])
+    // While dragging, show every category as a drop target; otherwise only non-empty ones (or the filtered one)
+    return [...map.entries()].filter(([name, items]) => items.length > 0 || dragId !== null || name === filter).map(([name, items]) => [name, items.sort(compareTodos)] as const)
+  }, [todos, filter, categories, dragId])
 
   const doneTodos = todos
     .filter((x) => x.done && (!filter || x.category === filter))
@@ -179,7 +245,21 @@ export default function ThoughtsPage() {
   function renderRow(todo: Todo) {
     const overdue = !todo.done && todo.dueDate !== null && todo.dueDate < today
     return (
-      <div key={todo.id} className={`${styles.row} ${todo.done ? styles.rowDone : ""}`} onClick={() => setEditing(todo)}>
+      <div
+        key={todo.id}
+        className={`${styles.row} ${todo.done ? styles.rowDone : ""} ${dragId === todo.id ? styles.rowDragging : ""}`}
+        onClick={() => setEditing(todo)}
+        draggable={!todo.done}
+        onDragStart={(e) => {
+          e.dataTransfer.setData("text/plain", todo.id)
+          e.dataTransfer.effectAllowed = "move"
+          setDragId(todo.id)
+        }}
+        onDragEnd={() => {
+          setDragId(null)
+          setDropTarget(null)
+        }}
+      >
         <input
           type="checkbox"
           className={styles.checkbox}
@@ -209,8 +289,6 @@ export default function ThoughtsPage() {
           {tt.privateHint}
         </span>
       </div>
-
-      <AboutMe />
 
       <div className={styles.composer}>
         <p className={styles.subtitle}>{tt.subtitle}</p>
@@ -266,12 +344,17 @@ export default function ThoughtsPage() {
         {categories.map(([name, count]) => (
           <button
             key={name}
-            className={`${styles.pill} ${filter === name ? styles.pillActive : ""}`}
+            className={`${styles.pill} ${filter === name ? styles.pillActive : ""} ${dropTarget === name ? styles.pillDrop : ""}`}
             onClick={() => setFilter(filter === name ? "" : name)}
+            {...dropProps(name)}
           >
             {name} <span className={styles.pillCount}>{count}</span>
           </button>
         ))}
+        <button className={`${styles.pill} ${styles.pillManage}`} onClick={() => setManaging(true)} title={tt.categoriesTitle}>
+          <Tags size={13} strokeWidth={2} />
+          {tt.manageCategories}
+        </button>
         <button
           className={`${styles.pill} ${styles.pillToggle} ${showDone ? styles.pillActive : ""}`}
           onClick={handleShowDoneToggle}
@@ -282,12 +365,22 @@ export default function ThoughtsPage() {
 
       {groups.length === 0 && <p className={styles.empty}>{tt.empty}</p>}
 
+      {groups.length > 0 && <p className={styles.dragHint}>{tt.dragHint}</p>}
+
       {groups.map(([name, items]) => (
-        <section key={name} className={styles.section}>
+        <section
+          key={name}
+          className={`${styles.section} ${dropTarget === name ? styles.sectionDrop : ""}`}
+          {...dropProps(name)}
+        >
           <div className={styles.sectionLabel}>{name}</div>
-          <div className={styles.list}>
-            {items.map(renderRow)}
-          </div>
+          {items.length > 0 ? (
+            <div className={styles.list}>
+              {items.map(renderRow)}
+            </div>
+          ) : (
+            <div className={styles.dropZone}>{tt.emptyCategory}</div>
+          )}
         </section>
       ))}
 
@@ -302,6 +395,17 @@ export default function ThoughtsPage() {
             </div>
           )}
         </section>
+      )}
+
+      {managing && (
+        <CategoriesModal
+          categories={categories.map(([name, count]) => {
+            const def = catDefs.find((c) => c.name === name)
+            return { id: def?.id ?? "", name, description: def?.description ?? null, count }
+          }).filter((c) => c.id)}
+          onChanged={handleCategoriesChanged}
+          onClose={() => setManaging(false)}
+        />
       )}
 
       {editing && (

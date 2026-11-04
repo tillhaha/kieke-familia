@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { categoryLabel } from "@/lib/shoppingCategories"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
 type Category = { id: string; name: string; order: number }
@@ -84,7 +85,7 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
           <select className={styles.modalInput} value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">{t.shopping.other}</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
+              <option key={c.id} value={c.id}>{categoryLabel(c.name, t)}</option>
             ))}
           </select>
         </label>

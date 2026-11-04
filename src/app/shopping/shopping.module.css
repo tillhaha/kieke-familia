@@ -181,7 +181,27 @@
 
 .itemName {
   flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
   font-size: 0.9375rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemName:disabled {
+  cursor: default;
+}
+
+/* Desktop (real hover): underline the name to show it opens the editor */
+@media (hover: hover) {
+  .itemName:hover:not(:disabled) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 .tagChip {

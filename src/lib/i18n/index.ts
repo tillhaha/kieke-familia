@@ -258,6 +258,8 @@ export type Translations = {
     removeItem: string
     clearList: string
     failedToAdd: string
+    // Display names for the built-in categories, keyed by the English name stored in the DB
+    defaultCategories: Record<string, string>
   }
   onboarding: {
     welcomeTitle: string
@@ -639,6 +641,19 @@ const en: Translations = {
     removeItem: "Remove item",
     clearList: "Clear list",
     failedToAdd: "Failed to add item",
+    defaultCategories: {
+      "Fruit/Vegetables": "Fruit & Vegetables",
+      "Meat": "Meat",
+      "Fish": "Fish",
+      "Milk Products": "Dairy",
+      "Bread": "Bread",
+      "Canned, Glass": "Canned & Jarred",
+      "Condiments": "Condiments",
+      "Sauces": "Sauces",
+      "Frozen": "Frozen",
+      "Nuts/Snacks": "Nuts & Snacks",
+      "Drinks": "Drinks",
+    },
   },
   onboarding: {
     welcomeTitle: "Welcome to YourKieke",
@@ -1020,6 +1035,19 @@ const es: Translations = {
     removeItem: "Eliminar artículo",
     clearList: "Limpiar lista",
     failedToAdd: "Error al añadir artículo",
+    defaultCategories: {
+      "Fruit/Vegetables": "Frutas y verduras",
+      "Meat": "Carne",
+      "Fish": "Pescado",
+      "Milk Products": "Lácteos",
+      "Bread": "Pan",
+      "Canned, Glass": "Conservas",
+      "Condiments": "Condimentos",
+      "Sauces": "Salsas",
+      "Frozen": "Congelados",
+      "Nuts/Snacks": "Frutos secos y snacks",
+      "Drinks": "Bebidas",
+    },
   },
   onboarding: {
     welcomeTitle: "Bienvenido a YourKieke",
@@ -1401,6 +1429,19 @@ const de: Translations = {
     removeItem: "Artikel entfernen",
     clearList: "Liste leeren",
     failedToAdd: "Artikel konnte nicht hinzugefügt werden",
+    defaultCategories: {
+      "Fruit/Vegetables": "Obst & Gemüse",
+      "Meat": "Fleisch",
+      "Fish": "Fisch",
+      "Milk Products": "Milchprodukte",
+      "Bread": "Brot",
+      "Canned, Glass": "Konserven & Gläser",
+      "Condiments": "Gewürze",
+      "Sauces": "Soßen",
+      "Frozen": "Tiefkühl",
+      "Nuts/Snacks": "Nüsse & Snacks",
+      "Drinks": "Getränke",
+    },
   },
   onboarding: {
     welcomeTitle: "Willkommen bei YourKieke",

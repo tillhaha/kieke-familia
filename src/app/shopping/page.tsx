@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { Pencil, Plus, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
+import { categoryLabel } from "@/lib/shoppingCategories"
 import EditItemModal, { type ItemChanges } from "./EditItemModal"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
@@ -228,7 +229,7 @@ export default function ShoppingPage() {
         <div className={styles.list}>
           {grouped.map(({ category, items: groupItems }) => (
             <div key={category?.id ?? "uncategorized"} className={styles.group}>
-              <div className={styles.groupLabel}>{category?.name ?? t.shopping.other}</div>
+              <div className={styles.groupLabel}>{category ? categoryLabel(category.name, t) : t.shopping.other}</div>
               <div className={styles.groupItems}>
                 {groupItems.map((item) => (
                   <div key={item.id} className={styles.item}>
@@ -238,7 +239,15 @@ export default function ShoppingPage() {
                       onChange={() => handleDelete(item.id)}
                     />
                     {item.quantity && <span className={styles.itemQty}>{item.quantity}</span>}
-                    <span className={styles.itemName}>{item.name}</span>
+                    <button
+                      type="button"
+                      className={styles.itemName}
+                      onClick={() => setEditingItemId(item.id)}
+                      disabled={item.id.startsWith("optimistic-")}
+                      title={t.shopping.editItem}
+                    >
+                      {item.name}
+                    </button>
                     {item.tags.map((tag) => (
                       <span key={tag} className={styles.tagChip}>{tag}</span>
                     ))}

@@ -5,6 +5,7 @@ import { X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./settings.module.css"
 import shopStyles from "../shopping/shopping.module.css"
+import { categoryLabel } from "@/lib/shoppingCategories"
 
 type Category = { id: string; name: string; order: number }
 type BlacklistTerm = { id: string; term: string }
@@ -43,6 +44,13 @@ export function ShoppingSection() {
 
   async function handleRenameCategory(id: string) {
     if (!editingCatName.trim()) return
+    // Unchanged (possibly translated) default name: keep the stored English key so it stays translated
+    const current = categories.find((c) => c.id === id)
+    if (current && editingCatName.trim() === categoryLabel(current.name, t)) {
+      setEditingCatId(null)
+      setEditingCatName("")
+      return
+    }
     const res = await fetch(`/api/shopping/categories/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -101,8 +109,8 @@ export function ShoppingSection() {
               </>
             ) : (
               <>
-                <span className={shopStyles.manageRowName}>{cat.name}</span>
-                <button className={shopStyles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(cat.name) }}>{t.settings.rename}</button>
+                <span className={shopStyles.manageRowName}>{categoryLabel(cat.name, t)}</span>
+                <button className={shopStyles.manageSaveBtn} onClick={() => { setEditingCatId(cat.id); setEditingCatName(categoryLabel(cat.name, t)) }}>{t.settings.rename}</button>
                 <button className={shopStyles.manageDeleteBtn} aria-label={t.settings.remove} onClick={() => handleDeleteCategory(cat.id)}><X size={13} /></button>
               </>
             )}

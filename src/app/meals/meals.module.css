@@ -36,47 +36,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   text-decoration: none;
   color: var(--foreground);
   min-width: 0;
 }
 
 .listItemName {
+  flex: 1 1 60%; /* the title gets the room; meta chips wrap instead */
+  min-width: 0;
   font-size: var(--text-base);
   font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.metaChip {
+  padding: 0.0625rem var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--secondary);
+  white-space: nowrap;
+  line-height: 1.5;
 }
 
 .listItemMeta {
-  font-size: var(--text-sm);
-  color: var(--secondary);
-  flex-shrink: 0;
-}
-
-.starBtn {
-  flex-shrink: 0;
+  flex: 0 1 auto;
+  max-width: 40%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-right: 0.25rem;
-  border: none;
-  background: transparent;
-  color: var(--secondary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: color 150ms;
-  padding: 0;
-}
-
-.starBtn:hover {
-  color: #f59e0b;
-}
-
-.starBtnActive {
-  color: #f59e0b;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1);
 }
 
 .grid {
@@ -210,7 +201,7 @@
 .filterToggle {
   padding: 0.375rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   background: var(--surface);
   color: var(--secondary);
   font-size: var(--text-sm);
@@ -230,7 +221,9 @@
 }
 
 .filterToggleStar {
-  padding: 0.375rem;
+  width: 30px; /* same size as FilterPill */
+  height: 30px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1276,4 +1269,22 @@
 
 @media (max-width: 768px) {
   .backLink { min-height: 44px; }
+}
+
+/* Phones: title gets the full row width, meta chips wrap on one line below */
+@media (max-width: 768px) {
+  .listItemLink {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .listItemName { flex: none; }
+  .listItemMeta {
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterToggleStar { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
 }

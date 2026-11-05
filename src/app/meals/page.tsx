@@ -71,19 +71,6 @@ export default function MealsPage() {
       .then((d) => setMeals(d.meals ?? []))
   }, [filterMealType, filterDiet, filterOffice, filterThirty, filterFavorite])
 
-  const toggleFavorite = async (id: string, current: boolean) => {
-    setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: !current } : m))
-    try {
-      await fetch(`/api/meals/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorite: !current }),
-      })
-    } catch {
-      setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: current } : m))
-    }
-  }
-
   // Re-fetch when filters change (immediately)
   useEffect(() => {
     if (status !== "authenticated") return
@@ -284,21 +271,12 @@ export default function MealsPage() {
                 >
                   <span className={styles.listItemName}>{meal.name}</span>
                   <span className={styles.listItemMeta}>
-                    {meal.mealType}
-                    {" · "}{dietLabel(meal.diet)}
-                    {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
-                    {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
+                    <span className={styles.metaChip}>{meal.mealType}</span>
+                    <span className={styles.metaChip}>{dietLabel(meal.diet)}</span>
+                    {meal.officeFriendly && <span className={styles.metaChip}>{t.meals.officeFilter}</span>}
+                    {meal.thirtyMinute && <span className={styles.metaChip}>{t.meals.quickFilter}</span>}
                   </span>
                 </Link>
-                {!selectMode && (
-                  <button
-                    className={`${styles.starBtn} ${meal.favorite ? styles.starBtnActive : ""}`}
-                    onClick={() => toggleFavorite(meal.id, meal.favorite)}
-                    title={meal.favorite ? "Remove from favourites" : "Add to favourites"}
-                  >
-                    <Star size={14} fill={meal.favorite ? "currentColor" : "none"} strokeWidth={1.5} />
-                  </button>
-                )}
               </div>
             )
           })}

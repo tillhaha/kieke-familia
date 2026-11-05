@@ -273,6 +273,8 @@ export type Translations = {
     clearList: string
     failedToAdd: string
     offlineNotice: string
+    tagOnlyHint: string
+    tagHiddenHint: string
     pendingSync: string
     // Display names for the built-in categories, keyed by the English name stored in the DB
     defaultCategories: Record<string, string>
@@ -673,6 +675,8 @@ const en: Translations = {
     failedToAdd: "Failed to add item",
     offlineNotice: "You're offline — showing the saved list. Changes stay on this device and sync automatically.",
     pendingSync: "{n} change(s) waiting to sync",
+    tagOnlyHint: "Only {tag} items — tap again to hide them",
+    tagHiddenHint: "{tag} items hidden — tap to show them again",
     defaultCategories: {
       "Fruit/Vegetables": "Fruit & Vegetables",
       "Meat": "Meat",
@@ -1083,6 +1087,8 @@ const es: Translations = {
     failedToAdd: "Error al añadir artículo",
     offlineNotice: "Sin conexión: se muestra la lista guardada. Los cambios se guardan en este dispositivo y se sincronizan solos.",
     pendingSync: "{n} cambio(s) pendientes de sincronizar",
+    tagOnlyHint: "Solo artículos de {tag}: toca otra vez para ocultarlos",
+    tagHiddenHint: "Artículos de {tag} ocultos: toca para mostrarlos",
     defaultCategories: {
       "Fruit/Vegetables": "Frutas y verduras",
       "Meat": "Carne",
@@ -1493,6 +1499,8 @@ const de: Translations = {
     failedToAdd: "Artikel konnte nicht hinzugefügt werden",
     offlineNotice: "Du bist offline – die gespeicherte Liste wird angezeigt. Änderungen bleiben auf diesem Gerät und werden automatisch synchronisiert.",
     pendingSync: "{n} Änderung(en) warten auf Synchronisierung",
+    tagOnlyHint: "Nur {tag}-Artikel – nochmal tippen zum Ausblenden",
+    tagHiddenHint: "{tag}-Artikel ausgeblendet – tippen zum Einblenden",
     defaultCategories: {
       "Fruit/Vegetables": "Obst & Gemüse",
       "Meat": "Fleisch",

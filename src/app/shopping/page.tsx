@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw } from "lucide-react"
+import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw, EyeOff } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -45,8 +45,25 @@ export default function ShoppingPage() {
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   // Tag filter — while active, only tagged items are shown and new items get the tag
+  // Tag pills cycle: off → only this tag → hide this tag → off. Several tags
+  // can be hidden at once (e.g. skip Drogerie + Asia in the supermarket).
   const [tagFilter, setTagFilter] = useState<ShoppingTag | null>(null)
-  const visibleItems = tagFilter ? items.filter((i) => i.tags.includes(tagFilter)) : items
+  const [hiddenTags, setHiddenTags] = useState<ShoppingTag[]>([])
+  const visibleItems = tagFilter
+    ? items.filter((i) => i.tags.includes(tagFilter))
+    : items.filter((i) => !i.tags.some((tag) => hiddenTags.includes(tag)))
+
+  const cycleTag = (tag: ShoppingTag) => {
+    if (tagFilter === tag) {
+      setTagFilter(null)
+      setHiddenTags((prev) => [...prev, tag])
+    } else if (hiddenTags.includes(tag)) {
+      setHiddenTags((prev) => prev.filter((x) => x !== tag))
+    } else {
+      setTagFilter(tag)
+      setHiddenTags((prev) => prev.filter((x) => x !== tag))
+    }
+  }
 
   // Edit modal
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
@@ -340,19 +357,29 @@ export default function ShoppingPage() {
       {addError && <p className={styles.addError}>{addError}</p>}
 
       <div className={styles.tagFilter}>
-        <FilterPill active={tagFilter === null} onClick={() => setTagFilter(null)}>
+        <FilterPill
+          active={tagFilter === null && hiddenTags.length === 0}
+          onClick={() => { setTagFilter(null); setHiddenTags([]) }}
+        >
           {t.shopping.allItems}
         </FilterPill>
-        {SHOPPING_TAGS.map((tag) => (
-          <FilterPill
-            key={tag}
-            active={tagFilter === tag}
-            count={items.filter((i) => i.tags.includes(tag)).length}
-            onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
-          >
-            {tag}
-          </FilterPill>
-        ))}
+        {SHOPPING_TAGS.map((tag) => {
+          const hidden = hiddenTags.includes(tag)
+          return (
+            <FilterPill
+              key={tag}
+              active={tagFilter === tag}
+              className={hidden ? styles.tagHidden : undefined}
+              icon={hidden ? <EyeOff size={13} strokeWidth={2} /> : undefined}
+              count={items.filter((i) => i.tags.includes(tag)).length}
+              onClick={() => cycleTag(tag)}
+              aria-pressed={tagFilter === tag ? true : hidden ? "mixed" : false}
+              title={hidden ? t.shopping.tagHiddenHint.replace("{tag}", tag) : tagFilter === tag ? t.shopping.tagOnlyHint.replace("{tag}", tag) : undefined}
+            >
+              {tag}
+            </FilterPill>
+          )
+        })}
       </div>
 
       {visibleItems.length === 0 ? (

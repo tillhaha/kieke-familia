@@ -6,7 +6,6 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { CheckSquare, Layers, Plus, Search, Square, Star, ChefHat } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
-import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
@@ -50,7 +49,6 @@ export default function MealsPage() {
   const [filterThirty, setFilterThirty] = useState(false)
   const [filterFavorite, setFilterFavorite] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [batchOpen, setBatchOpen] = useState(false)
 
   // Multi-select
   const [selectMode, setSelectMode] = useState(false)
@@ -70,19 +68,6 @@ export default function MealsPage() {
       .then((r) => r.json())
       .then((d) => setMeals(d.meals ?? []))
   }, [filterMealType, filterDiet, filterOffice, filterThirty, filterFavorite])
-
-  const toggleFavorite = async (id: string, current: boolean) => {
-    setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: !current } : m))
-    try {
-      await fetch(`/api/meals/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ favorite: !current }),
-      })
-    } catch {
-      setMeals((prev) => prev.map((m) => m.id === id ? { ...m, favorite: current } : m))
-    }
-  }
 
   // Re-fetch when filters change (immediately)
   useEffect(() => {
@@ -172,9 +157,6 @@ export default function MealsPage() {
               onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
             >
               {selectMode ? t.meals.cancel : t.meals.select}
-            </Button>
-            <Button variant="secondary" onClick={() => setBatchOpen(true)}>
-              {t.meals.batchImport}
             </Button>
             <Button variant="primary" href="/meals/new" icon={<Plus size={15} strokeWidth={2.5} />}>
               {t.meals.newRecipe}
@@ -284,36 +266,19 @@ export default function MealsPage() {
                 >
                   <span className={styles.listItemName}>{meal.name}</span>
                   <span className={styles.listItemMeta}>
-                    {meal.mealType}
-                    {" · "}{dietLabel(meal.diet)}
-                    {meal.officeFriendly ? ` · ${t.meals.officeFilter}` : ""}
-                    {meal.thirtyMinute ? ` · ${t.meals.quickFilter}` : ""}
+                    <span className={styles.metaChip}>{meal.mealType}</span>
+                    <span className={styles.metaChip}>{dietLabel(meal.diet)}</span>
+                    {meal.officeFriendly && <span className={styles.metaChip}>{t.meals.officeFilter}</span>}
+                    {meal.thirtyMinute && <span className={styles.metaChip}>{t.meals.quickFilter}</span>}
                   </span>
                 </Link>
-                {!selectMode && (
-                  <button
-                    className={`${styles.starBtn} ${meal.favorite ? styles.starBtnActive : ""}`}
-                    onClick={() => toggleFavorite(meal.id, meal.favorite)}
-                    title={meal.favorite ? "Remove from favourites" : "Add to favourites"}
-                  >
-                    <Star size={14} fill={meal.favorite ? "currentColor" : "none"} strokeWidth={1.5} />
-                  </button>
-                )}
               </div>
             )
           })}
         </div>
       )}
 
-      {batchOpen && (
-        <BatchImportModal
-          onClose={() => setBatchOpen(false)}
-          onRefresh={() => {
-            setLoading(true)
-            fetchMeals(query).finally(() => setLoading(false))
-          }}
-        />
-      )}
+
 
       {/* Bulk action bar */}
       {selectMode && (

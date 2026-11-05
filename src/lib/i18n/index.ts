@@ -151,12 +151,10 @@ export type Translations = {
     sourceEmptyPrompt: string
     ingredientsEmptyPrompt: string
     stepsEmptyPrompt: string
-    batchImport: string
     batchHint: string
-    batchPlaceholder: string
-    batchItemDetected: string
     batchItemsDetected: string
     importAll: string
+    goToRecipes: string
     batchImporting: string
     batchDoneAll: string
     batchDoneMixed: string
@@ -550,12 +548,10 @@ const en: Translations = {
     sourceEmptyPrompt: "Click to add source…",
     ingredientsEmptyPrompt: "Click to add ingredients…",
     stepsEmptyPrompt: "Click to add steps…",
-    batchImport: "Batch import",
-    batchHint: "One URL per line, or separate recipe texts with ---",
-    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/soup\n---\nBanana Bread\n\nIngredients:\n3 ripe bananas…",
-    batchItemDetected: "1 item detected",
-    batchItemsDetected: "{n} items detected",
+    batchHint: "Several recipes? Put one link per line, or separate recipe texts with a line of ---",
+    batchItemsDetected: "{n} recipes detected",
     importAll: "Import all",
+    goToRecipes: "Go to recipes",
     batchImporting: "Importing… {current} / {total}",
     batchDoneAll: "All {total} imported",
     batchDoneMixed: "{imported} imported, {failed} failed",
@@ -960,12 +956,10 @@ const es: Translations = {
     sourceEmptyPrompt: "Haz clic para añadir fuente…",
     ingredientsEmptyPrompt: "Haz clic para añadir ingredientes…",
     stepsEmptyPrompt: "Haz clic para añadir pasos…",
-    batchImport: "Importación masiva",
-    batchHint: "Una URL por línea, o separa recetas completas con ---",
-    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/sopa\n---\nPan de plátano\n\nIngredientes:\n3 plátanos maduros…",
-    batchItemDetected: "1 elemento detectado",
-    batchItemsDetected: "{n} elementos detectados",
+    batchHint: "¿Varias recetas? Un enlace por línea, o separa los textos con una línea ---",
+    batchItemsDetected: "{n} recetas detectadas",
     importAll: "Importar todo",
+    goToRecipes: "Ir a recetas",
     batchImporting: "Importando… {current} / {total}",
     batchDoneAll: "{total} importados",
     batchDoneMixed: "{imported} importados, {failed} fallidos",
@@ -1370,12 +1364,10 @@ const de: Translations = {
     sourceEmptyPrompt: "Klicken um Quelle hinzuzufügen…",
     ingredientsEmptyPrompt: "Klicken um Zutaten hinzuzufügen…",
     stepsEmptyPrompt: "Klicken um Schritte hinzuzufügen…",
-    batchImport: "Stapelimport",
-    batchHint: "Eine URL pro Zeile oder Rezepte mit --- trennen",
-    batchPlaceholder: "https://example.com/pasta\nhttps://example.com/suppe\n---\nBananenbrot\n\nZutaten:\n3 reife Bananen…",
-    batchItemDetected: "1 Element erkannt",
-    batchItemsDetected: "{n} Elemente erkannt",
+    batchHint: "Mehrere Rezepte? Ein Link pro Zeile oder Rezepttexte mit einer Zeile --- trennen",
+    batchItemsDetected: "{n} Rezepte erkannt",
     importAll: "Alle importieren",
+    goToRecipes: "Zu den Rezepten",
     batchImporting: "Importiere… {current} / {total}",
     batchDoneAll: "Alle {total} importiert",
     batchDoneMixed: "{imported} importiert, {failed} fehlgeschlagen",

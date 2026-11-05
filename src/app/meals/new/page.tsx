@@ -8,8 +8,14 @@ import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 import { Page } from "@/components/ui/Page"
 import { Button } from "@/components/ui/Button"
+import { splitImportText } from "../importItems"
 
 type ScreenshotEntry = { dataUrl: string; name: string }
+
+type ImportStatus =
+  | { status: "pending" }
+  | { status: "success"; name: string }
+  | { status: "fail"; label: string }
 
 type ParsedRecipe = {
   name?: string
@@ -56,6 +62,10 @@ export default function NewMealPage() {
   const [importText, setImportText] = useState("")
   const [parsing, setParsing] = useState(false)
   const [parseError, setParseError] = useState<string | null>(null)
+  // Several recipes in the AI import → parsed and saved one by one
+  const [importResults, setImportResults] = useState<ImportStatus[]>([])
+  const [importSummary, setImportSummary] = useState<string | null>(null)
+  const [importedAny, setImportedAny] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingImageFileRef = useRef<File | undefined>(undefined)
@@ -72,6 +82,8 @@ export default function NewMealPage() {
       setTimeout(() => textareaRef.current?.focus(), 50)
     } else {
       setParseError(null)
+      setImportResults([])
+      setImportSummary(null)
     }
   }, [modalOpen])
 
@@ -110,6 +122,60 @@ export default function NewMealPage() {
     setSource(r.source ?? "")
   }
 
+  const importItems = splitImportText(importText)
+  const isMultiImport = importItems.length > 1
+
+  const handleImport = () => (isMultiImport ? handleMultiImport() : handleParse())
+
+  // Several recipes: parse + save each one, keep failed inputs in the textarea
+  const handleMultiImport = async () => {
+    const batch = splitImportText(importText)
+    if (batch.length === 0 || parsing) return
+    setParsing(true)
+    setParseError(null)
+    setImportSummary(null)
+    setImportResults(batch.map(() => ({ status: "pending" })))
+
+    const headers = { "Content-Type": "application/json" }
+    const final: ImportStatus[] = batch.map(() => ({ status: "pending" }))
+    const setResult = (i: number, r: ImportStatus) => {
+      final[i] = r
+      setImportResults((prev) => prev.map((x, idx) => (idx === i ? r : x)))
+    }
+
+    for (let i = 0; i < batch.length; i++) {
+      const item = batch[i]
+      try {
+        const parseRes = await fetch("/api/meals/parse", { method: "POST", headers, body: JSON.stringify({ text: item }) })
+        const parseData = await parseRes.json().catch(() => ({}))
+        if (!parseRes.ok) {
+          setResult(i, { status: "fail", label: `${item.slice(0, 60)} — ${parseData.error ?? parseRes.statusText}` })
+          continue
+        }
+        const saveRes = await fetch("/api/meals", { method: "POST", headers, body: JSON.stringify(parseData.recipe) })
+        const saveData = await saveRes.json().catch(() => ({}))
+        if (!saveRes.ok) {
+          setResult(i, { status: "fail", label: `${item.slice(0, 60)} — ${saveData.error ?? saveRes.statusText}` })
+          continue
+        }
+        setResult(i, { status: "success", name: parseData.recipe.name })
+      } catch {
+        setResult(i, { status: "fail", label: `${item.slice(0, 60)} — network error` })
+      }
+    }
+
+    const failedInputs = batch.filter((_, i) => final[i].status === "fail")
+    const imported = batch.length - failedInputs.length
+    if (imported > 0) setImportedAny(true)
+    setImportSummary(
+      failedInputs.length === 0
+        ? t.meals.batchDoneAll.replace("{total}", String(batch.length))
+        : t.meals.batchDoneMixed.replace("{imported}", String(imported)).replace("{failed}", String(failedInputs.length))
+    )
+    setImportText(failedInputs.join("\n---\n"))
+    setParsing(false)
+  }
+
   const handleParse = async () => {
     if (!importText.trim() || parsing) return
     setParsing(true)
@@ -119,7 +185,7 @@ export default function NewMealPage() {
       const res = await fetch("/api/meals/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: importText }),
+        body: JSON.stringify({ text: importItems[0] ?? importText }),
       })
       const data = await res.json()
       if (!res.ok) { setParseError(data.error ?? "Failed to parse recipe."); return }
@@ -351,16 +417,55 @@ export default function NewMealPage() {
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
               placeholder={t.meals.insertRecipeOrUrl}
-              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleParse() }}
+              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleImport() }}
+              disabled={parsing && isMultiImport}
             />
+            <p className={styles.batchHint}>{t.meals.batchHint}</p>
+
+            {importResults.length > 0 && (
+              <>
+                {parsing && (
+                  <div className={styles.batchProgressSection}>
+                    <span className={styles.batchProgressLabel}>
+                      {t.meals.batchImporting
+                        .replace("{current}", String(importResults.filter((r) => r.status !== "pending").length))
+                        .replace("{total}", String(importResults.length))}
+                    </span>
+                    <div className={styles.batchBar}>
+                      <div
+                        className={styles.batchBarFill}
+                        style={{ width: `${(importResults.filter((r) => r.status !== "pending").length / importResults.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className={styles.batchStatusList}>
+                  {importResults.map((r, i) => (
+                    <div
+                      key={i}
+                      className={`${styles.batchStatusItem} ${r.status === "pending" ? styles.batchStatusPending : r.status === "success" ? styles.batchStatusSuccess : styles.batchStatusFail}`}
+                    >
+                      {r.status === "pending" ? "⋯" : r.status === "success" ? `✓ ${r.name}` : `✗ ${r.label}`}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {importSummary && <p className={styles.batchSummary}>{importSummary}</p>}
 
             <div className={styles.modalFooter}>
+              {isMultiImport && !parsing && (
+                <span className={styles.batchCountLabel}>{t.meals.batchItemsDetected.replace("{n}", String(importItems.length))}</span>
+              )}
+              {importedAny && !parsing && (
+                <Button variant="secondary" href="/meals">{t.meals.goToRecipes}</Button>
+              )}
               <Button
                 variant="primary"
-                onClick={handleParse}
-                disabled={parsing || !importText.trim()}
+                onClick={handleImport}
+                disabled={parsing || importItems.length === 0}
               >
-                {parsing ? t.meals.importing : t.meals.import}
+                {parsing ? t.meals.importing : isMultiImport ? `${t.meals.importAll} (${importItems.length})` : t.meals.import}
               </Button>
               {parseError && <span className={styles.parseError}>{parseError}</span>}
             </div>

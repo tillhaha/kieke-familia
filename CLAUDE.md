@@ -80,7 +80,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 - `TaskModal` (`src/app/tasks/TaskModal.tsx`) — shared create/edit modal; exports `TaskData` type; used on both `/tasks` page and the homepage tasks widget
 - `Providers` (`src/components/Providers.tsx`) — wraps `SessionProvider`
 - `Navbar` (`src/components/Navbar.tsx`) — client component, shows nav only when authenticated; mobile: slide-in drawer triggered by hamburger, closes on backdrop click
-- `BatchImportModal` (`src/app/meals/BatchImportModal.tsx`) — modal for bulk-importing recipes from URLs or pasted text; reuses `/api/meals/parse` + `POST /api/meals` sequentially; progress tracked via local mirror array (not a separate counter) to avoid stale-closure issues
+- AI import on `/meals/new` (`src/app/meals/new/page.tsx`) — one text/URL is parsed via `/api/meals/parse` into the form for review; several (split by a line of `---`+ dashes, or one link per line — `splitImportText` in `src/app/meals/importItems.ts`) are parsed and saved one by one via `POST /api/meals` with progress + per-item results; failed inputs stay in the textarea. (There is no separate batch-import modal any more.)
 
 ### API routes
 All under `src/app/api/`:

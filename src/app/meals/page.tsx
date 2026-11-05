@@ -6,7 +6,6 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { CheckSquare, Layers, Plus, Search, Square, Star, ChefHat } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
-import BatchImportModal from "./BatchImportModal"
 import styles from "./meals.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { Page } from "@/components/ui/Page"
@@ -50,7 +49,6 @@ export default function MealsPage() {
   const [filterThirty, setFilterThirty] = useState(false)
   const [filterFavorite, setFilterFavorite] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [batchOpen, setBatchOpen] = useState(false)
 
   // Multi-select
   const [selectMode, setSelectMode] = useState(false)
@@ -159,9 +157,6 @@ export default function MealsPage() {
               onClick={() => selectMode ? exitSelectMode() : setSelectMode(true)}
             >
               {selectMode ? t.meals.cancel : t.meals.select}
-            </Button>
-            <Button variant="secondary" onClick={() => setBatchOpen(true)}>
-              {t.meals.batchImport}
             </Button>
             <Button variant="primary" href="/meals/new" icon={<Plus size={15} strokeWidth={2.5} />}>
               {t.meals.newRecipe}
@@ -283,15 +278,7 @@ export default function MealsPage() {
         </div>
       )}
 
-      {batchOpen && (
-        <BatchImportModal
-          onClose={() => setBatchOpen(false)}
-          onRefresh={() => {
-            setLoading(true)
-            fetchMeals(query).finally(() => setLoading(false))
-          }}
-        />
-      )}
+
 
       {/* Bulk action bar */}
       {selectMode && (

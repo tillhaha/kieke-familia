@@ -2,8 +2,8 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useState, useEffect, useRef, useMemo } from "react"
-import { Pencil, Plus, X, ShoppingCart } from "lucide-react"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -14,12 +14,25 @@ import { FilterPill } from "@/components/ui/FilterPill"
 import { categoryLabel } from "@/lib/shoppingCategories"
 import EditItemModal, { type ItemChanges } from "./EditItemModal"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
+import {
+  TEMP_PREFIX,
+  applyOutbox,
+  cancelPendingAdd,
+  enqueue,
+  loadCache,
+  loadOutbox,
+  newId,
+  removeOp,
+  saveCache,
+  type OutboxOp,
+} from "@/lib/shoppingOffline"
 
 type Category = { id: string; name: string; order: number }
+type AddOp = Extract<OutboxOp, { kind: "add" }>
 type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null; tags: ShoppingTag[] }
 
 export default function ShoppingPage() {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<ShoppingItem[]>([])
@@ -41,16 +54,158 @@ export default function ShoppingPage() {
 
   const [clearing, setClearing] = useState(false)
 
+  // ── Offline sync (see src/lib/shoppingOffline.ts) ─────────────
+  // Every add / check-off goes into a per-user outbox first and the list
+  // updates immediately; the outbox is replayed in order whenever the
+  // connection is back. The last server list is cached for offline use.
+  const userId = session?.user?.id ?? null
+  const [online, setOnline] = useState(true)
+  const [connectionProblem, setConnectionProblem] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
+  const flushingRef = useRef(false)
+  const inFlightTempId = useRef<string | null>(null)
+  const cancelledTempIds = useRef(new Set<string>())
+  const categoriesRef = useRef<Category[]>([])
+
+  const opToItem = useCallback((op: AddOp): ShoppingItem => ({
+    id: op.tempId,
+    name: op.name,
+    quantity: op.quantity,
+    categoryId: op.categoryId,
+    category: categoriesRef.current.find((c) => c.id === op.categoryId) ?? null,
+    tags: op.tags as ShoppingTag[],
+  }), [])
+
+  const refreshPending = useCallback(() => {
+    if (userId) setPendingCount(loadOutbox(userId).length)
+  }, [userId])
+
+  // Server list + pending local changes on top; refreshes the offline cache
+  const fetchList = useCallback(async (): Promise<boolean> => {
+    if (!userId) return false
+    try {
+      const [catRes, itemRes] = await Promise.all([fetch("/api/shopping/categories"), fetch("/api/shopping/items")])
+      if (!catRes.ok || !itemRes.ok) return false
+      const [catData, itemData] = await Promise.all([catRes.json(), itemRes.json()])
+      const cats: Category[] = catData.categories ?? []
+      const serverItems: ShoppingItem[] = itemData.items ?? []
+      categoriesRef.current = cats
+      setCategories(cats)
+      setItems(applyOutbox(serverItems, loadOutbox(userId), opToItem))
+      saveCache(userId, serverItems, cats)
+      setConnectionProblem(false)
+      return true
+    } catch {
+      setConnectionProblem(true)
+      return false
+    }
+  }, [userId, opToItem])
+
+  // Replay the outbox in order; stops at the first network/server failure
+  const flush = useCallback(async () => {
+    if (!userId || flushingRef.current) return
+    flushingRef.current = true
+    let synced = false
+    try {
+      for (;;) {
+        const op = loadOutbox(userId)[0]
+        if (!op) break
+        if (op.kind === "add") inFlightTempId.current = op.tempId
+        let res: Response
+        try {
+          res = op.kind === "add"
+            ? await fetch("/api/shopping/items", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: op.name, quantity: op.quantity ?? undefined, categoryId: op.categoryId ?? undefined, tags: op.tags }),
+              })
+            : await fetch(`/api/shopping/items/${op.itemId}`, { method: "DELETE" })
+        } catch {
+          setConnectionProblem(true) // still offline — retried later
+          break
+        } finally {
+          inFlightTempId.current = null
+        }
+        if (res.status >= 500 || res.status === 401) break // server trouble / signed out — retry later
+        setConnectionProblem(false)
+        removeOp(userId, op.opId)
+        synced = true
+        if (op.kind === "add") {
+          if (res.ok) {
+            const created: ShoppingItem = await res.json()
+            if (cancelledTempIds.current.delete(op.tempId)) {
+              // checked off while it was being sent → remove it on the server too
+              enqueue(userId, { opId: newId(), kind: "delete", itemId: created.id })
+            } else {
+              setItems((prev) => prev.map((i) => (i.id === op.tempId ? created : i)))
+            }
+          } else {
+            const data = await res.json().catch(() => ({}))
+            setItems((prev) => prev.filter((i) => i.id !== op.tempId))
+            setAddError(data.error ?? t.shopping.failedToAdd)
+          }
+        }
+        // delete: ok, or 404 = already gone → done either way
+      }
+    } finally {
+      flushingRef.current = false
+      refreshPending()
+    }
+    if (synced && loadOutbox(userId).length === 0) await fetchList()
+  }, [userId, fetchList, refreshPending, t])
+
+  // Initial load: cached list first (instant, works offline), then the server
   useEffect(() => {
-    if (status !== "authenticated") return
-    Promise.all([
-      fetch("/api/shopping/categories").then((r) => r.json()),
-      fetch("/api/shopping/items").then((r) => r.json()),
-    ]).then(([catData, itemData]) => {
-      setCategories(catData.categories ?? [])
-      setItems(itemData.items ?? [])
-    }).finally(() => setLoading(false))
-  }, [status])
+    if (status !== "authenticated" || !userId) return
+    const cache = loadCache<ShoppingItem, Category>(userId)
+    if (cache) {
+      categoriesRef.current = cache.categories
+      setCategories(cache.categories)
+      setItems(applyOutbox(cache.items, loadOutbox(userId), opToItem))
+      setLoading(false)
+    }
+    refreshPending()
+    fetchList().finally(() => {
+      setLoading(false)
+      flush()
+    })
+  }, [status, userId, fetchList, flush, opToItem, refreshPending])
+
+  // Sync when the connection comes back, when the app returns to the
+  // foreground, and periodically while changes are waiting
+  useEffect(() => {
+    if (!userId) return
+    const sync = async () => {
+      setOnline(navigator.onLine)
+      if (!navigator.onLine) return
+      await flush()
+      if (loadOutbox(userId).length === 0) await fetchList()
+    }
+    const onVisible = () => { if (document.visibilityState === "visible") sync() }
+    setOnline(navigator.onLine)
+    window.addEventListener("online", sync)
+    window.addEventListener("offline", sync)
+    document.addEventListener("visibilitychange", onVisible)
+    const timer = window.setInterval(() => { if (loadOutbox(userId).length > 0) flush() }, 15000)
+    return () => {
+      window.removeEventListener("online", sync)
+      window.removeEventListener("offline", sync)
+      document.removeEventListener("visibilitychange", onVisible)
+      window.clearInterval(timer)
+    }
+  }, [userId, flush, fetchList])
+
+  // Remove an item locally and queue the server delete
+  const queueRemoval = (id: string) => {
+    if (!userId) return
+    if (id.startsWith(TEMP_PREFIX)) {
+      // added offline: drop the pending add, or delete it right after it lands
+      if (inFlightTempId.current === id) cancelledTempIds.current.add(id)
+      else cancelPendingAdd(userId, id)
+    } else {
+      enqueue(userId, { opId: newId(), kind: "delete", itemId: id })
+    }
+  }
 
   const memory = useMemo(() => {
     const m: Record<string, string> = {}
@@ -67,69 +222,33 @@ export default function ShoppingPage() {
     return (key && memory[key]) ? memory[key] : ""
   }, [name, memory])
 
-  const handleAdd = async (e?: React.FormEvent) => {
+  const handleAdd = (e?: React.FormEvent) => {
     e?.preventDefault()
-    if (!name.trim()) return
+    if (!name.trim() || !userId) return
     setAddError(null)
-
-    const optimisticItem: ShoppingItem = {
-      id: `optimistic-${Date.now()}`,
+    const op: AddOp = {
+      opId: newId(),
+      kind: "add",
+      tempId: newId(TEMP_PREFIX),
       name: name.trim(),
       quantity: qty.trim() || null,
       categoryId: effectiveCategoryId || null,
-      category: categories.find((c) => c.id === effectiveCategoryId) ?? null,
       tags: tagFilter ? [tagFilter] : [],
     }
-    setItems((prev) => [...prev, optimisticItem])
-
-    const savedQty = qty
-    const savedName = name
-    const savedCatId = effectiveCategoryId
+    enqueue(userId, op)
+    setItems((prev) => [...prev, opToItem(op)])
     setQty("")
     setName("")
     nameInputRef.current?.focus()
-
-    try {
-      const res = await fetch("/api/shopping/items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: savedName.trim(), quantity: savedQty.trim() || undefined, categoryId: savedCatId || undefined, tags: optimisticItem.tags }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setItems((prev) => prev.filter((i) => i.id !== optimisticItem.id))
-        setAddError(data.error ?? t.shopping.failedToAdd)
-        return
-      }
-      setItems((prev) => prev.map((i) => (i.id === optimisticItem.id ? data : i)))
-    } catch {
-      setItems((prev) => prev.filter((i) => i.id !== optimisticItem.id))
-      setAddError(t.shopping.failedToAdd)
-    }
+    refreshPending()
+    flush()
   }
 
-  const handleDelete = async (id: string) => {
-    const removedIndex = items.findIndex((i) => i.id === id)
-    const removed = items[removedIndex]
+  const handleDelete = (id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id))
-    try {
-      const res = await fetch(`/api/shopping/items/${id}`, { method: "DELETE" })
-      if (!res.ok && removed) {
-        setItems((prev) => {
-          const next = [...prev]
-          next.splice(removedIndex, 0, removed)
-          return next
-        })
-      }
-    } catch {
-      if (removed) {
-        setItems((prev) => {
-          const next = [...prev]
-          next.splice(removedIndex, 0, removed)
-          return next
-        })
-      }
-    }
+    queueRemoval(id)
+    refreshPending()
+    flush()
   }
 
   const handleEditSave = async (itemId: string, changes: ItemChanges): Promise<boolean> => {
@@ -148,18 +267,15 @@ export default function ShoppingPage() {
     }
   }
 
+  // Clears what this device shows (queued like single check-offs, so it works offline)
   async function handleClearList() {
-    const prev = items
+    const current = items
     setItems([])
     setClearing(true)
-    try {
-      const res = await fetch("/api/shopping/items", { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed")
-    } catch {
-      setItems(prev)
-    } finally {
-      setClearing(false)
-    }
+    current.forEach((i) => queueRemoval(i.id))
+    refreshPending()
+    await flush()
+    setClearing(false)
   }
 
   const grouped = (() => {
@@ -184,6 +300,23 @@ export default function ShoppingPage() {
   return (
     <Page width="narrow">
       <PageHeader title={t.shopping.title} />
+
+      {(!online || connectionProblem || pendingCount > 0) && (
+        <div className={styles.syncBanner} role="status">
+          {!online || connectionProblem
+            ? <CloudOff size={15} strokeWidth={2} />
+            : <RefreshCw size={15} strokeWidth={2} className={styles.syncSpin} />}
+          <span>
+            {!online || connectionProblem ? t.shopping.offlineNotice : null}
+            {pendingCount > 0 && (
+              <>
+                {!online || connectionProblem ? " " : null}
+                <strong>{t.shopping.pendingSync.replace("{n}", String(pendingCount))}</strong>
+              </>
+            )}
+          </span>
+        </div>
+      )}
 
       <form className={styles.addForm} onSubmit={handleAdd}>
         <input
@@ -242,7 +375,7 @@ export default function ShoppingPage() {
                       type="button"
                       className={styles.itemName}
                       onClick={() => setEditingItemId(item.id)}
-                      disabled={item.id.startsWith("optimistic-")}
+                      disabled={item.id.startsWith(TEMP_PREFIX)}
                       title={t.shopping.editItem}
                     >
                       {item.name}
@@ -255,7 +388,7 @@ export default function ShoppingPage() {
                       onClick={() => setEditingItemId(item.id)}
                       aria-label={t.shopping.editItem}
                       title={t.shopping.editItem}
-                      disabled={item.id.startsWith("optimistic-")}
+                      disabled={item.id.startsWith(TEMP_PREFIX)}
                     >
                       <Pencil size={14} strokeWidth={2} />
                     </button>

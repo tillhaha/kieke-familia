@@ -272,6 +272,8 @@ export type Translations = {
     removeItem: string
     clearList: string
     failedToAdd: string
+    offlineNotice: string
+    pendingSync: string
     // Display names for the built-in categories, keyed by the English name stored in the DB
     defaultCategories: Record<string, string>
   }
@@ -669,6 +671,8 @@ const en: Translations = {
     removeItem: "Remove item",
     clearList: "Clear list",
     failedToAdd: "Failed to add item",
+    offlineNotice: "You're offline — showing the saved list. Changes stay on this device and sync automatically.",
+    pendingSync: "{n} change(s) waiting to sync",
     defaultCategories: {
       "Fruit/Vegetables": "Fruit & Vegetables",
       "Meat": "Meat",
@@ -1077,6 +1081,8 @@ const es: Translations = {
     removeItem: "Eliminar artículo",
     clearList: "Limpiar lista",
     failedToAdd: "Error al añadir artículo",
+    offlineNotice: "Sin conexión: se muestra la lista guardada. Los cambios se guardan en este dispositivo y se sincronizan solos.",
+    pendingSync: "{n} cambio(s) pendientes de sincronizar",
     defaultCategories: {
       "Fruit/Vegetables": "Frutas y verduras",
       "Meat": "Carne",
@@ -1485,6 +1491,8 @@ const de: Translations = {
     removeItem: "Artikel entfernen",
     clearList: "Liste leeren",
     failedToAdd: "Artikel konnte nicht hinzugefügt werden",
+    offlineNotice: "Du bist offline – die gespeicherte Liste wird angezeigt. Änderungen bleiben auf diesem Gerät und werden automatisch synchronisiert.",
+    pendingSync: "{n} Änderung(en) warten auf Synchronisierung",
     defaultCategories: {
       "Fruit/Vegetables": "Obst & Gemüse",
       "Meat": "Fleisch",

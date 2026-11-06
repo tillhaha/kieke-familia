@@ -172,6 +172,14 @@
   accent-color: var(--primary);
 }
 
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .rowTitle {
   flex: 1;
   min-width: 0;
@@ -356,10 +364,12 @@
 
   .rowTitle { font-size: var(--text-md); }
 
-  /* Category pill + date go below the title */
-  .row { flex-wrap: wrap; row-gap: 0.35rem; }
-  .rowTitle { flex-basis: calc(100% - 16px - 0.75rem); }
-  .rowMeta { margin-left: calc(16px + 0.75rem); }
+  /* Checkbox stays left of the text; title wraps and the category pill +
+     date flow on after it (onto the next line when the title is long). */
+  .row { align-items: flex-start; }
+  .rowBody { flex-wrap: wrap; row-gap: 0.35rem; column-gap: 0.5rem; }
+  .rowTitle { flex: 0 1 auto; line-height: 22px; }
+  .rowMeta { flex-shrink: 1; flex-wrap: wrap; min-height: 22px; }
 
   .modal { padding: 1.25rem; }
 

@@ -272,14 +272,16 @@ export default function ThoughtsPage() {
           onChange={() => toggleDone(todo)}
           onClick={(e) => e.stopPropagation()}
         />
-        <span className={styles.rowTitle}>{todo.title}</span>
-        <div className={styles.rowMeta}>
-          <span className={styles.chip}>{todo.category}</span>
-          {todo.dueDate && (
-            <span className={`${styles.rowDue} ${overdue ? styles.overdue : ""}`}>
-              {overdue ? `${tt.overdue} · ` : ""}{formatDate(todo.dueDate, locale)}
-            </span>
-          )}
+        <div className={styles.rowBody}>
+          <span className={styles.rowTitle}>{todo.title}</span>
+          <div className={styles.rowMeta}>
+            <span className={styles.chip}>{todo.category}</span>
+            {todo.dueDate && (
+              <span className={`${styles.rowDue} ${overdue ? styles.overdue : ""}`}>
+                {overdue ? `${tt.overdue} · ` : ""}{formatDate(todo.dueDate, locale)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     )

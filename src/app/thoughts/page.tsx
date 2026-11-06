@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/Button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { FilterPill } from "@/components/ui/FilterPill"
 import { CategoriesModal, type CategoryDef } from "./CategoriesModal"
+import { VoiceInputButton } from "@/components/VoiceInputButton"
 
 type Todo = {
   id: string
@@ -318,6 +319,7 @@ export default function ThoughtsPage() {
         />
         <div className={styles.composerFooter}>
           <span className={styles.composerHint}>{tt.sendHint}</span>
+          <VoiceInputButton value={text} onChange={setText} onError={setError} disabled={sending} maxLength={5000} />
           <Button variant="primary" icon={<Send size={14} strokeWidth={2.25} />} onClick={send} disabled={sending || !text.trim()}>
             {sending ? tt.sending : tt.send}
           </Button>

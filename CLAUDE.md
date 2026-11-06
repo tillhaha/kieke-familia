@@ -72,7 +72,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 | `/meals/[id]` | Recipe detail with inline editing |
 | `/shopping` | Shopping list with category grouping |
 | `/tasks` | Task management — grouped by Overdue/This week/Later, assignee filter, show-completed toggle |
-| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). Open items are one flat list sorted by due date (next first, undated last) with a category pill per row; notes only show in the edit modal. Rows can be dragged (HTML5 DnD, desktop) onto the category filter pills to move them; "Categories" pill opens `CategoriesModal.tsx` (add/rename/merge/describe/delete) |
+| `/thoughts` | Private "Gedanken" inbox — free-text brain dump is split/categorised by Claude into the user's own todo list (only visible to them). Open items are one flat list sorted by due date (next first, undated last) with a category pill per row; notes only show in the edit modal. Rows can be dragged (HTML5 DnD, desktop) onto the category filter pills to move them; "Categories" pill opens `CategoriesModal.tsx` (add/rename/merge/describe/delete). The composer (and `QuickThought`) has a mic button — `VoiceInputButton` (`src/components/`), Web Speech API dictation into the textarea; hidden where unsupported (Firefox) |
 | `/settings` | Profile (incl. private "About me" — `AboutMeSection.tsx`, used as life context by the thoughts assistant), location, Google Calendar sync selection, family management, shopping categories/blacklist |
 
 ### Key components

@@ -152,6 +152,11 @@
   justify-content: space-between;
   gap: 0.75rem;
 }
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
 .viewAll {
   font-size: var(--text-sm);
   color: var(--secondary);

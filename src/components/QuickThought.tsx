@@ -9,6 +9,7 @@ import { Brain, Check, Lock, Send, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./QuickThought.module.css"
 import { Button } from "@/components/ui/Button"
+import { VoiceInputButton } from "@/components/VoiceInputButton"
 
 type Added = { id: string; title: string; category: string }
 
@@ -117,9 +118,12 @@ export function QuickThought() {
             )}
             <div className={styles.footer}>
               <Link href="/thoughts" className={styles.viewAll}>{tt.viewAll}</Link>
-              <Button variant="primary" icon={<Send size={14} strokeWidth={2.25} />} onClick={send} disabled={sending || !text.trim()}>
-                {sending ? tt.sending : tt.send}
-              </Button>
+              <div className={styles.footerActions}>
+                <VoiceInputButton value={text} onChange={setText} onError={setError} disabled={sending} maxLength={5000} />
+                <Button variant="primary" icon={<Send size={14} strokeWidth={2.25} />} onClick={send} disabled={sending || !text.trim()}>
+                  {sending ? tt.sending : tt.send}
+                </Button>
+              </div>
             </div>
           </div>
         </div>

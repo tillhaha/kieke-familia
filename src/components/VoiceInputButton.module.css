@@ -1,0 +1,14 @@
+/* src/components/VoiceInputButton.module.css */
+/* Pulsing ring while the mic is recording */
+.listening {
+  animation: voicePulse 1.4s ease-out infinite;
+}
+
+@keyframes voicePulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 45%, transparent); }
+  100% { box-shadow: 0 0 0 10px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listening { animation: none; }
+}

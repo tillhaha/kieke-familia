@@ -216,6 +216,10 @@ export type Translations = {
     send: string
     sending: string
     sendHint: string
+    voiceStart: string
+    voiceStop: string
+    voiceDenied: string
+    voiceFailed: string
     added: string
     failed: string
     all: string
@@ -617,6 +621,10 @@ const en: Translations = {
     send: "Send",
     sending: "Sorting…",
     sendHint: "Ctrl+Enter to send",
+    voiceStart: "Start voice input",
+    voiceStop: "Stop voice input",
+    voiceDenied: "Microphone access was blocked. Allow it in your browser settings.",
+    voiceFailed: "Voice input failed. Please try again.",
     added: "Added {n}:",
     failed: "Couldn't save that. Please try again.",
     all: "All",
@@ -1029,6 +1037,10 @@ const es: Translations = {
     send: "Enviar",
     sending: "Ordenando…",
     sendHint: "Ctrl+Enter para enviar",
+    voiceStart: "Iniciar entrada de voz",
+    voiceStop: "Detener entrada de voz",
+    voiceDenied: "El acceso al micrófono está bloqueado. Permítelo en los ajustes del navegador.",
+    voiceFailed: "La entrada de voz falló. Inténtalo de nuevo.",
     added: "Añadido {n}:",
     failed: "No se pudo guardar. Inténtalo de nuevo.",
     all: "Todo",
@@ -1441,6 +1453,10 @@ const de: Translations = {
     send: "Senden",
     sending: "Sortiere…",
     sendHint: "Strg+Enter zum Senden",
+    voiceStart: "Spracheingabe starten",
+    voiceStop: "Spracheingabe beenden",
+    voiceDenied: "Mikrofonzugriff blockiert. Erlaube ihn in den Browser-Einstellungen.",
+    voiceFailed: "Spracheingabe fehlgeschlagen. Bitte versuch es noch einmal.",
     added: "{n} hinzugefügt:",
     failed: "Konnte nicht gespeichert werden. Bitte nochmal versuchen.",
     all: "Alle",

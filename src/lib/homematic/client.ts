@@ -194,6 +194,7 @@ type RawGroup = {
   type: string
   label?: string
   actualTemperature?: number | null
+  valveActualTemperature?: number | null
   setPointTemperature?: number | null
   minTemperature?: number
   maxTemperature?: number
@@ -203,9 +204,26 @@ type RawGroup = {
   controlMode?: string
   boostMode?: boolean
   lowBat?: boolean | null
-  channels?: Array<{ deviceId: string }>
+  channels?: Array<{ deviceId: string; channelIndex?: number }>
   activeProfile?: string
   profiles?: Record<string, { index?: string; name?: string }>
+}
+
+type RawChannel = {
+  functionalChannelType?: string
+  actualTemperature?: number | null
+  valveActualTemperature?: number | null
+  setPointTemperature?: number | null
+  humidity?: number | null
+  valvePosition?: number | null
+  lowBat?: boolean | null
+}
+type RawDevice = { functionalChannels?: Record<string, RawChannel> }
+
+function average(values: Array<number | null | undefined>): number | null {
+  const nums = values.filter((v): v is number => typeof v === "number")
+  if (nums.length === 0) return null
+  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10
 }
 
 export type HomeState = {
@@ -217,27 +235,53 @@ export type HomeState = {
 /** Access Point status plus all heating rooms (Homematic "HEATING" groups) with their current state. */
 export async function getHomeState(conn: Connection): Promise<HomeState> {
   const res = await call(conn, "home/getCurrentState", clientCharacteristics(conn.accessPointId))
-  const state = (await res.json()) as { home?: { connected?: boolean }; groups?: Record<string, RawGroup> }
+  const state = (await res.json()) as {
+    home?: { connected?: boolean }
+    groups?: Record<string, RawGroup>
+    devices?: Record<string, RawDevice>
+  }
+  const devices = state.devices ?? {}
+
   const rooms = Object.values(state.groups ?? {})
     .filter((g) => g.type === "HEATING")
-    .map((g) => ({
-      id: g.id,
-      name: g.label ?? "",
-      actualTemperature: g.actualTemperature ?? null,
-      setPointTemperature: g.setPointTemperature ?? null,
-      minTemperature: g.minTemperature ?? 5,
-      maxTemperature: g.maxTemperature ?? 30,
-      humidity: g.humidity ?? null,
-      valvePosition: g.valvePosition ?? null,
-      windowOpen: g.windowState === "OPEN" || g.windowState === "TILTED",
-      controlMode: (["AUTOMATIC", "MANUAL", "ECO"].includes(g.controlMode ?? "") ? g.controlMode : "AUTOMATIC") as ControlMode,
-      boost: !!g.boostMode,
-      lowBattery: !!g.lowBat,
-      thermostatCount: new Set((g.channels ?? []).map((c) => c.deviceId)).size,
-      activeProfile: g.activeProfile
-        ? { index: g.profiles?.[g.activeProfile]?.index ?? g.activeProfile, name: g.profiles?.[g.activeProfile]?.name ?? "" }
-        : null,
-    }))
+    .map((g) => {
+      // The group only carries actualTemperature/humidity when a wall thermostat or
+      // climate sensor is in the room. With radiator thermostats alone the values
+      // live on the group's valveActualTemperature and on the devices' own channels.
+      const members = (g.channels ?? []).map((c) => ({
+        deviceId: c.deviceId,
+        channel: devices[c.deviceId]?.functionalChannels?.[String(c.channelIndex ?? 1)],
+      }))
+      const valves = members.map((m) => m.channel).filter((c) => c?.functionalChannelType === "HEATING_THERMOSTAT_CHANNEL")
+      const sensors = members.map((m) => m.channel).filter((c) => c && typeof c.actualTemperature === "number")
+      // Radiator and wall thermostats (not window contacts, switches etc. that share the group)
+      const thermostats = members.filter((m) => m.channel?.functionalChannelType?.includes("THERMOSTAT"))
+      const lowBatDevice = (g.channels ?? []).some((c) => devices[c.deviceId]?.functionalChannels?.["0"]?.lowBat)
+
+      return {
+        id: g.id,
+        name: g.label ?? "",
+        actualTemperature:
+          g.actualTemperature ??
+          average(sensors.map((c) => c?.actualTemperature)) ??
+          g.valveActualTemperature ??
+          average(valves.map((c) => c?.valveActualTemperature)),
+        setPointTemperature:
+          g.setPointTemperature ?? average(thermostats.map((m) => m.channel?.setPointTemperature)),
+        minTemperature: g.minTemperature ?? 5,
+        maxTemperature: g.maxTemperature ?? 30,
+        humidity: g.humidity ?? average(sensors.map((c) => c?.humidity)),
+        valvePosition: g.valvePosition ?? average(valves.map((c) => c?.valvePosition)),
+        windowOpen: g.windowState === "OPEN" || g.windowState === "TILTED",
+        controlMode: (["AUTOMATIC", "MANUAL", "ECO"].includes(g.controlMode ?? "") ? g.controlMode : "AUTOMATIC") as ControlMode,
+        boost: !!g.boostMode,
+        lowBattery: !!g.lowBat || lowBatDevice,
+        thermostatCount: new Set(thermostats.map((m) => m.deviceId)).size,
+        activeProfile: g.activeProfile
+          ? { index: g.profiles?.[g.activeProfile]?.index ?? g.activeProfile, name: g.profiles?.[g.activeProfile]?.name ?? "" }
+          : null,
+      }
+    })
     .sort((a, b) => a.name.localeCompare(b.name))
   return { accessPointOnline: state.home?.connected !== false, rooms }
 }

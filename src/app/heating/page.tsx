@@ -60,6 +60,7 @@ export default function HeatingPage() {
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
   const queued = useRef<Map<string, Update>>(new Map())
   const [schedules, setSchedules] = useState<Record<string, Schedule | null>>({})
+  const [scheduleErrors, setScheduleErrors] = useState<Record<string, string>>({})
   const [openSchedules, setOpenSchedules] = useState<Set<string>>(new Set())
   const [now, setNow] = useState(() => new Date())
 
@@ -100,7 +101,11 @@ export default function HeatingPage() {
     const loadSchedules = () =>
       fetch("/api/heating/schedules")
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => d?.schedules && setSchedules(d.schedules))
+        .then((d) => {
+          if (!d?.schedules) return
+          setSchedules(d.schedules)
+          setScheduleErrors(d.errors ?? {})
+        })
         .catch(() => {})
     loadSchedules()
     const id = setInterval(() => {
@@ -301,7 +306,18 @@ export default function HeatingPage() {
 
                 {(() => {
                   const schedule = schedules[room.id]
-                  if (!schedule) return null
+                  const scheduleError = scheduleErrors[room.id]
+                  if (!schedule) {
+                    if (!scheduleError) return null
+                    return (
+                      <div className={styles.scheduleBlock}>
+                        <span className={styles.nextSwitch} title={scheduleError}>
+                          <CalendarClock size={14} />
+                          {t.heating.scheduleFailed}
+                        </span>
+                      </div>
+                    )
+                  }
                   const sw = room.controlMode === "AUTOMATIC" ? nextSwitch(schedule, now) : null
                   const open = openSchedules.has(room.id)
                   return (

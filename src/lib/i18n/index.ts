@@ -463,6 +463,7 @@ export type Translations = {
     scheduleInactive: string
     nextSwitch: string
     noSwitch: string
+    scheduleFailed: string
     today: string
     tomorrow: string
     allDay: string
@@ -944,6 +945,7 @@ const en: Translations = {
     scheduleInactive: "Schedule paused – not in Auto mode",
     nextSwitch: "{when} at {time} → {temp}",
     noSwitch: "Same temperature all week",
+    scheduleFailed: "Couldn't read the heating schedule from Homematic IP.",
     today: "Today",
     tomorrow: "Tomorrow",
     allDay: "All day",
@@ -1425,6 +1427,7 @@ const es: Translations = {
     scheduleInactive: "Horario en pausa – no está en modo Auto",
     nextSwitch: "{when} a las {time} → {temp}",
     noSwitch: "Misma temperatura toda la semana",
+    scheduleFailed: "No se pudo leer el horario de Homematic IP.",
     today: "Hoy",
     tomorrow: "Mañana",
     allDay: "Todo el día",
@@ -1906,6 +1909,7 @@ const de: Translations = {
     scheduleInactive: "Heizplan pausiert – nicht im Auto-Modus",
     nextSwitch: "{when} um {time} → {temp}",
     noSwitch: "Die ganze Woche gleiche Temperatur",
+    scheduleFailed: "Der Heizplan konnte nicht aus Homematic IP gelesen werden.",
     today: "Heute",
     tomorrow: "Morgen",
     allDay: "Ganztägig",

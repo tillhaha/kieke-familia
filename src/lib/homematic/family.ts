@@ -62,26 +62,39 @@ export async function getFamilyHome(familyId: string, { fresh = false } = {}): P
   return state
 }
 
-// Schedules only change when someone edits them in the Homematic IP app
+// Schedules only change when someone edits them in the Homematic IP app.
+// Failures are cached briefly too, so a broken schedule doesn't hit the cloud on every page view.
 const SCHEDULE_CACHE_MS = 10 * 60_000
-const scheduleCache = new Map<string, { at: number; schedule: WeekSchedule | null }>()
+const SCHEDULE_ERROR_CACHE_MS = 2 * 60_000
+const scheduleCache = new Map<string, { at: number; schedule: WeekSchedule } | { at: number; error: HomematicError }>()
 
 /**
  * The weekly schedule of a room's active profile. Returns undefined if heating isn't
- * connected or the room doesn't exist, null if the room has no readable schedule.
+ * connected or the room doesn't exist; throws a HomematicError if it can't be read.
  */
-export async function getFamilyRoomSchedule(familyId: string, roomId: string): Promise<WeekSchedule | null | undefined> {
+export async function getFamilyRoomSchedule(familyId: string, roomId: string): Promise<WeekSchedule | undefined> {
   const conn = await getFamilyConnection(familyId)
   const home = await getFamilyHome(familyId)
   const room = home?.rooms.find((r) => r.id === roomId)
   if (!conn || !room) return undefined
-  if (!room.activeProfile) return null
+  if (!room.activeProfile) throw new HomematicError("UNKNOWN", "Room has no active heating profile")
   const key = `${familyId}:${roomId}:${room.activeProfile.index}`
   const cached = scheduleCache.get(key)
-  if (cached && Date.now() - cached.at < SCHEDULE_CACHE_MS) return cached.schedule
-  const schedule = await getSchedule(conn, roomId, room.activeProfile)
-  scheduleCache.set(key, { at: Date.now(), schedule })
-  return schedule
+  if (cached) {
+    const age = Date.now() - cached.at
+    if ("schedule" in cached && age < SCHEDULE_CACHE_MS) return cached.schedule
+    if ("error" in cached && age < SCHEDULE_ERROR_CACHE_MS) throw cached.error
+  }
+  try {
+    const schedule = await getSchedule(conn, roomId, room.activeProfile)
+    scheduleCache.set(key, { at: Date.now(), schedule })
+    return schedule
+  } catch (err) {
+    const error = err instanceof HomematicError ? err : new HomematicError("UNKNOWN", err instanceof Error ? err.message : String(err))
+    // Rate limiting is temporary — don't remember it
+    if (error.code !== "THROTTLED") scheduleCache.set(key, { at: Date.now(), error })
+    throw error
+  }
 }
 
 export async function getFamilyRooms(familyId: string): Promise<HeatingRoom[] | null> {

@@ -247,38 +247,83 @@ export async function getRooms(conn: Connection): Promise<HeatingRoom[]> {
 }
 
 const WEEKDAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
-const TIME = /^\d{1,2}:\d{2}$/
 
-type RawProfile = {
-  profileDays?: Record<string, { baseValue?: number; periods?: Array<{ starttime?: string; endtime?: string; value?: number }> }>
+type RawPeriod = Record<string, unknown>
+type RawDay = { baseValue?: unknown; periods?: unknown }
+
+function asTime(value: unknown, minutesOfDay: unknown): string | null {
+  if (typeof value === "string" && /^\d{1,2}:\d{2}/.test(value)) return value.slice(0, value.indexOf(":") + 3).padStart(5, "0")
+  if (typeof minutesOfDay === "number" && minutesOfDay >= 0 && minutesOfDay <= 24 * 60) {
+    return `${String(Math.floor(minutesOfDay / 60)).padStart(2, "0")}:${String(minutesOfDay % 60).padStart(2, "0")}`
+  }
+  return null
+}
+
+function parsePeriod(p: RawPeriod): SchedulePeriod | null {
+  const start = asTime(p.starttime ?? p.startTime, p.starttimeAsMinutesOfDay ?? p.startTimeAsMinutesOfDay)
+  const end = asTime(p.endtime ?? p.endTime, p.endtimeAsMinutesOfDay ?? p.endTimeAsMinutesOfDay)
+  const value = p.value ?? p.temperature ?? p.setPointTemperature
+  if (!start || !end || typeof value !== "number") return null
+  return { start, end, temperature: value }
+}
+
+/** Short, value-free description of a JSON shape for error messages, e.g. "{homeId,profileDays{MONDAY,…}}" */
+function shapeOf(v: unknown, depth = 0): string {
+  if (Array.isArray(v)) return `[${v.length}]`
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v)
+    if (depth >= 1) return `{${keys.slice(0, 8).join(",")}${keys.length > 8 ? ",…" : ""}}`
+    return `{${keys.slice(0, 12).map((k) => {
+      const child = (v as Record<string, unknown>)[k]
+      return child && typeof child === "object" ? `${k}${shapeOf(child, depth + 1)}` : k
+    }).join(",")}}`
+  }
+  return typeof v
+}
+
+/** Parse a getProfile answer. Accepts days keyed by weekday name or 0–6 (Monday first), or as an array. */
+function parseProfile(raw: unknown): ScheduleDay[] | null {
+  const root = raw as { profileDays?: unknown; profile?: { profileDays?: unknown } } | null
+  const pd = root?.profileDays ?? root?.profile?.profileDays
+  if (!pd || typeof pd !== "object") return null
+  const lookup = (i: number): RawDay | undefined => {
+    if (Array.isArray(pd)) return pd[i] as RawDay | undefined
+    const rec = pd as Record<string, RawDay>
+    return rec[WEEKDAYS[i]] ?? rec[WEEKDAYS[i].toLowerCase()] ?? rec[String(i)]
+  }
+  const days: ScheduleDay[] = []
+  for (let i = 0; i < 7; i++) {
+    const d = lookup(i)
+    if (!d || typeof d.baseValue !== "number") return null
+    const periods = (Array.isArray(d.periods) ? d.periods : [])
+      .map((p) => parsePeriod(p as RawPeriod))
+      .filter((p): p is SchedulePeriod => p !== null)
+      .sort((a, b) => a.start.localeCompare(b.start))
+    days.push({ baseTemperature: d.baseValue, periods })
+  }
+  return days
 }
 
 /**
  * Read-only: the weekly schedule of one heating profile (as set up in the Homematic IP app).
- * Returns null if the cloud answers in a shape we don't understand.
+ * Throws a HomematicError (with HTTP status / response shape in the message) if it can't be read.
  */
 export async function getSchedule(
   conn: Connection,
   groupId: string,
   profile: { index: string; name: string }
-): Promise<WeekSchedule | null> {
-  const res = await call(conn, "group/heating/getProfile", {
-    groupId,
-    profileIndex: profile.index,
-    profileName: profile.name,
-  })
-  const raw = (await res.json().catch(() => null)) as RawProfile | null
-  if (!raw?.profileDays) return null
-  const days: ScheduleDay[] = []
-  for (const name of WEEKDAYS) {
-    const d = raw.profileDays[name]
-    if (!d || typeof d.baseValue !== "number") return null
-    const periods = (d.periods ?? [])
-      .filter((p) => TIME.test(p.starttime ?? "") && TIME.test(p.endtime ?? "") && typeof p.value === "number")
-      .map((p) => ({ start: p.starttime!.padStart(5, "0"), end: p.endtime!.padStart(5, "0"), temperature: p.value! }))
-      .sort((a, b) => a.start.localeCompare(b.start))
-    days.push({ baseTemperature: d.baseValue, periods })
+): Promise<WeekSchedule> {
+  // Body as sent by homematicip-rest-api; some setups reject profileName, so retry without it once
+  let res: Response
+  try {
+    res = await call(conn, "group/heating/getProfile", { groupId, profileIndex: profile.index, profileName: profile.name })
+  } catch (err) {
+    if (!(err instanceof HomematicError) || err.code !== "UNKNOWN") throw err
+    res = await call(conn, "group/heating/getProfile", { groupId, profileIndex: profile.index })
   }
+  const raw = await res.json().catch(() => null)
+  const days = parseProfile(raw)
+  if (!days) throw new HomematicError("UNKNOWN", `Unexpected getProfile answer: ${shapeOf(raw)}`)
   return { profileIndex: profile.index, profileName: profile.name, days }
 }
 

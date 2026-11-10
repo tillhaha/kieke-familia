@@ -62,7 +62,15 @@ async function getSchedule(familyId: string, args: unknown): Promise<ToolResult>
     if (!rooms) return text(NOT_CONNECTED, true)
     const room = findRoom(rooms, parsed.data.room)
     if (!room) return text(`No unique room matches "${parsed.data.room}". Rooms: ${rooms.map((r) => r.name).join(", ")}`, true)
-    const schedule = await getFamilyRoomSchedule(familyId, room.id)
+    let schedule
+    try {
+      schedule = await getFamilyRoomSchedule(familyId, room.id)
+    } catch (err) {
+      if (err instanceof HomematicError && err.code === "UNKNOWN") {
+        return text(`Couldn't read the heating schedule for ${room.name} (${err.message}).`, true)
+      }
+      throw err
+    }
     if (!schedule) return text(`No readable heating schedule for ${room.name}.`, true)
     const lines = schedule.days.map((d, i) => {
       const periods = d.periods.map((p) => `${p.start}–${p.end} ${p.temperature}°C`).join(", ")

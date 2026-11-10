@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { categorizeShoppingItem } from "@/lib/shoppingCategorize"
 import { isShoppingTagList } from "@/lib/shoppingTags"
+import { getRememberedTags, mergeTags, rememberTags } from "@/lib/shoppingTagMemory"
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -54,6 +55,8 @@ export async function POST(request: Request) {
   }
 
   const resolvedCategoryId = categoryId || (await categorizeShoppingItem(familyId, name))
+  const remembered = await getRememberedTags(familyId, [name])
+  const resolvedTags = mergeTags(tags, remembered.get(name.trim().toLowerCase()))
 
   const item = await prisma.shoppingItem.create({
     data: {
@@ -61,7 +64,7 @@ export async function POST(request: Request) {
       name: name.trim(),
       quantity: quantity?.trim() || null,
       categoryId: resolvedCategoryId,
-      tags: tags ? [...new Set(tags)] : [],
+      tags: resolvedTags,
     },
     include: { category: true },
   })
@@ -74,6 +77,9 @@ export async function POST(request: Request) {
       create: { familyId, itemName: name.trim().toLowerCase(), categoryId },
     })
   }
+
+  // Tags given explicitly (e.g. added under a tag filter) are remembered for next time
+  if (tags?.length) await rememberTags(familyId, name, resolvedTags)
 
   return NextResponse.json(item, { status: 201 })
 }

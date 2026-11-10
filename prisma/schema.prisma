@@ -98,6 +98,7 @@ model Family {
   shoppingCategories ShoppingCategory[]
   shoppingItems      ShoppingItem[]
   shoppingMemory     ShoppingItemMemory[]
+  shoppingTagMemory  ShoppingItemTagMemory[]
   shoppingBlacklist  ShoppingBlacklist[]
   tasks              Task[]
   importedCalendars  ImportedCalendar[]
@@ -282,6 +283,17 @@ model ShoppingItemMemory {
   itemName   String
   categoryId String
   category   ShoppingCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([familyId, itemName])
+}
+
+// Remembered tags per item name, applied by default when the item is added again
+model ShoppingItemTagMemory {
+  id       String   @id @default(cuid())
+  familyId String
+  family   Family   @relation(fields: [familyId], references: [id])
+  itemName String
+  tags     String[]
 
   @@unique([familyId, itemName])
 }

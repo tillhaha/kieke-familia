@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
 import { isShoppingTagList, type ShoppingTag } from "@/lib/shoppingTags"
+import { rememberTags } from "@/lib/shoppingTagMemory"
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
@@ -71,6 +72,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       await prisma.shoppingItemMemory.deleteMany({ where: { familyId, itemName } })
     }
   }
+
+  // Same for tags: an explicit tag change overwrites the remembered tags; removing all forgets them
+  if (updateData.tags !== undefined) await rememberTags(familyId, updated.name, updateData.tags)
 
   return NextResponse.json(updated)
 }

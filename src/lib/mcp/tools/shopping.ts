@@ -2,7 +2,8 @@
 // MCP tools for the family shopping list
 import { prisma } from "@/lib/prisma"
 import { categorizeShoppingItems } from "@/lib/shoppingCategorize"
-import { SHOPPING_TAGS } from "@/lib/shoppingTags"
+import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
+import { getRememberedTags, mergeTags, rememberTags } from "@/lib/shoppingTagMemory"
 import { z } from "zod"
 import { type McpTool, type ToolResult, text } from "../types"
 
@@ -22,7 +23,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
   const existing = await prisma.shoppingItem.findMany({ where: { familyId }, select: { name: true } })
   const seen = new Set(existing.map((i) => i.name.toLowerCase()))
   const skipped: string[] = []
-  const toAdd: Array<{ name: string; quantity: string | null; tags: string[] }> = []
+  const toAdd: Array<{ name: string; quantity: string | null; tags: ShoppingTag[]; tagsGiven: boolean }> = []
   for (const item of parsed.data.items) {
     const key = item.name.toLowerCase()
     if (seen.has(key)) {
@@ -30,11 +31,13 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
       continue
     }
     seen.add(key)
-    toAdd.push({ name: item.name, quantity: item.quantity || null, tags: [...new Set(item.tags ?? [])] })
+    toAdd.push({ name: item.name, quantity: item.quantity || null, tags: item.tags ?? [], tagsGiven: !!item.tags?.length })
   }
 
   if (toAdd.length > 0) {
     const categoryMap = await categorizeShoppingItems(familyId, toAdd.map((i) => i.name))
+    const rememberedTags = await getRememberedTags(familyId, toAdd.map((i) => i.name))
+    for (const item of toAdd) item.tags = mergeTags(item.tags, rememberedTags.get(item.name.toLowerCase()))
     await prisma.$transaction(async (tx) => {
       const maxSortOrder = await tx.shoppingItem.aggregate({ where: { familyId }, _max: { sortOrder: true } })
       const baseOrder = (maxSortOrder._max.sortOrder ?? -1) + 1
@@ -49,6 +52,10 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
         })),
       })
     })
+
+    for (const item of toAdd) {
+      if (item.tagsGiven) await rememberTags(familyId, item.name, item.tags)
+    }
 
     const categories = await prisma.shoppingCategory.findMany({ where: { familyId } })
     const categoryName = new Map(categories.map((c) => [c.id, c.name]))
@@ -121,7 +128,7 @@ export const shoppingTools: McpTool[] = [
               tags: {
                 type: "array",
                 items: { type: "string", enum: [...SHOPPING_TAGS] },
-                description: "Optional shop tags: \"Drogerie\" for drugstore items (toiletries, cleaning, …), \"Asia\" for items from the Asian supermarket",
+                description: "Optional shop tags: \"Drogerie\" for drugstore items (toiletries, cleaning, …), \"Asia\" for items from the Asian supermarket. Tags remembered for an item name are applied automatically.",
               },
             },
             required: ["name"],

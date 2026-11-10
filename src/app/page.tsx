@@ -7,7 +7,6 @@ import { LogIn, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent, WorkLocationEntry, WorkLocationValue } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { QuickThought } from "@/components/QuickThought"
-import { HeatingWidget } from "./HeatingWidget"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -215,10 +214,7 @@ export default function Home() {
         </h1>
       </div>
 
-      <div className={styles.widgetRow}>
-        <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} onOpenTask={setOpenTask} />
-        <HeatingWidget />
-      </div>
+      <TasksWidget tasks={tasks} onToggleDone={handleToggleDone} onOpenTask={setOpenTask} />
 
       {openTask && (
         <TaskModal

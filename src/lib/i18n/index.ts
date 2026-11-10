@@ -8,6 +8,7 @@ export type Translations = {
     shopping: string
     tasks: string
     thoughts: string
+    heating: string
     settings: string
     signOut: string
   }
@@ -429,7 +430,6 @@ export type Translations = {
     errNotAuthorized: string
     errExpired: string
     errUnknown: string
-    widgetTitle: string
     target: string
     humidity: string
     windowOpen: string
@@ -441,6 +441,32 @@ export type Translations = {
     noRooms: string
     loadFailed: string
     thermostats: string
+    pageTitle: string
+    connection: string
+    goToSettings: string
+    notConnected: string
+    statusOnline: string
+    statusOffline: string
+    statusError: string
+    statusPairing: string
+    statusDisconnected: string
+    offlineHint: string
+    current: string
+    mode: string
+    valve: string
+    autoHint: string
+    schedule: string
+    weekPlan: string
+    profileFallback: string
+    scheduleReadOnly: string
+    scheduleHint: string
+    scheduleInactive: string
+    nextSwitch: string
+    noSwitch: string
+    today: string
+    tomorrow: string
+    allDay: string
+    otherwise: string
   }
 }
 
@@ -452,6 +478,7 @@ const en: Translations = {
     shopping: "Shopping",
     tasks: "Tasks",
     thoughts: "Thoughts",
+    heating: "Heating",
     settings: "Settings",
     signOut: "Sign out",
   },
@@ -884,7 +911,6 @@ const en: Translations = {
     errNotAuthorized: "Homematic IP rejected the access token. Please disconnect and connect again.",
     errExpired: "The time for pressing the button ran out. Check the Access Point ID and start again.",
     errUnknown: "Something went wrong. Please try again.",
-    widgetTitle: "Heating",
     target: "Target",
     humidity: "Humidity",
     windowOpen: "Window open",
@@ -896,6 +922,32 @@ const en: Translations = {
     noRooms: "No heating rooms found in Homematic IP.",
     loadFailed: "Couldn't load the heating right now.",
     thermostats: "thermostats",
+    pageTitle: "Heating",
+    connection: "Connection",
+    goToSettings: "Connect in settings",
+    notConnected: "Connect your Homematic IP Access Point to see and control the heating here.",
+    statusOnline: "Access Point connected",
+    statusOffline: "Access Point offline",
+    statusError: "Heating not reachable",
+    statusPairing: "Pairing in progress – press the blue button on the Access Point.",
+    statusDisconnected: "Heating not connected",
+    offlineHint: "The Access Point is not connected to the Homematic IP cloud right now. Values may be outdated and changes won't reach the thermostats.",
+    current: "Current",
+    mode: "Mode",
+    valve: "Valve",
+    autoHint: "In Auto mode a new target temperature lasts until the next switching point of the heating schedule.",
+    schedule: "Schedule",
+    weekPlan: "Week plan",
+    profileFallback: "Profile {n}",
+    scheduleReadOnly: "Edit in the Homematic IP app",
+    scheduleHint: "Heating schedules are read from Homematic IP and can only be changed in the Homematic IP app.",
+    scheduleInactive: "Schedule paused – not in Auto mode",
+    nextSwitch: "{when} at {time} → {temp}",
+    noSwitch: "Same temperature all week",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    allDay: "All day",
+    otherwise: "otherwise",
   },
 }
 
@@ -907,6 +959,7 @@ const es: Translations = {
     shopping: "Compras",
     tasks: "Tareas",
     thoughts: "Ideas",
+    heating: "Calefacción",
     settings: "Ajustes",
     signOut: "Cerrar sesión",
   },
@@ -1339,7 +1392,6 @@ const es: Translations = {
     errNotAuthorized: "Homematic IP rechazó la clave de acceso. Desconecta y vuelve a conectar.",
     errExpired: "Se acabó el tiempo para pulsar el botón. Revisa el ID del Access Point y empieza de nuevo.",
     errUnknown: "Algo salió mal. Inténtalo de nuevo.",
-    widgetTitle: "Calefacción",
     target: "Objetivo",
     humidity: "Humedad",
     windowOpen: "Ventana abierta",
@@ -1351,6 +1403,32 @@ const es: Translations = {
     noRooms: "No se encontraron habitaciones con calefacción en Homematic IP.",
     loadFailed: "No se pudo cargar la calefacción ahora mismo.",
     thermostats: "termostatos",
+    pageTitle: "Calefacción",
+    connection: "Conexión",
+    goToSettings: "Conectar en ajustes",
+    notConnected: "Conecta tu Access Point de Homematic IP para ver y controlar la calefacción aquí.",
+    statusOnline: "Access Point conectado",
+    statusOffline: "Access Point sin conexión",
+    statusError: "Calefacción no disponible",
+    statusPairing: "Emparejando – pulsa el botón azul del Access Point.",
+    statusDisconnected: "Calefacción no conectada",
+    offlineHint: "El Access Point no está conectado a la nube de Homematic IP. Los valores pueden estar desactualizados y los cambios no llegarán a los termostatos.",
+    current: "Actual",
+    mode: "Modo",
+    valve: "Válvula",
+    autoHint: "En modo Auto, una nueva temperatura objetivo dura hasta el siguiente punto de cambio del horario.",
+    schedule: "Horario",
+    weekPlan: "Plan semanal",
+    profileFallback: "Perfil {n}",
+    scheduleReadOnly: "Se edita en la app Homematic IP",
+    scheduleHint: "Los horarios se leen de Homematic IP y solo se pueden cambiar en la app Homematic IP.",
+    scheduleInactive: "Horario en pausa – no está en modo Auto",
+    nextSwitch: "{when} a las {time} → {temp}",
+    noSwitch: "Misma temperatura toda la semana",
+    today: "Hoy",
+    tomorrow: "Mañana",
+    allDay: "Todo el día",
+    otherwise: "resto",
   },
 }
 
@@ -1362,6 +1440,7 @@ const de: Translations = {
     shopping: "Einkauf",
     tasks: "Aufgaben",
     thoughts: "Gedanken",
+    heating: "Heizung",
     settings: "Einstellungen",
     signOut: "Abmelden",
   },
@@ -1794,7 +1873,6 @@ const de: Translations = {
     errNotAuthorized: "Homematic IP hat den Zugangsschlüssel abgelehnt. Bitte trennen und neu verbinden.",
     errExpired: "Die Zeit für den Tastendruck ist abgelaufen. Prüf die Access Point ID und starte neu.",
     errUnknown: "Etwas ist schiefgelaufen. Bitte versuch es noch einmal.",
-    widgetTitle: "Heizung",
     target: "Soll",
     humidity: "Luftfeuchte",
     windowOpen: "Fenster offen",
@@ -1806,6 +1884,32 @@ const de: Translations = {
     noRooms: "Keine Heizungsräume in Homematic IP gefunden.",
     loadFailed: "Die Heizung konnte gerade nicht geladen werden.",
     thermostats: "Thermostate",
+    pageTitle: "Heizung",
+    connection: "Verbindung",
+    goToSettings: "In den Einstellungen verbinden",
+    notConnected: "Verbinde deinen Homematic IP Access Point, um die Heizung hier zu sehen und zu steuern.",
+    statusOnline: "Access Point verbunden",
+    statusOffline: "Access Point offline",
+    statusError: "Heizung nicht erreichbar",
+    statusPairing: "Kopplung läuft – drück die blaue Taste am Access Point.",
+    statusDisconnected: "Heizung nicht verbunden",
+    offlineHint: "Der Access Point ist gerade nicht mit der Homematic IP Cloud verbunden. Werte können veraltet sein, Änderungen kommen nicht an den Thermostaten an.",
+    current: "Ist",
+    mode: "Modus",
+    valve: "Ventil",
+    autoHint: "Im Auto-Modus gilt eine neue Solltemperatur bis zum nächsten Schaltpunkt des Heizplans.",
+    schedule: "Heizplan",
+    weekPlan: "Wochenplan",
+    profileFallback: "Profil {n}",
+    scheduleReadOnly: "Bearbeiten in der Homematic IP App",
+    scheduleHint: "Die Heizpläne werden aus Homematic IP gelesen und lassen sich nur in der Homematic IP App ändern.",
+    scheduleInactive: "Heizplan pausiert – nicht im Auto-Modus",
+    nextSwitch: "{when} um {time} → {temp}",
+    noSwitch: "Die ganze Woche gleiche Temperatur",
+    today: "Heute",
+    tomorrow: "Morgen",
+    allDay: "Ganztägig",
+    otherwise: "sonst",
   },
 }
 

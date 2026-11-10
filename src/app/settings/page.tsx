@@ -2,7 +2,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { User, Download, Home, ShoppingCart, Globe, Palette, Plug, Thermometer, ChevronRight, ArrowLeft } from "lucide-react"
 import { GoogleCalendarSync } from "./GoogleCalendarSync"
 import { ImportedCalendarsSection } from "./ImportedCalendarsSection"
@@ -38,6 +38,16 @@ export default function SettingsPage() {
   const [mobileView, setMobileView] = useState<"index" | "detail">("index")
   const { t, lang } = useTranslation()
   const { theme } = useTheme()
+
+  // Deep link: /settings?section=heating opens that section directly
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("section")
+    if (requested && requested in SECTION_COLORS) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setActiveSection(requested as Section)
+      setMobileView("detail")
+    }
+  }, [])
 
   if (status === "loading") return null
 

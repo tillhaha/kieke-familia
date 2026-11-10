@@ -5,8 +5,11 @@ import { z } from "zod"
 import {
   type Connection,
   type HeatingRoom,
+  type HomeState,
+  type WeekSchedule,
   HomematicError,
-  getRooms,
+  getHomeState,
+  getSchedule,
   setBoost,
   setControlMode,
   setSetPointTemperature,
@@ -40,9 +43,49 @@ export async function getFamilyConnection(familyId: string): Promise<Connection 
   return { accessPointId: row.accessPointId, restUrl: row.restUrl, authToken: row.authToken }
 }
 
-export async function getFamilyRooms(familyId: string): Promise<HeatingRoom[] | null> {
+// The navbar status icon, the heating page and the MCP tools all read the same
+// state; a short per-family cache keeps us well clear of the cloud's rate limit.
+const HOME_CACHE_MS = 15_000
+const homeCache = new Map<string, { at: number; state: HomeState }>()
+
+/** Current Access Point status + rooms, or null if heating isn't connected. */
+export async function getFamilyHome(familyId: string, { fresh = false } = {}): Promise<HomeState | null> {
   const conn = await getFamilyConnection(familyId)
-  return conn ? getRooms(conn) : null
+  if (!conn) {
+    homeCache.delete(familyId)
+    return null
+  }
+  const cached = homeCache.get(familyId)
+  if (!fresh && cached && Date.now() - cached.at < HOME_CACHE_MS) return cached.state
+  const state = await getHomeState(conn)
+  homeCache.set(familyId, { at: Date.now(), state })
+  return state
+}
+
+// Schedules only change when someone edits them in the Homematic IP app
+const SCHEDULE_CACHE_MS = 10 * 60_000
+const scheduleCache = new Map<string, { at: number; schedule: WeekSchedule | null }>()
+
+/**
+ * The weekly schedule of a room's active profile. Returns undefined if heating isn't
+ * connected or the room doesn't exist, null if the room has no readable schedule.
+ */
+export async function getFamilyRoomSchedule(familyId: string, roomId: string): Promise<WeekSchedule | null | undefined> {
+  const conn = await getFamilyConnection(familyId)
+  const home = await getFamilyHome(familyId)
+  const room = home?.rooms.find((r) => r.id === roomId)
+  if (!conn || !room) return undefined
+  if (!room.activeProfile) return null
+  const key = `${familyId}:${roomId}:${room.activeProfile.index}`
+  const cached = scheduleCache.get(key)
+  if (cached && Date.now() - cached.at < SCHEDULE_CACHE_MS) return cached.schedule
+  const schedule = await getSchedule(conn, roomId, room.activeProfile)
+  scheduleCache.set(key, { at: Date.now(), schedule })
+  return schedule
+}
+
+export async function getFamilyRooms(familyId: string): Promise<HeatingRoom[] | null> {
+  return (await getFamilyHome(familyId))?.rooms ?? null
 }
 
 export const RoomUpdate = z
@@ -69,7 +112,8 @@ export async function updateFamilyRoom(familyId: string, roomId: string, update:
   }
   if (update.boost !== undefined) await setBoost(conn, roomId, update.boost)
 
-  const room = (await getRooms(conn)).find((r) => r.id === roomId)
+  const home = await getFamilyHome(familyId, { fresh: true })
+  const room = home?.rooms.find((r) => r.id === roomId)
   if (!room) throw new HomematicError("UNKNOWN", "Room not found")
   return room
 }

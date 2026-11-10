@@ -5,8 +5,9 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, X } from "lucide-react"
+import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, Thermometer, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
+import { HeatingStatusIcon } from "./HeatingStatusIcon"
 import styles from "./navbar.module.css"
 
 export function Navbar() {
@@ -24,6 +25,7 @@ export function Navbar() {
     { href: "/shopping", label: t.nav.shopping, icon: ShoppingCart },
     { href: "/tasks", label: t.nav.tasks, icon: CheckSquare },
     { href: "/thoughts", label: t.nav.thoughts, icon: Brain },
+    { href: "/heating", label: t.nav.heating, icon: Thermometer },
   ]
 
   useEffect(() => {
@@ -65,6 +67,8 @@ export function Navbar() {
               ))}
             </div>
           )}
+
+          {session?.user?.familyId && <HeatingStatusIcon active={pathname === "/heating"} />}
 
           {session && (
             <div className={styles.userSection} ref={ref}>

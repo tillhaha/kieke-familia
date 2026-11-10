@@ -49,7 +49,14 @@ export type HeatingRoom = {
   boost: boolean
   lowBattery: boolean
   thermostatCount: number
+  /** The weekly heating profile the room follows in AUTOMATIC mode */
+  activeProfile: { index: string; name: string } | null
 }
+
+export type SchedulePeriod = { start: string; end: string; temperature: number } // "06:00", "22:30"
+export type ScheduleDay = { baseTemperature: number; periods: SchedulePeriod[] }
+/** days[0] = Monday … days[6] = Sunday */
+export type WeekSchedule = { profileIndex: string; profileName: string; days: ScheduleDay[] }
 
 export type Connection = { accessPointId: string; restUrl: string; authToken: string }
 
@@ -197,13 +204,21 @@ type RawGroup = {
   boostMode?: boolean
   lowBat?: boolean | null
   channels?: Array<{ deviceId: string }>
+  activeProfile?: string
+  profiles?: Record<string, { index?: string; name?: string }>
 }
 
-/** All heating rooms (Homematic "HEATING" groups) with their current state. */
-export async function getRooms(conn: Connection): Promise<HeatingRoom[]> {
+export type HomeState = {
+  /** Whether the Access Point itself is currently connected to the cloud */
+  accessPointOnline: boolean
+  rooms: HeatingRoom[]
+}
+
+/** Access Point status plus all heating rooms (Homematic "HEATING" groups) with their current state. */
+export async function getHomeState(conn: Connection): Promise<HomeState> {
   const res = await call(conn, "home/getCurrentState", clientCharacteristics(conn.accessPointId))
-  const state = (await res.json()) as { groups?: Record<string, RawGroup> }
-  return Object.values(state.groups ?? {})
+  const state = (await res.json()) as { home?: { connected?: boolean }; groups?: Record<string, RawGroup> }
+  const rooms = Object.values(state.groups ?? {})
     .filter((g) => g.type === "HEATING")
     .map((g) => ({
       id: g.id,
@@ -219,8 +234,52 @@ export async function getRooms(conn: Connection): Promise<HeatingRoom[]> {
       boost: !!g.boostMode,
       lowBattery: !!g.lowBat,
       thermostatCount: new Set((g.channels ?? []).map((c) => c.deviceId)).size,
+      activeProfile: g.activeProfile
+        ? { index: g.profiles?.[g.activeProfile]?.index ?? g.activeProfile, name: g.profiles?.[g.activeProfile]?.name ?? "" }
+        : null,
     }))
     .sort((a, b) => a.name.localeCompare(b.name))
+  return { accessPointOnline: state.home?.connected !== false, rooms }
+}
+
+export async function getRooms(conn: Connection): Promise<HeatingRoom[]> {
+  return (await getHomeState(conn)).rooms
+}
+
+const WEEKDAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+const TIME = /^\d{1,2}:\d{2}$/
+
+type RawProfile = {
+  profileDays?: Record<string, { baseValue?: number; periods?: Array<{ starttime?: string; endtime?: string; value?: number }> }>
+}
+
+/**
+ * Read-only: the weekly schedule of one heating profile (as set up in the Homematic IP app).
+ * Returns null if the cloud answers in a shape we don't understand.
+ */
+export async function getSchedule(
+  conn: Connection,
+  groupId: string,
+  profile: { index: string; name: string }
+): Promise<WeekSchedule | null> {
+  const res = await call(conn, "group/heating/getProfile", {
+    groupId,
+    profileIndex: profile.index,
+    profileName: profile.name,
+  })
+  const raw = (await res.json().catch(() => null)) as RawProfile | null
+  if (!raw?.profileDays) return null
+  const days: ScheduleDay[] = []
+  for (const name of WEEKDAYS) {
+    const d = raw.profileDays[name]
+    if (!d || typeof d.baseValue !== "number") return null
+    const periods = (d.periods ?? [])
+      .filter((p) => TIME.test(p.starttime ?? "") && TIME.test(p.endtime ?? "") && typeof p.value === "number")
+      .map((p) => ({ start: p.starttime!.padStart(5, "0"), end: p.endtime!.padStart(5, "0"), temperature: p.value! }))
+      .sort((a, b) => a.start.localeCompare(b.start))
+    days.push({ baseTemperature: d.baseValue, periods })
+  }
+  return { profileIndex: profile.index, profileName: profile.name, days }
 }
 
 /** Set a room's target temperature. Like turning the knob: lasts until the next schedule switching point in AUTOMATIC mode. */

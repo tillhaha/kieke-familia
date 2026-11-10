@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { Button } from "@/components/ui/Button"
+import { HEATING_STATUS_EVENT } from "@/components/HeatingStatusIcon"
 import styles from "./settings.module.css"
 
 type Status =
@@ -28,6 +29,11 @@ export function HeatingSection() {
   const [confirmDisconnect, setConfirmDisconnect] = useState(false)
   const [now, setNow] = useState(() => Date.now())
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Keep the navbar status icon in sync with connect / pairing / disconnect
+  useEffect(() => {
+    if (state) window.dispatchEvent(new Event(HEATING_STATUS_EVENT))
+  }, [state?.status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const errorText = useCallback((code: string | undefined) => {
     switch (code) {

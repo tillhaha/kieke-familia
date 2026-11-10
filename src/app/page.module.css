@@ -176,18 +176,6 @@
 
 
 /* Widgets row (tasks + heating side by side on desktop) */
-.widgetRow {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-
-.widgetRow > * {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 50%;
-}
-
 /* Tasks widget */
 .tasksWidget {
   max-width: 50%;
@@ -316,13 +304,4 @@
     margin-top: 0;
   }
 
-  .widgetRow {
-    flex-direction: column;
-    gap: 0;
-    align-items: stretch;
-  }
-
-  .widgetRow > * {
-    max-width: 100%;
-  }
 }

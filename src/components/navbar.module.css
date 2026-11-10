@@ -56,6 +56,7 @@
   font-size: var(--text-2xs);
   font-weight: 500;
   color: var(--secondary);
+  white-space: nowrap;
   transition: background-color 150ms, color 150ms;
   cursor: pointer;
 }
@@ -159,6 +160,53 @@
   background: var(--danger-soft);
 }
 
+/* ── Heating status icon ─────────────────────────────── */
+
+.heatingIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  color: var(--secondary);
+  transition: background-color 150ms, color 150ms;
+}
+
+.heatingIcon:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.heatingIconActive {
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.heatingDot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--background);
+  box-sizing: content-box;
+}
+
+.heating_online .heatingDot { background: var(--success); }
+.heating_offline .heatingDot,
+.heating_error .heatingDot { background: var(--danger); }
+.heating_pairing .heatingDot { background: #F4A261; }
+.heating_disconnected .heatingDot {
+  background: var(--background);
+  border-color: var(--secondary);
+  width: 6px;
+  height: 6px;
+}
+
 /* ── Hamburger button (hidden on desktop) ────────────── */
 
 .hamburger {
@@ -186,11 +234,44 @@
   display: none;
 }
 
+/* ── Tablet landscape: tighten so all links fit ──────── */
+
+@media (max-width: 1023px) {
+  .inner {
+    gap: 0.75rem;
+  }
+
+  .navLink {
+    padding: 4px 8px;
+  }
+
+  /* Labels only — the icons don't fit next to seven links */
+  .navLink svg {
+    display: none;
+  }
+
+  .userName {
+    max-width: 90px;
+  }
+}
+
 /* ── Mobile ──────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
+    margin-left: 0;
+  }
+
+  .heatingIcon {
+    margin-left: auto;
+    width: 40px;
+    height: 40px;
+  }
+
+  .heatingDot {
+    top: 8px;
+    right: 8px;
   }
 
   .navLinks {

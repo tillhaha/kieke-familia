@@ -8,10 +8,11 @@ import { NextResponse } from "next/server"
 import { type McpAuth, type McpTool, type ToolResult, text } from "./types"
 import { shoppingTools } from "./tools/shopping"
 import { personalTodoTools } from "./tools/personalTodos"
+import { heatingTools } from "./tools/heating"
 
 const SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
 
-const TOOLS: McpTool[] = [...shoppingTools, ...personalTodoTools]
+const TOOLS: McpTool[] = [...shoppingTools, ...personalTodoTools, ...heatingTools]
 
 type JsonRpcRequest = { jsonrpc: "2.0"; id?: string | number | null; method: string; params?: Record<string, unknown> }
 
@@ -45,7 +46,7 @@ async function handleMessage(auth: McpAuth, msg: JsonRpcRequest): Promise<object
         capabilities: { tools: {} },
         serverInfo: { name: "familia", version: "1.0.0" },
         instructions:
-          "Access Familia data: the family shopping list (add, list and remove items) and the user's private todo list. When the user shares thoughts, todos or ideas to remember, pass them to capture_thoughts — it splits and categorises them itself. Call get_personal_profile for context about the user's life (people, hobbies, routines) before personal planning or tasks.",
+          "Access Familia data: the family shopping list (add, list and remove items), the user's private todo list and, if connected, the Homematic IP heating (list rooms, set temperature, mode or boost). When the user shares thoughts, todos or ideas to remember, pass them to capture_thoughts — it splits and categorises them itself. Call get_personal_profile for context about the user's life (people, hobbies, routines) before personal planning or tasks.",
       })
     }
     case "ping":

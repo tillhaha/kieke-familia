@@ -102,6 +102,7 @@ model Family {
   shoppingBlacklist  ShoppingBlacklist[]
   tasks              Task[]
   importedCalendars  ImportedCalendar[]
+  homematic          HomematicConnection?
 }
 
 model VerificationToken {
@@ -376,4 +377,21 @@ model PersonalCategory {
   createdAt   DateTime @default(now())
 
   @@unique([userId, name])
+}
+
+// Homematic IP cloud connection (one Access Point per family). While pairing,
+// pairingDeviceId is set and authToken is null; once the blue button on the
+// Access Point is pressed the token is stored and pairingDeviceId cleared.
+// authToken grants control over the family's heating: never send it to the browser.
+model HomematicConnection {
+  id              String   @id @default(cuid())
+  familyId        String   @unique
+  family          Family   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  accessPointId   String   // SGTIN, 24 hex chars, no dashes, upper case
+  restUrl         String   // regional cloud host from lookup.homematic.com
+  authToken       String?
+  pairingDeviceId String?
+  pairingStarted  DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

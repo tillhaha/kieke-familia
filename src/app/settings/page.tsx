@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState } from "react"
-import { User, Download, Home, ShoppingCart, Globe, Palette, Plug, ChevronRight, ArrowLeft } from "lucide-react"
+import { User, Download, Home, ShoppingCart, Globe, Palette, Plug, Thermometer, ChevronRight, ArrowLeft } from "lucide-react"
 import { GoogleCalendarSync } from "./GoogleCalendarSync"
 import { ImportedCalendarsSection } from "./ImportedCalendarsSection"
 import { ProfileSection } from "./ProfileSection"
@@ -12,19 +12,21 @@ import { LocationSection } from "./LocationSection"
 import { UsersSection } from "./UsersSection"
 import { ShoppingSection } from "./ShoppingSection"
 import { ApiTokensSection } from "./ApiTokensSection"
+import { HeatingSection } from "./HeatingSection"
 import { LanguageSection } from "./LanguageSection"
 import { AppearanceSection } from "./AppearanceSection"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { useTheme } from "@/lib/theme/ThemeContext"
 import styles from "./settings.module.css"
 
-type Section = "profile" | "import" | "family" | "shopping" | "integrations" | "language" | "appearance"
+type Section = "profile" | "import" | "family" | "shopping" | "heating" | "integrations" | "language" | "appearance"
 
 const SECTION_COLORS: Record<Section, string> = {
   profile:    "#3EC6C6",
   import:     "#7C6FE0",
   family:     "#F4A261",
   shopping:   "#45B88A",
+  heating:    "#E76F51",
   integrations: "#E879A6",
   language:   "#5BA4F5",
   appearance: "#A29BFE",
@@ -54,6 +56,7 @@ export default function SettingsPage() {
     { id: "import",     icon: <Download size={18} strokeWidth={1.75} />, label: t.settings.calendarImport },
     { id: "family",     icon: <Home size={18} strokeWidth={1.75} />,     label: t.settings.family },
     { id: "shopping",   icon: <ShoppingCart size={18} strokeWidth={1.75} />, label: t.settings.shopping },
+    { id: "heating",    icon: <Thermometer size={18} strokeWidth={1.75} />, label: t.heating.section },
     { id: "integrations", icon: <Plug size={18} strokeWidth={1.75} />,  label: t.settings.integrations },
     { id: "language",   icon: <Globe size={18} strokeWidth={1.75} />,    label: t.settings.language,      status: langLabel },
     { id: "appearance", icon: <Palette size={18} strokeWidth={1.75} />,  label: t.settings.appearance,    status: themeLabel },
@@ -126,6 +129,7 @@ export default function SettingsPage() {
             </>
           )}
           {activeSection === "shopping"   && <ShoppingSection />}
+          {activeSection === "heating"    && <HeatingSection />}
           {activeSection === "integrations" && <ApiTokensSection />}
           {activeSection === "language"   && <LanguageSection />}
           {activeSection === "appearance" && <AppearanceSection />}

@@ -403,6 +403,45 @@ export type Translations = {
     noApiTokens: string
     copy: string
   }
+  heating: {
+    section: string
+    title: string
+    desc: string
+    sgtinLabel: string
+    sgtinHint: string
+    pinLabel: string
+    pinHint: string
+    connect: string
+    connecting: string
+    pressButtonTitle: string
+    pressButtonHint: string
+    timeLeft: string
+    cancel: string
+    connectedTo: string
+    disconnect: string
+    confirmDisconnect: string
+    disconnectHint: string
+    errInvalidSgtin: string
+    errInvalidPin: string
+    errLocked: string
+    errUnreachable: string
+    errThrottled: string
+    errNotAuthorized: string
+    errExpired: string
+    errUnknown: string
+    widgetTitle: string
+    target: string
+    humidity: string
+    windowOpen: string
+    lowBattery: string
+    modeAuto: string
+    modeManual: string
+    modeEco: string
+    boost: string
+    noRooms: string
+    loadFailed: string
+    thermostats: string
+  }
 }
 
 const en: Translations = {
@@ -818,6 +857,45 @@ const en: Translations = {
     neverUsed: "never used",
     noApiTokens: "No tokens yet.",
     copy: "Copy",
+  },
+  heating: {
+    section: "Heating",
+    title: "Homematic IP heating",
+    desc: "Connect your Homematic IP Access Point so you can see and change room temperatures in Kieke.",
+    sgtinLabel: "Access Point ID (SGTIN)",
+    sgtinHint: "Printed on the sticker on the back of the Access Point, e.g. 3014-F711-A000-…",
+    pinLabel: "System PIN",
+    pinHint: "Only if you set one in the Homematic IP app.",
+    connect: "Connect",
+    connecting: "Connecting…",
+    pressButtonTitle: "Now press the blue button on your Access Point",
+    pressButtonHint: "Kieke is waiting for the button press and continues automatically.",
+    timeLeft: "Time left",
+    cancel: "Cancel",
+    connectedTo: "Connected to Access Point",
+    disconnect: "Disconnect",
+    confirmDisconnect: "Disconnect?",
+    disconnectHint: "Kieke forgets the access token. Your thermostats and schedules stay unchanged.",
+    errInvalidSgtin: "That doesn't look like an SGTIN. It has 24 characters (letters A–F and digits).",
+    errInvalidPin: "The PIN is wrong.",
+    errLocked: "The Access Point is locked. Wait a moment and try again.",
+    errUnreachable: "The Homematic IP cloud is not reachable right now.",
+    errThrottled: "Too many requests to the Homematic IP cloud. Try again in a minute.",
+    errNotAuthorized: "Homematic IP rejected the access token. Please disconnect and connect again.",
+    errExpired: "The time for pressing the button ran out. Check the Access Point ID and start again.",
+    errUnknown: "Something went wrong. Please try again.",
+    widgetTitle: "Heating",
+    target: "Target",
+    humidity: "Humidity",
+    windowOpen: "Window open",
+    lowBattery: "Battery low",
+    modeAuto: "Auto",
+    modeManual: "Manual",
+    modeEco: "Eco",
+    boost: "Boost",
+    noRooms: "No heating rooms found in Homematic IP.",
+    loadFailed: "Couldn't load the heating right now.",
+    thermostats: "thermostats",
   },
 }
 
@@ -1235,6 +1313,45 @@ const es: Translations = {
     noApiTokens: "Aún no hay tokens.",
     copy: "Copiar",
   },
+  heating: {
+    section: "Calefacción",
+    title: "Calefacción Homematic IP",
+    desc: "Conecta tu Access Point de Homematic IP para ver y cambiar la temperatura de las habitaciones en Kieke.",
+    sgtinLabel: "ID del Access Point (SGTIN)",
+    sgtinHint: "Está en la etiqueta de la parte trasera del Access Point, p. ej. 3014-F711-A000-…",
+    pinLabel: "PIN del sistema",
+    pinHint: "Solo si configuraste uno en la app de Homematic IP.",
+    connect: "Conectar",
+    connecting: "Conectando…",
+    pressButtonTitle: "Ahora pulsa el botón azul de tu Access Point",
+    pressButtonHint: "Kieke espera a que pulses el botón y continúa automáticamente.",
+    timeLeft: "Tiempo restante",
+    cancel: "Cancelar",
+    connectedTo: "Conectado al Access Point",
+    disconnect: "Desconectar",
+    confirmDisconnect: "¿Desconectar?",
+    disconnectHint: "Kieke olvida la clave de acceso. Tus termostatos y horarios no cambian.",
+    errInvalidSgtin: "Eso no parece un SGTIN. Tiene 24 caracteres (letras A–F y números).",
+    errInvalidPin: "El PIN es incorrecto.",
+    errLocked: "El Access Point está bloqueado. Espera un momento y vuelve a intentarlo.",
+    errUnreachable: "La nube de Homematic IP no está disponible ahora mismo.",
+    errThrottled: "Demasiadas solicitudes a la nube de Homematic IP. Inténtalo de nuevo en un minuto.",
+    errNotAuthorized: "Homematic IP rechazó la clave de acceso. Desconecta y vuelve a conectar.",
+    errExpired: "Se acabó el tiempo para pulsar el botón. Revisa el ID del Access Point y empieza de nuevo.",
+    errUnknown: "Algo salió mal. Inténtalo de nuevo.",
+    widgetTitle: "Calefacción",
+    target: "Objetivo",
+    humidity: "Humedad",
+    windowOpen: "Ventana abierta",
+    lowBattery: "Batería baja",
+    modeAuto: "Auto",
+    modeManual: "Manual",
+    modeEco: "Eco",
+    boost: "Boost",
+    noRooms: "No se encontraron habitaciones con calefacción en Homematic IP.",
+    loadFailed: "No se pudo cargar la calefacción ahora mismo.",
+    thermostats: "termostatos",
+  },
 }
 
 const de: Translations = {
@@ -1650,6 +1767,45 @@ const de: Translations = {
     neverUsed: "nie benutzt",
     noApiTokens: "Noch keine Tokens.",
     copy: "Kopieren",
+  },
+  heating: {
+    section: "Heizung",
+    title: "Homematic IP Heizung",
+    desc: "Verbinde deinen Homematic IP Access Point, um Raumtemperaturen in Kieke zu sehen und zu ändern.",
+    sgtinLabel: "Access Point ID (SGTIN)",
+    sgtinHint: "Steht auf dem Aufkleber auf der Rückseite des Access Points, z. B. 3014-F711-A000-…",
+    pinLabel: "System-PIN",
+    pinHint: "Nur falls du in der Homematic IP App eine gesetzt hast.",
+    connect: "Verbinden",
+    connecting: "Verbinde…",
+    pressButtonTitle: "Drück jetzt die blaue Taste am Access Point",
+    pressButtonHint: "Kieke wartet auf den Tastendruck und macht dann automatisch weiter.",
+    timeLeft: "Verbleibende Zeit",
+    cancel: "Abbrechen",
+    connectedTo: "Verbunden mit Access Point",
+    disconnect: "Trennen",
+    confirmDisconnect: "Trennen?",
+    disconnectHint: "Kieke vergisst den Zugangsschlüssel. Thermostate und Heizpläne bleiben unverändert.",
+    errInvalidSgtin: "Das sieht nicht nach einer SGTIN aus. Sie hat 24 Zeichen (Buchstaben A–F und Ziffern).",
+    errInvalidPin: "Die PIN ist falsch.",
+    errLocked: "Der Access Point ist gesperrt. Warte kurz und versuch es noch einmal.",
+    errUnreachable: "Die Homematic IP Cloud ist gerade nicht erreichbar.",
+    errThrottled: "Zu viele Anfragen an die Homematic IP Cloud. Versuch es in einer Minute noch einmal.",
+    errNotAuthorized: "Homematic IP hat den Zugangsschlüssel abgelehnt. Bitte trennen und neu verbinden.",
+    errExpired: "Die Zeit für den Tastendruck ist abgelaufen. Prüf die Access Point ID und starte neu.",
+    errUnknown: "Etwas ist schiefgelaufen. Bitte versuch es noch einmal.",
+    widgetTitle: "Heizung",
+    target: "Soll",
+    humidity: "Luftfeuchte",
+    windowOpen: "Fenster offen",
+    lowBattery: "Batterie schwach",
+    modeAuto: "Auto",
+    modeManual: "Manuell",
+    modeEco: "Eco",
+    boost: "Boost",
+    noRooms: "Keine Heizungsräume in Homematic IP gefunden.",
+    loadFailed: "Die Heizung konnte gerade nicht geladen werden.",
+    thermostats: "Thermostate",
   },
 }
 

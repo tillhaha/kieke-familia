@@ -112,6 +112,7 @@ All under `src/app/api/`:
 - `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` / `get_personal_profile` (user-scoped)
 - `user/` — GET/PATCH (profile)
 - `weather/` — GET (weather for family city)
+- `heating/` — GET (connection status + Homematic IP rooms); `connect/` — POST start pairing / GET poll for blue-button press / DELETE disconnect; `rooms/[id]/` — PATCH (target temperature, mode, boost)
 - `auth/[...nextauth]/` — NextAuth handler
 
 ### i18n
@@ -124,6 +125,9 @@ All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defin
 
 ### iCal / imported calendars
 `src/lib/ical.ts` — `fetchAndParseIcal(url, calendarId, name, color, timeMin, timeMax)` fetches an iCal URL (normalising `webcal://` → `https://`) and returns `ImportedEvent[]`. Recurring events are expanded via `expandRecurringEvent` from `node-ical`. Imported calendars are stored in the `ImportedCalendar` table (`User` → `ImportedCalendar`). Managed via `calendar/imported/` API routes; events are fetched alongside Google events in `calendar/events/`.
+
+### Homematic IP heating
+`src/lib/homematic/client.ts` talks to the **unofficial** Homematic IP cloud API (same protocol as the `homematicip-rest-api` Python library / Home Assistant): lookup of the regional host via `lookup.homematic.com:48335`, pairing by pressing the blue button on the Access Point, then `/hmip/...` calls with an `AUTHTOKEN` header. One `HomematicConnection` row per family stores the SGTIN, REST host and token — the token is server-only. Rooms are Homematic `HEATING` groups. `src/lib/homematic/family.ts` holds the family-scoped helpers shared by `/api/heating` and the MCP tools (`src/lib/mcp/tools/heating.ts`). The homepage `HeatingWidget` renders nothing unless connected. Note: the cloud accepts a connection request even for a non-existent SGTIN, so a typo only surfaces when the 5-minute pairing window expires.
 
 ### Recipe photo storage
 Recipe photos (`meals/[id]/image/`) are written to `public/uploads/meals/` on disk, but are **served through the same route handler** (`GET /api/meals/[id]/image`), not via Next's static `/public` serving. Reason: in production, Next's router snapshots the contents of `public/` once at server boot (`setupFsCheck` in `next/dist/server/lib/router-utils/filesystem.js`) and resolves static requests against that in-memory list — it never re-scans the filesystem. A file uploaded after the server started is invisible to that snapshot and 404s even though it genuinely exists on disk, regardless of host (true on Vercel and on a long-running container alike). The GET handler sidesteps this by reading the file straight off disk on every request (`Cache-Control: no-store`, since the URL is stable per meal and must reflect the latest upload). `Meal.imageUrl` for newly uploaded photos is the API path (`/api/meals/<id>/image`), not a literal `/uploads/...` path; do not rely on Next statically serving new uploads.

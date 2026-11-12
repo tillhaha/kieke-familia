@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { Button } from "@/components/ui/Button"
 import { HEATING_STATUS_EVENT } from "@/components/HeatingStatusIcon"
+import { HeatingAutomationSection } from "./HeatingAutomationSection"
 import styles from "./settings.module.css"
 
 type Status =
@@ -132,6 +133,7 @@ export function HeatingSection() {
   if (!state) return <p className={styles.spinner}>{t.settings.loading}</p>
 
   return (
+    <>
     <div className={styles.section}>
       <h2 className={styles.sectionTitle}>{t.heating.title}</h2>
       <p className={styles.sectionDesc}>{t.heating.desc}</p>
@@ -208,6 +210,8 @@ export function HeatingSection() {
 
       {error && <p className={styles.saveError}>{error}</p>}
     </div>
+    {state.status === "connected" && <HeatingAutomationSection />}
+    </>
   )
 }
 

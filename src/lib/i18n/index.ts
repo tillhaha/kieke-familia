@@ -469,6 +469,49 @@ export type Translations = {
     allDay: string
     otherwise: string
   }
+  heatingAuto: {
+    title: string
+    desc: string
+    enabled: string
+    baseTemperature: string
+    time: string
+    rulesTitle: string
+    rulesHint: string
+    ruleNone: string
+    ruleWorkAway: string
+    ruleChildAway: string
+    noThermostat: string
+    roomsUnavailable: string
+    save: string
+    saving: string
+    saved: string
+    saveFailed: string
+    startsTomorrow: string
+    previewTitle: string
+    today: string
+    tomorrow: string
+    stateAway: string
+    statePresent: string
+    stateUnset: string
+    unsavedHint: string
+    runNow: string
+    running: string
+    lastRun: string
+    never: string
+    triggerSchedule: string
+    triggerManual: string
+    runFailed: string
+    noRules: string
+    outcomeLowered: string
+    outcomeFailed: string
+    reasonUNSET: string
+    reasonPRESENT: string
+    reasonROOM_MISSING: string
+    reasonNO_THERMOSTAT: string
+    reasonNOT_AUTO: string
+    reasonBOOST: string
+    reasonALREADY_LOW: string
+  }
 }
 
 const en: Translations = {
@@ -950,6 +993,49 @@ const en: Translations = {
     tomorrow: "Tomorrow",
     allDay: "All day",
     otherwise: "otherwise",
+  },
+  heatingAuto: {
+    title: "Smart schedule",
+    desc: "Every morning Kieke lowers rooms whose people aren't home that day, based on the week planner. The room stays in Auto mode: the lower target lasts until the room's next switching point, then the Homematic week plan takes over again. Changing the temperature on the device or in the app always wins.",
+    enabled: "Active",
+    baseTemperature: "Base temperature",
+    time: "Time",
+    rulesTitle: "Rooms",
+    rulesHint: "When nothing is entered in the week planner for that day, the room is left alone. So are rooms in Manual or Eco mode, with boost on, or already at or below the base temperature.",
+    ruleNone: "Don't lower",
+    ruleWorkAway: "{name} not working from home",
+    ruleChildAway: "{name} not with us",
+    noThermostat: "no thermostat connected",
+    roomsUnavailable: "Couldn't load the rooms from Homematic IP right now.",
+    save: "Save",
+    saving: "Saving…",
+    saved: "Saved",
+    saveFailed: "Couldn't save the settings.",
+    startsTomorrow: "Today's time has passed — it runs from tomorrow on. Use “Run now” to apply today's rules.",
+    previewTitle: "Plan",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    stateAway: "lower to {t}",
+    statePresent: "stays",
+    stateUnset: "not entered",
+    unsavedHint: "Save to update the plan.",
+    runNow: "Run now",
+    running: "Running…",
+    lastRun: "Last run",
+    never: "Hasn't run yet.",
+    triggerSchedule: "scheduled",
+    triggerManual: "manual",
+    runFailed: "Didn't run: {error}",
+    noRules: "No rooms set up.",
+    outcomeLowered: "lowered from {from} to {t}",
+    outcomeFailed: "failed: {error}",
+    reasonUNSET: "not entered – left alone",
+    reasonPRESENT: "someone's home – left alone",
+    reasonROOM_MISSING: "room not found",
+    reasonNO_THERMOSTAT: "no thermostat connected",
+    reasonNOT_AUTO: "not in Auto mode – left alone",
+    reasonBOOST: "boost running – left alone",
+    reasonALREADY_LOW: "already at or below base temperature",
   },
 }
 
@@ -1433,6 +1519,49 @@ const es: Translations = {
     allDay: "Todo el día",
     otherwise: "resto",
   },
+  heatingAuto: {
+    title: "Programación inteligente",
+    desc: "Cada mañana Kieke baja la temperatura de las habitaciones cuyas personas no están en casa ese día, según el planificador semanal. La habitación sigue en modo automático: la temperatura más baja dura hasta el siguiente punto de cambio y luego vuelve a mandar el plan semanal de Homematic. Los cambios en el dispositivo o en la app siempre tienen prioridad.",
+    enabled: "Activa",
+    baseTemperature: "Temperatura base",
+    time: "Hora",
+    rulesTitle: "Habitaciones",
+    rulesHint: "Si no hay nada anotado en el planificador para ese día, la habitación no se toca. Tampoco las habitaciones en modo manual o eco, con boost o que ya están a la temperatura base o por debajo.",
+    ruleNone: "No bajar",
+    ruleWorkAway: "{name} no trabaja desde casa",
+    ruleChildAway: "{name} no está con nosotros",
+    noThermostat: "sin termostato conectado",
+    roomsUnavailable: "No se pudieron cargar las habitaciones de Homematic IP.",
+    save: "Guardar",
+    saving: "Guardando…",
+    saved: "Guardado",
+    saveFailed: "No se pudo guardar la configuración.",
+    startsTomorrow: "La hora de hoy ya pasó: se ejecuta a partir de mañana. Usa “Ejecutar ahora” para aplicar las reglas hoy.",
+    previewTitle: "Previsión",
+    today: "Hoy",
+    tomorrow: "Mañana",
+    stateAway: "bajar a {t}",
+    statePresent: "se mantiene",
+    stateUnset: "sin datos",
+    unsavedHint: "Guarda para actualizar la previsión.",
+    runNow: "Ejecutar ahora",
+    running: "Ejecutando…",
+    lastRun: "Última ejecución",
+    never: "Aún no se ha ejecutado.",
+    triggerSchedule: "programada",
+    triggerManual: "manual",
+    runFailed: "No se ejecutó: {error}",
+    noRules: "No hay habitaciones configuradas.",
+    outcomeLowered: "bajada de {from} a {t}",
+    outcomeFailed: "falló: {error}",
+    reasonUNSET: "sin datos – sin cambios",
+    reasonPRESENT: "hay alguien en casa – sin cambios",
+    reasonROOM_MISSING: "habitación no encontrada",
+    reasonNO_THERMOSTAT: "sin termostato conectado",
+    reasonNOT_AUTO: "no está en modo automático – sin cambios",
+    reasonBOOST: "boost activo – sin cambios",
+    reasonALREADY_LOW: "ya está a la temperatura base o por debajo",
+  },
 }
 
 const de: Translations = {
@@ -1914,6 +2043,49 @@ const de: Translations = {
     tomorrow: "Morgen",
     allDay: "Ganztägig",
     otherwise: "sonst",
+  },
+  heatingAuto: {
+    title: "Intelligenter Zeitplan",
+    desc: "Jeden Morgen senkt Kieke die Räume ab, deren Personen an dem Tag nicht zu Hause sind – laut Wochenplaner. Der Raum bleibt im Automatik-Modus: Die niedrigere Temperatur gilt bis zum nächsten Schaltpunkt, danach übernimmt wieder der Homematic-Wochenplan. Änderungen am Gerät oder in der App haben immer Vorrang.",
+    enabled: "Aktiv",
+    baseTemperature: "Grundtemperatur",
+    time: "Uhrzeit",
+    rulesTitle: "Räume",
+    rulesHint: "Ist im Wochenplaner für den Tag nichts eingetragen, bleibt der Raum unverändert. Ebenso Räume im manuellen oder Eco-Modus, mit Boost oder die schon auf oder unter der Grundtemperatur sind.",
+    ruleNone: "Nicht absenken",
+    ruleWorkAway: "{name} nicht im Homeoffice",
+    ruleChildAway: "{name} nicht bei uns",
+    noThermostat: "kein Thermostat verbunden",
+    roomsUnavailable: "Die Räume konnten gerade nicht von Homematic IP geladen werden.",
+    save: "Speichern",
+    saving: "Speichern…",
+    saved: "Gespeichert",
+    saveFailed: "Die Einstellungen konnten nicht gespeichert werden.",
+    startsTomorrow: "Die Uhrzeit ist heute schon vorbei – es läuft ab morgen. Mit „Jetzt ausführen“ gelten die Regeln sofort.",
+    previewTitle: "Vorschau",
+    today: "Heute",
+    tomorrow: "Morgen",
+    stateAway: "auf {t} absenken",
+    statePresent: "bleibt",
+    stateUnset: "nicht eingetragen",
+    unsavedHint: "Speichern, um die Vorschau zu aktualisieren.",
+    runNow: "Jetzt ausführen",
+    running: "Läuft…",
+    lastRun: "Letzte Ausführung",
+    never: "Noch nicht ausgeführt.",
+    triggerSchedule: "geplant",
+    triggerManual: "manuell",
+    runFailed: "Nicht ausgeführt: {error}",
+    noRules: "Keine Räume eingerichtet.",
+    outcomeLowered: "von {from} auf {t} abgesenkt",
+    outcomeFailed: "fehlgeschlagen: {error}",
+    reasonUNSET: "nicht eingetragen – unverändert",
+    reasonPRESENT: "jemand zu Hause – unverändert",
+    reasonROOM_MISSING: "Raum nicht gefunden",
+    reasonNO_THERMOSTAT: "kein Thermostat verbunden",
+    reasonNOT_AUTO: "nicht im Automatik-Modus – unverändert",
+    reasonBOOST: "Boost läuft – unverändert",
+    reasonALREADY_LOW: "schon auf oder unter Grundtemperatur",
   },
 }
 

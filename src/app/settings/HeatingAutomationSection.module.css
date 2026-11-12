@@ -1,0 +1,150 @@
+/* src/app/settings/HeatingAutomationSection.module.css */
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+  cursor: pointer;
+}
+
+.inputsRow {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.unitInput {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--secondary);
+}
+
+.unitInput input {
+  width: 6rem;
+}
+
+.roomList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: var(--space-3);
+}
+
+.roomRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.roomRow:last-child {
+  border-bottom: none;
+}
+
+.roomHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.roomName {
+  font-weight: 600;
+  font-size: var(--text-base);
+  min-width: 0;
+}
+
+.muted {
+  color: var(--secondary);
+  font-weight: 400;
+  font-size: var(--text-sm);
+}
+
+.select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  cursor: pointer;
+  max-width: 60%;
+}
+
+.select:focus {
+  border-color: var(--primary);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  font-size: var(--text-xs);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+
+.chipAway {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+}
+
+.chipPresent {
+  background: var(--surface);
+}
+
+.chipUnset {
+  border-style: dashed;
+  color: var(--secondary);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-2);
+  flex-wrap: wrap;
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.logList {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.logError {
+  color: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .roomHead {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .select {
+    max-width: none;
+    min-height: 44px;
+  }
+}

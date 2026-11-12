@@ -103,6 +103,7 @@ model Family {
   tasks              Task[]
   importedCalendars  ImportedCalendar[]
   homematic          HomematicConnection?
+  heatingAutomation  HeatingAutomation?
 }
 
 model VerificationToken {
@@ -394,4 +395,21 @@ model HomematicConnection {
   pairingStarted  DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// Smart heating schedule: each morning, lower rooms whose people aren't home today
+// (work location / custody from the week planner). One row per family.
+model HeatingAutomation {
+  id              String    @id @default(cuid())
+  familyId        String    @unique
+  family          Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  enabled         Boolean   @default(false)
+  baseTemperature Float     @default(18)
+  time            String    @default("08:00") // "HH:MM" local time
+  timeZone        String    @default("Europe/Berlin")
+  rules           Json      @default("[]") // AutomationRule[] — see src/lib/homematic/automation.ts
+  lastRunDate     String? // "YYYY-MM-DD" local date of the last scheduled run (claims the day)
+  lastRunAt       DateTime?
+  lastRunLog      Json? // AutomationResult[] of the last run (scheduled or manual)
+  updatedAt       DateTime  @updatedAt
 }

@@ -1147,6 +1147,22 @@ tr:last-child .cell {
   font-size: var(--text-md);
 }
 
+/* "Laura und Till Calendar" link in the page header (the calendar left the main menu) */
+.calendarLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.calendarLink:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   /* no hover on touch: keep the edit icon visible, 44px target */
   .weekEditLink {

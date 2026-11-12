@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Bot, Calendar, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, Thermometer, X } from "lucide-react"
+import { Bot, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, Thermometer, X } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { HeatingStatusIcon } from "./HeatingStatusIcon"
 import styles from "./navbar.module.css"
@@ -19,7 +19,6 @@ export function Navbar() {
   const { t } = useTranslation()
 
   const navLinks = [
-    { href: "/calendar", label: t.nav.calendar, icon: Calendar },
     { href: "/week", label: t.nav.weekPlanner, icon: CalendarDays },
     { href: "/meals", label: t.nav.recipes, icon: UtensilsCrossed },
     { href: "/shopping", label: t.nav.shopping, icon: ShoppingCart },

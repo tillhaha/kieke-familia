@@ -35,6 +35,7 @@ export type Translations = {
   week: {
     title: string
     planNextWeek: string
+    calendarLink: string
     planning: string
     noWeeksYet: string
     generateShopping: string
@@ -548,9 +549,10 @@ const en: Translations = {
   },
   week: {
     title: "Week Planner",
-    planNextWeek: "Plan next week",
+    planNextWeek: "next week",
+    calendarLink: "Laura und Till Calendar",
     planning: "Planning…",
-    noWeeksYet: "No weeks planned yet. Click \"Plan next week\" to get started.",
+    noWeeksYet: "No weeks planned yet. Click \"+ next week\" to get started.",
     generateShopping: "Generate shopping list",
   },
   weekBlock: {
@@ -1073,9 +1075,10 @@ const es: Translations = {
   },
   week: {
     title: "Planificador semanal",
-    planNextWeek: "Planificar próxima semana",
+    planNextWeek: "próxima semana",
+    calendarLink: "Laura und Till Calendar",
     planning: "Planificando…",
-    noWeeksYet: "Sin semanas planificadas. Haz clic en \"Planificar próxima semana\" para empezar.",
+    noWeeksYet: "Sin semanas planificadas. Haz clic en \"+ próxima semana\" para empezar.",
     generateShopping: "Generar lista de compras",
   },
   weekBlock: {
@@ -1598,9 +1601,10 @@ const de: Translations = {
   },
   week: {
     title: "Wochenplaner",
-    planNextWeek: "Nächste Woche planen",
+    planNextWeek: "nächste Woche",
+    calendarLink: "Laura und Till Calendar",
     planning: "Plane…",
-    noWeeksYet: "Noch keine Wochen geplant. Klicke auf \"Nächste Woche planen\" um zu beginnen.",
+    noWeeksYet: "Noch keine Wochen geplant. Klicke auf \"+ nächste Woche\", um zu beginnen.",
     generateShopping: "Einkaufsliste erstellen",
   },
   weekBlock: {

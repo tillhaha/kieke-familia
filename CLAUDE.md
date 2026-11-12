@@ -65,8 +65,8 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 |-------|-------------|
 | `/` | Home — greeting + current week summary (read-only `WeekBlock`) + tasks widget |
 | `/onboarding` | Family create/join flow for new users without a family |
-| `/week` | Week planning — editable `WeekBlock` with day notes, lunch/dinner |
-| `/calendar` | Calendar view with Google Calendar events, birthdays, travel |
+| `/week` | Week planning — editable `WeekBlock` with day notes, lunch/dinner. Header: "+ next week" button right after the title (`PageHeader` `addon`), "Laura und Till Calendar" link to `/calendar` top right |
+| `/calendar` | Calendar view with Google Calendar events, birthdays, travel. Not in the main menu — reached via the link on `/week` |
 | `/meals` | Recipe library list |
 | `/meals/new` | Create recipe |
 | `/meals/[id]` | Recipe detail with inline editing |

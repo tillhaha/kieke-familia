@@ -4,7 +4,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Plus, CalendarDays } from "lucide-react"
+import Link from "next/link"
+import { Plus, CalendarDays, Calendar } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
@@ -149,10 +150,16 @@ export default function WeekPage() {
     <Page width="wide">
       <PageHeader
         title={t.week.title}
-        actions={
-          <Button variant="primary" icon={<Plus size={15} strokeWidth={2.5} />} onClick={handlePlanNextWeek} disabled={planning}>
+        addon={
+          <Button variant="primary" size="sm" icon={<Plus size={14} strokeWidth={2.5} />} onClick={handlePlanNextWeek} disabled={planning}>
             {planning ? t.week.planning : t.week.planNextWeek}
           </Button>
+        }
+        actions={
+          <Link href="/calendar" className={styles.calendarLink}>
+            <Calendar size={15} strokeWidth={2} />
+            {t.week.calendarLink}
+          </Link>
         }
       />
 

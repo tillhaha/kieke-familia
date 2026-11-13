@@ -148,7 +148,8 @@ async function updateDay(familyId: string, args: unknown): Promise<ToolResult> {
 const WorkLocationArgs = z.object({
   date: z.string().regex(ISO_DATE),
   userId: z.string().min(1),
-  location: z.enum(["HOME", "OFFICE"]).nullable(),
+  // NONE (or null from older clients) clears it
+  location: z.enum(["HOME", "OFFICE", "NONE"]).nullable().transform((v) => (v === "NONE" ? null : v)),
 })
 
 async function setWorkLocation(familyId: string, args: unknown): Promise<ToolResult> {
@@ -260,18 +261,18 @@ export const familyTools: McpTool[] = [
   {
     name: "update_day_plan",
     description:
-      "Change one day in the week planner: lunch, dinner, their notes and the day note. Only the fields you pass are changed; pass null or \"\" to clear one. Pass lunchRecipeId / dinnerRecipeId (from search_recipes) to link a recipe instead of free text. Creates the week if it isn't planned yet.",
+      "Change one day in the week planner: lunch, dinner, their notes and the day note. Only the fields you pass are changed; pass \"\" to clear one. Pass lunchRecipeId / dinnerRecipeId (from search_recipes) to link a recipe instead of free text. Creates the week if it isn't planned yet.",
     inputSchema: {
       type: "object",
       properties: {
         date: { type: "string", description: "YYYY-MM-DD" },
-        lunch: { type: ["string", "null"] },
-        lunchNote: { type: ["string", "null"] },
+        lunch: { type: "string" },
+        lunchNote: { type: "string" },
         lunchRecipeId: { type: "string" },
-        dinner: { type: ["string", "null"] },
-        dinnerNote: { type: ["string", "null"] },
+        dinner: { type: "string" },
+        dinnerNote: { type: "string" },
         dinnerRecipeId: { type: "string" },
-        note: { type: ["string", "null"], description: "Note for the whole day" },
+        note: { type: "string", description: "Note for the whole day" },
       },
       required: ["date"],
     },
@@ -279,13 +280,13 @@ export const familyTools: McpTool[] = [
   },
   {
     name: "set_work_location",
-    description: "Set where a family member works on a day: HOME (working from home), OFFICE, or null to clear. Get member ids from list_family_members.",
+    description: "Set where a family member works on a day: HOME (working from home), OFFICE, or NONE to clear. Get member ids from list_family_members.",
     inputSchema: {
       type: "object",
       properties: {
         date: { type: "string", description: "YYYY-MM-DD" },
         userId: { type: "string" },
-        location: { type: ["string", "null"], enum: ["HOME", "OFFICE", null] },
+        location: { type: "string", enum: ["HOME", "OFFICE", "NONE"] },
       },
       required: ["date", "userId", "location"],
     },

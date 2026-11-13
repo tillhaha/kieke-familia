@@ -134,7 +134,7 @@ export const taskTools: McpTool[] = [
         id: { type: "string" },
         name: { type: "string" },
         dueDate: { type: "string", description: "YYYY-MM-DD" },
-        description: { type: ["string", "null"] },
+        description: { type: "string", description: "\"\" clears it" },
         assigneeIds: { type: "array", items: { type: "string" } },
         done: { type: "boolean" },
       },

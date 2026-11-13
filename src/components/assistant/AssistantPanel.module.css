@@ -250,6 +250,15 @@
   font-size: var(--text-sm);
 }
 
+.errorDetail {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: var(--text-xs);
+  color: var(--secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
 /* History */
 .historyList {
   list-style: none;

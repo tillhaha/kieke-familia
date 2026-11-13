@@ -37,11 +37,32 @@ function headers(apiKey: string) {
 }
 
 async function errorFrom(res: Response): Promise<OpenRouterError> {
-  const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null
-  const message = body?.error?.message || `OpenRouter answered ${res.status}`
+  const raw = await res.text().catch(() => "")
+  let body: { error?: { message?: string; metadata?: { raw?: unknown; provider_name?: string } } } | null = null
+  try {
+    body = JSON.parse(raw)
+  } catch {
+    // not JSON (proxy error page etc.)
+  }
+  // OpenRouter puts the provider's own explanation (e.g. a rejected tool schema) in metadata.raw
+  const provider = body?.error?.metadata
+  const providerText = provider?.raw ? ` — ${provider.provider_name ?? "provider"}: ${typeof provider.raw === "string" ? provider.raw : JSON.stringify(provider.raw)}` : ""
+  const message = `OpenRouter ${res.status}: ${body?.error?.message || raw.slice(0, 300) || res.statusText}${providerText}`.slice(0, 1000)
+  console.error("[assistant] openrouter error", message)
   if (res.status === 402) return new OpenRouterError("NO_CREDITS", message)
   if (res.status === 429) return new OpenRouterError("RATE_LIMITED", message)
   return new OpenRouterError("UPSTREAM", message)
+}
+
+/** fetch, but a connection failure says why (DNS, refused, TLS, timeout …) */
+async function reach(url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init)
+  } catch (err) {
+    if (init.signal?.aborted) throw err
+    const cause = (err as { cause?: { code?: string; message?: string } }).cause
+    throw new OpenRouterError("UPSTREAM", `Can't reach ${new URL(url).host}: ${cause?.code ?? ""} ${cause?.message ?? (err instanceof Error ? err.message : String(err))}`.trim())
+  }
 }
 
 /**
@@ -58,7 +79,7 @@ export async function streamChat(opts: {
   const cfg = assistantConfig()
   if (!cfg.apiKey) throw new OpenRouterError("NOT_CONFIGURED", "OPENROUTER_API_KEY is not set")
 
-  const res = await fetch(`${cfg.baseUrl}/chat/completions`, {
+  const res = await reach(`${cfg.baseUrl}/chat/completions`, {
     method: "POST",
     headers: headers(cfg.apiKey),
     body: JSON.stringify({

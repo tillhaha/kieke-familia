@@ -25,7 +25,7 @@ type StreamEvent =
   | { type: "tool"; name: string; ok: boolean }
   | { type: "confirm" }
   | { type: "messages"; messages: ChatMessage[] }
-  | { type: "error"; code: string }
+  | { type: "error"; code: string; message: string }
 
 export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data: session } = useSession()
@@ -42,6 +42,8 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
   const [busy, setBusy] = useState(false)
   const [live, setLive] = useState<Live | null>(null)
   const [error, setError] = useState<string | null>(null)
+  /** The technical reason behind `error`, shown small under the friendly text */
+  const [errorDetail, setErrorDetail] = useState("")
   const [voice, setVoice] = useState<"idle" | "recording" | "transcribing">("idle")
   const [voiceError, setVoiceError] = useState("")
 
@@ -123,6 +125,7 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
       liveTextRef.current = ""
       setBusy(true)
       setError(null)
+      setErrorDetail("")
       setLive([])
       let committed = false
       try {
@@ -135,6 +138,7 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
         if (!res.ok || !res.body) {
           const data = await res.json().catch(() => ({}))
           setError(data.code ?? (res.status === 503 ? "NOT_CONFIGURED" : "UNKNOWN"))
+          setErrorDetail(`HTTP ${res.status}${data.error ? `: ${data.error}` : ""}`)
           return
         }
         const reader = res.body.getReader()
@@ -157,6 +161,7 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
             committed = true
           } else if (e.type === "error") {
             setError(e.code)
+            setErrorDetail(e.message)
           }
         }
         for (;;) {
@@ -177,6 +182,7 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
         } else {
           console.error("[assistant]", err)
           setError("UNKNOWN")
+          setErrorDetail(err instanceof Error ? err.message : String(err))
         }
       } finally {
         if (abortRef.current === ac) abortRef.current = null
@@ -423,6 +429,7 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
               {error && !busy && (
                 <div className={styles.error}>
                   {errorText}
+                  {errorDetail && <code className={styles.errorDetail}>{errorDetail}</code>}
                   {error !== "NOT_CONFIGURED" && (
                     <Button variant="secondary" size="sm" onClick={() => run(conversation.messages, [])}>
                       {ta.retry}

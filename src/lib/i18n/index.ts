@@ -544,6 +544,7 @@ export type Translations = {
     recordStop: string
     transcribing: string
     errVoice: string
+    errVoiceModel: string
     errMic: string
     tools: Record<string, string>
   }
@@ -1082,7 +1083,7 @@ const en: Translations = {
     back: "Back",
     noHistory: "No earlier chats on this device.",
     historyHint: "Chats are kept on this device for 14 days.",
-    placeholder: "Ask anything or tell me what to do…",
+    placeholder: "Ask me anything…",
     send: "Send",
     stop: "Stop",
     greeting: "Hi {name}! I know your week plan, calendar, tasks, recipes, shopping list and heating. How can I help?",
@@ -1104,6 +1105,7 @@ const en: Translations = {
     recordStop: "Stop and send",
     transcribing: "Listening to your message…",
     errVoice: "Couldn't understand the voice message.",
+    errVoiceModel: "The voice model can't transcribe speech. Set OPENROUTER_AUDIO_MODEL to a speech-to-text model, e.g. openai/whisper-large-v3.",
     errMic: "No access to the microphone.",
     tools: {
       list_family_members: "Looked up the family",
@@ -1664,7 +1666,7 @@ const es: Translations = {
     back: "Volver",
     noHistory: "No hay chats anteriores en este dispositivo.",
     historyHint: "Los chats se guardan 14 días en este dispositivo.",
-    placeholder: "Pregunta algo o dime qué hacer…",
+    placeholder: "Pregúntame algo…",
     send: "Enviar",
     stop: "Detener",
     greeting: "¡Hola {name}! Conozco vuestro plan semanal, calendario, tareas, recetas, lista de la compra y calefacción. ¿En qué te ayudo?",
@@ -1686,6 +1688,7 @@ const es: Translations = {
     recordStop: "Detener y enviar",
     transcribing: "Escuchando tu mensaje…",
     errVoice: "No se pudo entender el mensaje de voz.",
+    errVoiceModel: "El modelo de voz no puede transcribir. Pon en OPENROUTER_AUDIO_MODEL un modelo de voz a texto, p. ej. openai/whisper-large-v3.",
     errMic: "Sin acceso al micrófono.",
     tools: {
       list_family_members: "Consultó la familia",
@@ -2246,7 +2249,7 @@ const de: Translations = {
     back: "Zurück",
     noHistory: "Keine früheren Chats auf diesem Gerät.",
     historyHint: "Chats bleiben 14 Tage auf diesem Gerät gespeichert.",
-    placeholder: "Frag etwas oder sag mir, was ich tun soll…",
+    placeholder: "Frag mich etwas…",
     send: "Senden",
     stop: "Stopp",
     greeting: "Hallo {name}! Ich kenne euren Wochenplan, Kalender, Aufgaben, Rezepte, die Einkaufsliste und die Heizung. Wobei kann ich helfen?",
@@ -2268,6 +2271,7 @@ const de: Translations = {
     recordStop: "Stoppen und senden",
     transcribing: "Höre mir deine Nachricht an…",
     errVoice: "Die Sprachnachricht konnte nicht verstanden werden.",
+    errVoiceModel: "Das Sprachmodell kann keine Sprache in Text umwandeln. Trag in OPENROUTER_AUDIO_MODEL ein Speech-to-Text-Modell ein, z. B. openai/whisper-large-v3.",
     errMic: "Kein Zugriff aufs Mikrofon.",
     tools: {
       list_family_members: "Familie nachgeschaut",

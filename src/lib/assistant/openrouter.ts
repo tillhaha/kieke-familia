@@ -19,7 +19,7 @@ type ToolDef = { type: "function"; function: { name: string; description: string
 
 export class OpenRouterError extends Error {
   constructor(
-    public code: "NOT_CONFIGURED" | "NO_CREDITS" | "RATE_LIMITED" | "UPSTREAM",
+    public code: "NOT_CONFIGURED" | "NO_CREDITS" | "RATE_LIMITED" | "UPSTREAM" | "WRONG_MODEL",
     message: string,
   ) {
     super(message)
@@ -126,10 +126,29 @@ export async function streamChat(opts: {
   return { content, toolCalls }
 }
 
-/** Speech → text with an audio-capable model (OPENROUTER_AUDIO_MODEL). */
+/**
+ * Speech → text with OPENROUTER_AUDIO_MODEL. Uses OpenRouter's speech-to-text endpoint
+ * (Whisper, GPT-4o Transcribe, Voxtral, …); a chat model that only accepts audio input is
+ * asked to transcribe via chat completions instead.
+ */
 export async function transcribe(audioBase64: string, format: "wav" | "mp3", signal?: AbortSignal): Promise<string> {
   const cfg = assistantConfig()
   if (!cfg.apiKey || !cfg.audioModel) throw new OpenRouterError("NOT_CONFIGURED", "Voice model is not configured")
+
+  const stt = await fetch(`${cfg.baseUrl}/audio/transcriptions`, {
+    method: "POST",
+    headers: headers(cfg.apiKey),
+    body: JSON.stringify({ model: cfg.audioModel, input_audio: { data: audioBase64, format } }),
+    signal,
+  })
+  if (stt.ok) {
+    const body = (await stt.json()) as { text?: string }
+    return (body.text ?? "").trim()
+  }
+  // Out of credits / rate limited: no point trying the other way
+  if (stt.status === 402 || stt.status === 429) throw await errorFrom(stt)
+  const sttError = await errorFrom(stt)
+
   const res = await fetch(`${cfg.baseUrl}/chat/completions`, {
     method: "POST",
     headers: headers(cfg.apiKey),
@@ -151,7 +170,12 @@ export async function transcribe(audioBase64: string, format: "wav" | "mp3", sig
     }),
     signal,
   })
-  if (!res.ok) throw await errorFrom(res)
+  if (!res.ok) {
+    const chatError = await errorFrom(res)
+    if (chatError.code === "NO_CREDITS" || chatError.code === "RATE_LIMITED") throw chatError
+    // Neither way works: most likely not a speech-to-text model (e.g. a text-to-speech one)
+    throw new OpenRouterError("WRONG_MODEL", `${cfg.audioModel} can't transcribe audio (${sttError.message}; ${chatError.message})`)
+  }
   const body = (await res.json()) as { choices?: { message?: { content?: string | null } }[] }
   return (body.choices?.[0]?.message?.content ?? "").trim()
 }

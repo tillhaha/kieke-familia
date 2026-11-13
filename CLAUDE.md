@@ -122,7 +122,7 @@ Slide-in chat panel (`src/components/assistant/AssistantPanel.tsx`), opened from
 - **Streaming**: the route streams NDJSON events `text` / `tool` / `confirm` / `messages` (the new messages to append, always sent last, also after errors) / `error` (`NOT_CONFIGURED`, `NO_CREDITS`, `RATE_LIMITED`, `UPSTREAM`).
 - **Confirmation**: tools with `confirm: true` aren't run; the loop stops, the panel shows Confirm/Cancel and sends `approvals: [{ id, approved }]` with the next request (`pendingCalls` in `src/lib/assistant/messages.ts` = tool calls of the last assistant message without a result). Typing a new message instead counts as "no".
 - **No server-side history**: conversations live in the browser only (`src/components/assistant/storage.ts`, localStorage per user, 14 days, max 20); a chat idle for 30 min isn't resumed.
-- **Voice**: with `OPENROUTER_AUDIO_MODEL` set, the mic records (MediaRecorder → 16 kHz mono WAV, `recorder.ts`, max 2 min) and `/api/assistant/transcribe` turns it into text via an `input_audio` message, which is then sent. Without it the mic is the browser's Web Speech dictation (`VoiceInputButton`).
+- **Voice**: with `OPENROUTER_AUDIO_MODEL` set, the mic records (MediaRecorder → 16 kHz mono WAV, `recorder.ts`, max 2 min) and `/api/assistant/transcribe` turns it into text, which is then sent. `transcribe()` uses OpenRouter's speech-to-text endpoint `/audio/transcriptions` (`{ model, input_audio: { data, format } }` → `{ text }`; e.g. `openai/whisper-large-v3`) and falls back to an `input_audio` chat message for chat models that accept audio. If both fail it reports `WRONG_MODEL` (e.g. a text-to-speech model like HeyGen Voice was configured). Without it the mic is the browser's Web Speech dictation (`VoiceInputButton`).
 
 ### i18n
 All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defines the full shape; three locale objects (`en`, `de`, `es`) implement it. `useTranslation()` from `src/lib/i18n/LanguageContext.tsx` returns `{ t, language, setLanguage }`. When adding new strings, update the type definition **and** all three locale objects.
@@ -198,7 +198,7 @@ NEXTAUTH_URL
 ANTHROPIC_API_KEY   # used by /api/meals/parse (recipe text → structured fields)
 OPENROUTER_API_KEY  # assistant; without it the panel says it isn't set up
 OPENROUTER_MODEL    # optional, default anthropic/claude-haiku-5.5
-OPENROUTER_AUDIO_MODEL  # optional, audio-capable model for voice messages
+OPENROUTER_AUDIO_MODEL  # optional, speech-to-text model for voice messages, e.g. openai/whisper-large-v3
 OPENROUTER_BASE_URL # optional, default https://openrouter.ai/api/v1 (tests point it at a mock)
 ```
 

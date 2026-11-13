@@ -233,8 +233,14 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
       const data = await res.json().catch(() => ({}))
       if (!res.ok || !data.text) throw new Error(data.code ?? "EMPTY")
       send(data.text)
-    } catch {
-      setVoiceError(ta.errVoice)
+    } catch (err) {
+      const code = err instanceof Error ? err.message : ""
+      setVoiceError(
+        code === "WRONG_MODEL" ? ta.errVoiceModel
+        : code === "NO_CREDITS" ? ta.errNoCredits
+        : code === "RATE_LIMITED" ? ta.errRateLimited
+        : ta.errVoice,
+      )
     } finally {
       setVoice("idle")
     }

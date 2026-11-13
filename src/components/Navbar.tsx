@@ -5,9 +5,10 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Bot, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, Thermometer, X } from "lucide-react"
+import { Bot, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, ShoppingCart, CheckSquare, Brain, Thermometer, X, Sparkles } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { HeatingStatusIcon } from "./HeatingStatusIcon"
+import { AssistantPanel } from "./assistant/AssistantPanel"
 import styles from "./navbar.module.css"
 
 export function Navbar() {
@@ -15,6 +16,8 @@ export function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  // The panel stays mounted after the first open, so a chat survives closing it and navigating
+  const [assistant, setAssistant] = useState<"never" | "open" | "closed">("never")
   const ref = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
 
@@ -67,6 +70,18 @@ export function Navbar() {
             </div>
           )}
 
+          {session?.user?.familyId && (
+            <button
+              type="button"
+              className={`${styles.heatingIcon} ${assistant === "open" ? styles.heatingIconActive : ""}`}
+              onClick={() => setAssistant((a) => (a === "open" ? "closed" : "open"))}
+              aria-label={t.assistant.open}
+              aria-expanded={assistant === "open"}
+              title={t.assistant.title}
+            >
+              <Sparkles size={17} strokeWidth={2} />
+            </button>
+          )}
           {session?.user?.familyId && <HeatingStatusIcon active={pathname === "/heating"} />}
 
           {session && (
@@ -176,6 +191,10 @@ export function Navbar() {
             </button>
           </div>
         </div>
+      )}
+
+      {session?.user?.familyId && assistant !== "never" && (
+        <AssistantPanel open={assistant === "open"} onClose={() => setAssistant("closed")} />
       )}
     </>
   )

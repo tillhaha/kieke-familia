@@ -29,5 +29,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   // App icons and the web manifest must be reachable without a session —
   // iOS/browsers fetch them anonymously when adding the app to the home screen.
-  matcher: ["/((?!api|_next/static|_next/image|favicon\\.ico|icon\\.svg|apple-icon|manifest\\.webmanifest|kieke-icon-).*)"],
+  // theme-init.js runs on every page, including the sign-in page.
+  matcher: ["/((?!api|_next/static|_next/image|favicon\\.ico|icon\\.svg|apple-icon|manifest\\.webmanifest|kieke-icon-|theme-init\\.js).*)"],
 }

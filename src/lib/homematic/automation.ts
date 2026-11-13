@@ -11,6 +11,9 @@ import { prisma } from "@/lib/prisma"
 import type { Prisma } from "@prisma/client"
 import { type HeatingRoom, HomematicError, setSetPointTemperature } from "./client"
 import { getFamilyConnection, getFamilyHome } from "./family"
+import { DEFAULT_TIME_ZONE, addDays, dbDate, localClock } from "@/lib/localDate"
+
+export { DEFAULT_TIME_ZONE, addDays, localClock }
 
 // ---------------------------------------------------------------------------
 // Settings
@@ -36,7 +39,6 @@ export const AutomationSettings = z.object({
 export type AutomationSettings = z.infer<typeof AutomationSettings>
 
 export const DEFAULT_SETTINGS: AutomationSettings = { enabled: false, baseTemperature: 18, time: "08:00", rules: [] }
-export const DEFAULT_TIME_ZONE = "Europe/Berlin"
 
 /** Stored rules, ignoring anything malformed */
 export function parseRules(value: unknown): AutomationRule[] {
@@ -51,38 +53,9 @@ export function parseRules(value: unknown): AutomationRule[] {
 // Time helpers
 // ---------------------------------------------------------------------------
 
-/** Local calendar date ("YYYY-MM-DD") and minutes since midnight in a time zone */
-export function localClock(timeZone: string, at: Date = new Date()): { date: string; minutes: number } {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23",
-    })
-      .formatToParts(at)
-      .map((p) => [p.type, p.value]),
-  )
-  return { date: `${parts.year}-${parts.month}-${parts.day}`, minutes: Number(parts.hour) * 60 + Number(parts.minute) }
-}
-
 export function timeToMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number)
   return h * 60 + m
-}
-
-export function addDays(date: string, days: number): string {
-  const [y, m, d] = date.split("-").map(Number)
-  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10)
-}
-
-/** Week planner dates are stored as UTC midnight of the local day */
-function dbDate(date: string): Date {
-  const [y, m, d] = date.split("-").map(Number)
-  return new Date(Date.UTC(y, m - 1, d))
 }
 
 // ---------------------------------------------------------------------------

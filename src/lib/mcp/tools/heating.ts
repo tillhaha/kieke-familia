@@ -158,5 +158,6 @@ export const heatingTools: McpTool[] = [
       additionalProperties: false,
     },
     handler: (auth, args) => setRoom(auth.familyId, args),
+    confirm: true,
   },
 ]

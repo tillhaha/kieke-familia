@@ -8,6 +8,11 @@ export type McpTool = {
   description: string
   inputSchema: Record<string, unknown>
   handler: (auth: McpAuth, args: unknown) => Promise<ToolResult>
+  /**
+   * The in-app assistant asks the user before running this tool (heating changes, deletions).
+   * MCP clients like Claude Desktop handle confirmation themselves.
+   */
+  confirm?: boolean
 }
 
 export function text(t: string, isError = false): ToolResult {

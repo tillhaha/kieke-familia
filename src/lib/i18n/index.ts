@@ -513,6 +513,40 @@ export type Translations = {
     reasonBOOST: string
     reasonALREADY_LOW: string
   }
+  assistant: {
+    title: string
+    open: string
+    close: string
+    newChat: string
+    history: string
+    back: string
+    noHistory: string
+    historyHint: string
+    placeholder: string
+    send: string
+    stop: string
+    greeting: string
+    suggestion1: string
+    suggestion2: string
+    suggestion3: string
+    suggestion4: string
+    thinking: string
+    confirmTitle: string
+    confirm: string
+    cancel: string
+    declined: string
+    errNotConfigured: string
+    errNoCredits: string
+    errRateLimited: string
+    errFailed: string
+    retry: string
+    recordStart: string
+    recordStop: string
+    transcribing: string
+    errVoice: string
+    errMic: string
+    tools: Record<string, string>
+  }
 }
 
 const en: Translations = {
@@ -1038,6 +1072,62 @@ const en: Translations = {
     reasonNOT_AUTO: "not in Auto mode – left alone",
     reasonBOOST: "boost running – left alone",
     reasonALREADY_LOW: "already at or below base temperature",
+  },
+  assistant: {
+    title: "Assistant",
+    open: "Open assistant",
+    close: "Close",
+    newChat: "New chat",
+    history: "Earlier chats",
+    back: "Back",
+    noHistory: "No earlier chats on this device.",
+    historyHint: "Chats are kept on this device for 14 days.",
+    placeholder: "Ask anything or tell me what to do…",
+    send: "Send",
+    stop: "Stop",
+    greeting: "Hi {name}! I know your week plan, calendar, tasks, recipes, shopping list and heating. How can I help?",
+    suggestion1: "What's on this week?",
+    suggestion2: "Suggest dinners for next week from our recipes",
+    suggestion3: "Which tasks are due soon?",
+    suggestion4: "Add milk and eggs to the shopping list",
+    thinking: "Thinking…",
+    confirmTitle: "Do you want me to do this?",
+    confirm: "Yes, do it",
+    cancel: "Cancel",
+    declined: "cancelled",
+    errNotConfigured: "The assistant isn't set up yet: OPENROUTER_API_KEY is missing on the server.",
+    errNoCredits: "OpenRouter says the credits are used up.",
+    errRateLimited: "Too many requests right now. Try again in a moment.",
+    errFailed: "Something went wrong. Please try again.",
+    retry: "Try again",
+    recordStart: "Record voice message",
+    recordStop: "Stop and send",
+    transcribing: "Listening to your message…",
+    errVoice: "Couldn't understand the voice message.",
+    errMic: "No access to the microphone.",
+    tools: {
+      list_family_members: "Looked up the family",
+      get_week_plan: "Checked the week plan",
+      update_day_plan: "Updated the week plan",
+      set_work_location: "Set work location",
+      search_recipes: "Searched recipes",
+      get_recipe: "Opened a recipe",
+      get_calendar: "Checked the calendar",
+      list_tasks: "Checked tasks",
+      create_task: "Created a task",
+      update_task: "Updated a task",
+      delete_task: "Delete a task",
+      add_shopping_items: "Added to the shopping list",
+      list_shopping_items: "Checked the shopping list",
+      remove_shopping_items: "Removed from the shopping list",
+      get_personal_profile: "Read your profile",
+      capture_thoughts: "Saved to your todos",
+      list_personal_todos: "Checked your todos",
+      complete_personal_todos: "Ticked off todos",
+      list_heating_rooms: "Checked the heating",
+      get_heating_schedule: "Checked the heating schedule",
+      set_room_heating: "Change the heating",
+    },
   },
 }
 
@@ -1565,6 +1655,62 @@ const es: Translations = {
     reasonBOOST: "boost activo – sin cambios",
     reasonALREADY_LOW: "ya está a la temperatura base o por debajo",
   },
+  assistant: {
+    title: "Asistente",
+    open: "Abrir asistente",
+    close: "Cerrar",
+    newChat: "Nuevo chat",
+    history: "Chats anteriores",
+    back: "Volver",
+    noHistory: "No hay chats anteriores en este dispositivo.",
+    historyHint: "Los chats se guardan 14 días en este dispositivo.",
+    placeholder: "Pregunta algo o dime qué hacer…",
+    send: "Enviar",
+    stop: "Detener",
+    greeting: "¡Hola {name}! Conozco vuestro plan semanal, calendario, tareas, recetas, lista de la compra y calefacción. ¿En qué te ayudo?",
+    suggestion1: "¿Qué hay esta semana?",
+    suggestion2: "Sugiere cenas para la próxima semana con nuestras recetas",
+    suggestion3: "¿Qué tareas vencen pronto?",
+    suggestion4: "Añade leche y huevos a la lista de la compra",
+    thinking: "Pensando…",
+    confirmTitle: "¿Quieres que lo haga?",
+    confirm: "Sí, hazlo",
+    cancel: "Cancelar",
+    declined: "cancelado",
+    errNotConfigured: "El asistente aún no está configurado: falta OPENROUTER_API_KEY en el servidor.",
+    errNoCredits: "OpenRouter dice que se acabaron los créditos.",
+    errRateLimited: "Demasiadas solicitudes. Inténtalo de nuevo en un momento.",
+    errFailed: "Algo salió mal. Inténtalo de nuevo.",
+    retry: "Reintentar",
+    recordStart: "Grabar mensaje de voz",
+    recordStop: "Detener y enviar",
+    transcribing: "Escuchando tu mensaje…",
+    errVoice: "No se pudo entender el mensaje de voz.",
+    errMic: "Sin acceso al micrófono.",
+    tools: {
+      list_family_members: "Consultó la familia",
+      get_week_plan: "Revisó el plan semanal",
+      update_day_plan: "Actualizó el plan semanal",
+      set_work_location: "Fijó el lugar de trabajo",
+      search_recipes: "Buscó recetas",
+      get_recipe: "Abrió una receta",
+      get_calendar: "Revisó el calendario",
+      list_tasks: "Revisó las tareas",
+      create_task: "Creó una tarea",
+      update_task: "Actualizó una tarea",
+      delete_task: "Eliminar una tarea",
+      add_shopping_items: "Añadió a la lista de la compra",
+      list_shopping_items: "Revisó la lista de la compra",
+      remove_shopping_items: "Quitó de la lista de la compra",
+      get_personal_profile: "Leyó tu perfil",
+      capture_thoughts: "Guardó en tus pendientes",
+      list_personal_todos: "Revisó tus pendientes",
+      complete_personal_todos: "Marcó pendientes",
+      list_heating_rooms: "Revisó la calefacción",
+      get_heating_schedule: "Revisó el horario de calefacción",
+      set_room_heating: "Cambiar la calefacción",
+    },
+  },
 }
 
 const de: Translations = {
@@ -2090,6 +2236,62 @@ const de: Translations = {
     reasonNOT_AUTO: "nicht im Automatik-Modus – unverändert",
     reasonBOOST: "Boost läuft – unverändert",
     reasonALREADY_LOW: "schon auf oder unter Grundtemperatur",
+  },
+  assistant: {
+    title: "Assistent",
+    open: "Assistent öffnen",
+    close: "Schließen",
+    newChat: "Neuer Chat",
+    history: "Frühere Chats",
+    back: "Zurück",
+    noHistory: "Keine früheren Chats auf diesem Gerät.",
+    historyHint: "Chats bleiben 14 Tage auf diesem Gerät gespeichert.",
+    placeholder: "Frag etwas oder sag mir, was ich tun soll…",
+    send: "Senden",
+    stop: "Stopp",
+    greeting: "Hallo {name}! Ich kenne euren Wochenplan, Kalender, Aufgaben, Rezepte, die Einkaufsliste und die Heizung. Wobei kann ich helfen?",
+    suggestion1: "Was steht diese Woche an?",
+    suggestion2: "Schlag Abendessen für nächste Woche aus unseren Rezepten vor",
+    suggestion3: "Welche Aufgaben sind bald fällig?",
+    suggestion4: "Setz Milch und Eier auf die Einkaufsliste",
+    thinking: "Denke nach…",
+    confirmTitle: "Soll ich das machen?",
+    confirm: "Ja, machen",
+    cancel: "Abbrechen",
+    declined: "abgebrochen",
+    errNotConfigured: "Der Assistent ist noch nicht eingerichtet: OPENROUTER_API_KEY fehlt auf dem Server.",
+    errNoCredits: "OpenRouter meldet: Das Guthaben ist aufgebraucht.",
+    errRateLimited: "Gerade zu viele Anfragen. Versuch es gleich nochmal.",
+    errFailed: "Da ist etwas schiefgelaufen. Bitte versuch es nochmal.",
+    retry: "Nochmal versuchen",
+    recordStart: "Sprachnachricht aufnehmen",
+    recordStop: "Stoppen und senden",
+    transcribing: "Höre mir deine Nachricht an…",
+    errVoice: "Die Sprachnachricht konnte nicht verstanden werden.",
+    errMic: "Kein Zugriff aufs Mikrofon.",
+    tools: {
+      list_family_members: "Familie nachgeschaut",
+      get_week_plan: "Wochenplan angesehen",
+      update_day_plan: "Wochenplan geändert",
+      set_work_location: "Arbeitsort eingetragen",
+      search_recipes: "Rezepte durchsucht",
+      get_recipe: "Rezept geöffnet",
+      get_calendar: "Kalender angesehen",
+      list_tasks: "Aufgaben angesehen",
+      create_task: "Aufgabe erstellt",
+      update_task: "Aufgabe geändert",
+      delete_task: "Aufgabe löschen",
+      add_shopping_items: "Auf die Einkaufsliste gesetzt",
+      list_shopping_items: "Einkaufsliste angesehen",
+      remove_shopping_items: "Von der Einkaufsliste genommen",
+      get_personal_profile: "Dein Profil gelesen",
+      capture_thoughts: "In deine Todos gespeichert",
+      list_personal_todos: "Deine Todos angesehen",
+      complete_personal_todos: "Todos abgehakt",
+      list_heating_rooms: "Heizung angesehen",
+      get_heating_schedule: "Heizplan angesehen",
+      set_room_heating: "Heizung ändern",
+    },
   },
 }
 

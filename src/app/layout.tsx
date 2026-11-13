@@ -39,9 +39,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <Script src="/theme-init.js" strategy="beforeInteractive" />
+    // theme-init.js sets data-theme before React hydrates; that mismatch is intended
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {/* Sets data-theme on <html> before first paint; Next injects it into <head> */}
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         <Providers>
           <div className="appShell">
             <Navbar />

@@ -110,11 +110,19 @@ All under `src/app/api/`:
 - `personal-todos/` — GET (own items, `?includeDone=true`), POST `{ text }` (brain dump → Claude splits/categorises via `captureThoughts` in `src/lib/personalTodos.ts`; falls back to one `Inbox` item if the AI call fails); `[id]/` — PATCH/DELETE (owner only, others get 404)
 - `personal-categories/` — GET (all own categories with open counts; lazily creates rows for names only used by todos), POST `{ name, description? }` (409 if exists); `[id]/` — PATCH `{ name?, description? }` (rename moves todos; renaming onto an existing name merges), DELETE (todos move to `Inbox`)
 - `personal-profile/` — GET/PUT `{ text }` (own private profile). `buildLifeContext(userId)` in `src/lib/personalProfile.ts` combines it with name, family members, city and saved birthdays (with computed ages) — passed to `captureThoughts` as prompt context and returned by the `get_personal_profile` MCP tool
-- `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. Tools: shopping list (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` / `get_personal_profile` (user-scoped)
+- `mcp/` — MCP server (`src/lib/mcp/`); tool handlers receive `{ userId, familyId }`. All tools are listed in `src/lib/mcp/tools/index.ts` (shared with the in-app assistant): family/week planner/recipes (`family.ts`: `list_family_members`, `get_week_plan`, `update_day_plan`, `set_work_location`, `search_recipes`, `get_recipe`), `get_calendar` (`calendar.ts`), tasks (`tasks.ts`), shopping list, heating (family-scoped) and `capture_thoughts` / `list_personal_todos` / `complete_personal_todos` / `get_personal_profile` (user-scoped). A tool with `confirm: true` (`set_room_heating`, `delete_task`) needs the user's OK in the assistant
+- `assistant/` — GET (`{ enabled, voice }`); `chat/` — POST `{ messages, approvals? }` → NDJSON stream; `transcribe/` — POST `{ audio }` (base64 WAV → text). See "Assistant" below
 - `user/` — GET/PATCH (profile)
 - `weather/` — GET (weather for family city)
 - `heating/` — GET (connection status + `accessPointOnline` + Homematic IP rooms); `status/` — GET (lightweight status for the navbar icon); `schedules/` — GET (read-only weekly schedule of each room's active profile, `days[0]` = Monday); `connect/` — POST start pairing / GET poll for blue-button press / DELETE disconnect; `rooms/[id]/` — PATCH (target temperature, mode, boost); `automation/` — GET (smart schedule settings + rooms/members/custody names + today/tomorrow preview + last run) / PUT (save); `automation/run/` — POST ("Run now": apply today's rules immediately, doesn't claim the day)
 - `auth/[...nextauth]/` — NextAuth handler
+
+### Assistant
+Slide-in chat panel (`src/components/assistant/AssistantPanel.tsx`), opened from the sparkles button in the navbar (stays mounted after the first open, so a chat survives navigation). Uses **OpenRouter** (OpenAI-compatible API, `src/lib/assistant/openrouter.ts`) with the MCP tools as function tools; the loop is `runAssistant` in `src/lib/assistant/chat.ts` (max 8 rounds, history trimmed to the last 40 messages at a user-message boundary, tool results capped at 15k chars). It runs **as the signed-in user**: family data + only their own private todos/profile/Google calendars. The system prompt adds today's date (Europe/Berlin), family member ids and `buildLifeContext`.
+- **Streaming**: the route streams NDJSON events `text` / `tool` / `confirm` / `messages` (the new messages to append, always sent last, also after errors) / `error` (`NOT_CONFIGURED`, `NO_CREDITS`, `RATE_LIMITED`, `UPSTREAM`).
+- **Confirmation**: tools with `confirm: true` aren't run; the loop stops, the panel shows Confirm/Cancel and sends `approvals: [{ id, approved }]` with the next request (`pendingCalls` in `src/lib/assistant/messages.ts` = tool calls of the last assistant message without a result). Typing a new message instead counts as "no".
+- **No server-side history**: conversations live in the browser only (`src/components/assistant/storage.ts`, localStorage per user, 14 days, max 20); a chat idle for 30 min isn't resumed.
+- **Voice**: with `OPENROUTER_AUDIO_MODEL` set, the mic records (MediaRecorder → 16 kHz mono WAV, `recorder.ts`, max 2 min) and `/api/assistant/transcribe` turns it into text via an `input_audio` message, which is then sent. Without it the mic is the browser's Web Speech dictation (`VoiceInputButton`).
 
 ### i18n
 All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defines the full shape; three locale objects (`en`, `de`, `es`) implement it. `useTranslation()` from `src/lib/i18n/LanguageContext.tsx` returns `{ t, language, setLanguage }`. When adding new strings, update the type definition **and** all three locale objects.
@@ -188,6 +196,10 @@ GOOGLE_CLIENT_SECRET
 NEXTAUTH_SECRET
 NEXTAUTH_URL
 ANTHROPIC_API_KEY   # used by /api/meals/parse (recipe text → structured fields)
+OPENROUTER_API_KEY  # assistant; without it the panel says it isn't set up
+OPENROUTER_MODEL    # optional, default anthropic/claude-haiku-5.5
+OPENROUTER_AUDIO_MODEL  # optional, audio-capable model for voice messages
+OPENROUTER_BASE_URL # optional, default https://openrouter.ai/api/v1 (tests point it at a mock)
 ```
 
 <!-- code-review-graph MCP tools -->

@@ -22,7 +22,12 @@ export async function POST(request: Request) {
   if (!assistantConfig().apiKey) return NextResponse.json({ error: "Assistant is not configured", code: "NOT_CONFIGURED" }, { status: 503 })
 
   const parsed = Body.safeParse(await request.json().catch(() => null))
-  if (!parsed.success) return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0]
+    const detail = `Invalid request: ${issue?.path.join(".") || "body"} — ${issue?.message ?? "?"}`
+    console.error("[assistant]", detail)
+    return NextResponse.json({ error: detail, code: "INVALID_REQUEST" }, { status: 400 })
+  }
 
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
@@ -44,7 +49,7 @@ export async function POST(request: Request) {
         })
       } catch (err) {
         if (!request.signal.aborted) {
-          console.error("[assistant]", err)
+          console.error("[assistant] turn failed:", err)
           const code = err instanceof OpenRouterError ? err.code : "UNKNOWN"
           emit({ type: "error", code, message: err instanceof Error ? err.message : String(err) })
         }

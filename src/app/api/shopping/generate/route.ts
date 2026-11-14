@@ -6,6 +6,7 @@ import Anthropic from "@anthropic-ai/sdk"
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod"
 import { z } from "zod"
 import { categorizeShoppingItems } from "@/lib/shoppingCategorize"
+import { describeSources, mealSources } from "@/lib/shoppingFromWeek"
 
 const client = new Anthropic()
 
@@ -43,27 +44,17 @@ export async function POST(request: Request) {
   const end = new Date(start)
   end.setDate(end.getDate() + 7)
 
-  // 1. Fetch DayPlans for the week that have linked meals
+  // 1. All planned meals of the week: linked recipes (scaled to our servings) and, for meals
+  //    without a recipe, the ingredients written in the meal's note — see src/lib/shoppingFromWeek.ts
+  const recipe = { select: { name: true, servings: true, ingredients: true } }
   const dayPlans = await prisma.dayPlan.findMany({
-    where: {
-      familyId,
-      date: { gte: start, lt: end },
-      OR: [{ lunchMealId: { not: null } }, { dinnerMealId: { not: null } }],
-    },
-    include: {
-      lunchMeal: { select: { ingredients: true } },
-      dinnerMeal: { select: { ingredients: true } },
-    },
+    where: { familyId: familyId as string, date: { gte: start, lt: end } },
+    include: { lunchMeal: recipe, dinnerMeal: recipe },
+    orderBy: { date: "asc" },
   })
+  const sources = mealSources(dayPlans)
 
-  // 2. Collect all ingredients
-  const rawIngredients: string[] = []
-  for (const plan of dayPlans) {
-    if (plan.lunchMeal) rawIngredients.push(...plan.lunchMeal.ingredients)
-    if (plan.dinnerMeal) rawIngredients.push(...plan.dinnerMeal.ingredients)
-  }
-
-  if (rawIngredients.length === 0) {
+  if (sources.length === 0) {
     return NextResponse.json({ added: 0 })
   }
 
@@ -72,14 +63,16 @@ export async function POST(request: Request) {
   try {
     const response = await client.messages.parse({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
+      max_tokens: 2048,
       output_config: {
         format: zodOutputFormat(UnifiedSchema),
       },
-      system: `You are a shopping list assistant. Given a list of raw meal ingredients, return a clean, unified shopping list.
+      system: `You are a shopping list assistant. Given the ingredients of the planned meals, return a clean, unified shopping list.
 
 Rules:
-- Merge clearly identical ingredients (e.g. "2 chicken breasts" and "3 chicken pieces" → one "chicken breast" entry).
+- Each meal comes with a scaling instruction. Scale its quantities first (e.g. "multiply every quantity by 0.5": "400 g pasta" → "200 g", "1 onion" → "½ onion"), then merge. Round to sensible shopping amounts (whole eggs, ½ for produce, grams to 5–10 g); items without a quantity stay without one.
+- For a meal whose ingredients are written in a note, read the ingredients out of that text (one per line or separated by commas) and use their quantities as written.
+- Merge clearly identical ingredients and add up their (scaled) quantities (e.g. "2 chicken breasts" and "3 chicken pieces" → one "chicken breast" entry).
 - For similar-but-potentially-different ingredients (e.g. "potatoes" and "small potatoes"), keep both but place them adjacent in the list.
 - Strip quantities and units from the name field — put them in the quantity field (null if none).
 - Strip all preparation descriptors from the name field — only keep the core ingredient (e.g. "garlic cloves, crushed" → "garlic", "olives, pitted and quartered lengthways" → "olive", "finely chopped onion" → "onion", "bone-in chicken thighs" → "chicken thigh").
@@ -88,8 +81,9 @@ Rules:
       messages: [
         {
           role: "user",
-          content: `Ingredients:
-${rawIngredients.map((i) => `- ${i}`).join("\n")}`,
+          content: `Planned meals:
+
+${describeSources(sources)}`,
         },
       ],
     })

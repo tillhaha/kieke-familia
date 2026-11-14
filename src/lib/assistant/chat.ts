@@ -10,7 +10,7 @@ import { DEFAULT_TIME_ZONE, localClock, weekday } from "@/lib/localDate"
 import { TOOLS } from "@/lib/mcp/tools"
 import type { McpAuth } from "@/lib/mcp/types"
 import { streamChat } from "./openrouter"
-import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls } from "./messages"
+import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls, trimForRequest } from "./messages"
 
 /** What the browser receives, one JSON object per line */
 export type AssistantEvent =
@@ -23,7 +23,7 @@ export type AssistantEvent =
 export type Approval = { id: string; approved: boolean }
 
 const MAX_ROUNDS = 8
-const MAX_HISTORY = 40
+const MAX_HISTORY = 60
 const MAX_TOOL_RESULT = 15_000
 
 const toolDefs = TOOLS.map((t) => ({
@@ -70,13 +70,6 @@ How to work:
 - If something can't be done with the tools, say so plainly.${lifeContext ? `\n\nAbout ${name} (private context):\n${lifeContext}` : ""}`
 }
 
-/** Keep the request small: the last messages, starting at a user message (never mid tool exchange). */
-function trimHistory(messages: ChatMessage[]): ChatMessage[] {
-  if (messages.length <= MAX_HISTORY) return messages
-  const start = messages.findIndex((m, i) => i >= messages.length - MAX_HISTORY && m.role === "user")
-  return start >= 0 ? messages.slice(start) : messages.slice(-1)
-}
-
 export async function runAssistant(opts: {
   auth: McpAuth
   messages: ChatMessage[]
@@ -110,7 +103,7 @@ export async function runAssistant(opts: {
     for (let round = 0; round < MAX_ROUNDS; round++) {
       const { content, toolCalls } = await streamChat({
         system,
-        messages: trimHistory(history),
+        messages: trimForRequest(history, MAX_HISTORY),
         tools: toolDefs,
         onText: (delta) => emit({ type: "text", delta }),
         signal: opts.signal,

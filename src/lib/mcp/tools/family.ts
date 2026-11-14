@@ -181,35 +181,40 @@ const RecipeSearch = z.object({
   diet: z.enum(["Vegetarian", "Meat", "Fish"]).optional(),
   favoritesOnly: z.boolean().optional(),
   quickOnly: z.boolean().optional(),
-  limit: z.number().int().min(1).max(100).optional(),
+  minServings: z.number().int().min(1).max(100).optional(),
+  maxServings: z.number().int().min(1).max(100).optional(),
+  limit: z.number().int().min(1).max(200).optional(),
 })
 
 async function searchRecipes(familyId: string, args: unknown): Promise<ToolResult> {
   const parsed = RecipeSearch.safeParse(args ?? {})
   if (!parsed.success) return invalid(parsed.error)
-  const { query, diet, favoritesOnly, quickOnly, limit = 40 } = parsed.data
+  const { query, diet, favoritesOnly, quickOnly, minServings, maxServings, limit = 60 } = parsed.data
   const meals = await prisma.meal.findMany({
     where: {
       familyId,
       ...(diet ? { diet } : {}),
       ...(favoritesOnly ? { favorite: true } : {}),
       ...(quickOnly ? { thirtyMinute: true } : {}),
+      ...(minServings || maxServings ? { servings: { ...(minServings ? { gte: minServings } : {}), ...(maxServings ? { lte: maxServings } : {}) } } : {}),
       ...(query
         ? { OR: [{ name: { contains: query, mode: "insensitive" } }, { ingredients: { has: query } }, { notes: { contains: query, mode: "insensitive" } }] }
         : {}),
     },
-    select: { id: true, name: true, mealType: true, diet: true, favorite: true, thirtyMinute: true, officeFriendly: true },
+    select: { id: true, name: true, mealType: true, diet: true, servings: true, favorite: true, thirtyMinute: true, officeFriendly: true },
     orderBy: [{ favorite: "desc" }, { name: "asc" }],
-    take: limit,
+    take: limit + 1,
   })
   if (!meals.length) return text("No matching recipes.")
+  const more = meals.length > limit
+  if (more) meals.pop()
   return text(
     meals
       .map((m) => {
-        const tags = [m.mealType !== "Meal" ? m.mealType : null, m.diet, m.favorite && "favorite", m.thirtyMinute && "≤30 min", m.officeFriendly && "office-friendly"]
+        const tags = [m.mealType !== "Meal" ? m.mealType : null, m.diet, `serves ${m.servings}`, m.favorite && "favorite", m.thirtyMinute && "≤30 min", m.officeFriendly && "office-friendly"]
         return `- ${m.name} (id: ${m.id}; ${tags.filter(Boolean).join(", ")})`
       })
-      .join("\n"),
+      .join("\n") + (more ? `\n… more than ${limit} found — narrow the search or raise limit (max 200).` : ""),
   )
 }
 
@@ -294,7 +299,8 @@ export const familyTools: McpTool[] = [
   },
   {
     name: "search_recipes",
-    description: "Search the family recipe library by name, ingredient or notes. Without a query it lists recipes (favorites first).",
+    description:
+      "Search the family recipe library by name, ingredient or notes, and filter by diet, servings, favorites or quick (≤30 min). Without a query it lists recipes (favorites first). Each line shows type, diet and servings, so you rarely need get_recipe just to compare recipes.",
     inputSchema: {
       type: "object",
       properties: {
@@ -302,7 +308,9 @@ export const familyTools: McpTool[] = [
         diet: { type: "string", enum: ["Vegetarian", "Meat", "Fish"] },
         favoritesOnly: { type: "boolean" },
         quickOnly: { type: "boolean", description: "Only recipes that take at most 30 minutes" },
-        limit: { type: "number", description: "Default 40, max 100" },
+        minServings: { type: "number", description: "At least this many servings" },
+        maxServings: { type: "number", description: "At most this many servings" },
+        limit: { type: "number", description: "Default 60, max 200" },
       },
     },
     handler: (auth, args) => searchRecipes(auth.familyId, args),

@@ -11,7 +11,7 @@ export type ToolCall = z.infer<typeof ToolCall>
 
 export const ChatMessage = z.discriminatedUnion("role", [
   z.object({ role: z.literal("user"), content: z.string().min(1).max(20_000) }),
-  z.object({ role: z.literal("assistant"), content: z.string().max(50_000).nullable(), tool_calls: z.array(ToolCall).max(20).optional() }),
+  z.object({ role: z.literal("assistant"), content: z.string().max(50_000).nullable(), tool_calls: z.array(ToolCall).max(100).optional() }),
   z.object({ role: z.literal("tool"), tool_call_id: z.string().min(1).max(200), content: z.string().max(50_000) }),
 ])
 export type ChatMessage = z.infer<typeof ChatMessage>
@@ -41,3 +41,22 @@ export function pendingCalls(messages: ChatMessage[]): ToolCall[] {
 }
 
 export const DECLINED_RESULT = "The user declined this action. Do not retry it unless they ask again."
+
+/**
+ * The part of a conversation to send: at most `max` messages, always starting at a user
+ * message so no tool result is cut off from the call it answers. If a single exchange is
+ * longer than `max` (e.g. many tool calls), it is kept whole from its user message on.
+ */
+export function trimForRequest(messages: ChatMessage[], max: number): ChatMessage[] {
+  if (messages.length <= max) return messages
+  let start = messages.findIndex((m, i) => i >= messages.length - max && m.role === "user")
+  if (start < 0) {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "user") {
+        start = i
+        break
+      }
+    }
+  }
+  return start > 0 ? messages.slice(start) : messages
+}

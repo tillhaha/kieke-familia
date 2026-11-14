@@ -23,12 +23,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
   const bodyObj = body as Record<string, unknown>
-  const { name, quantity, categoryId, tags } = bodyObj
+  const { name, quantity, note, categoryId, tags } = bodyObj
   if (name !== undefined && (typeof name !== "string" || !name.trim())) {
     return NextResponse.json({ error: "name must be a non-empty string" }, { status: 400 })
   }
   if (quantity !== undefined && quantity !== null && typeof quantity !== "string") {
     return NextResponse.json({ error: "quantity must be a string" }, { status: 400 })
+  }
+  if (note !== undefined && note !== null && typeof note !== "string") {
+    return NextResponse.json({ error: "note must be a string" }, { status: 400 })
   }
   if (categoryId !== undefined && categoryId !== null && typeof categoryId !== "string") {
     return NextResponse.json({ error: "categoryId must be a string" }, { status: 400 })
@@ -38,9 +41,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 
   // Build update data — only include fields explicitly provided in body
-  const updateData: { name?: string; quantity?: string | null; categoryId?: string | null; tags?: ShoppingTag[] } = {}
+  const updateData: { name?: string; quantity?: string | null; note?: string | null; categoryId?: string | null; tags?: ShoppingTag[] } = {}
   if (typeof name === "string") updateData.name = name.trim()
   if ("quantity" in bodyObj) updateData.quantity = (quantity as string | null)?.trim() || null
+  if ("note" in bodyObj) updateData.note = (note as string | null)?.trim().slice(0, 300) || null
   if (tags !== undefined) updateData.tags = [...new Set(tags)]
   if ("categoryId" in bodyObj) {
     updateData.categoryId = categoryId ?? null

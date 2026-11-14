@@ -226,8 +226,9 @@ async function getRecipe(familyId: string, args: unknown): Promise<ToolResult> {
   return text(
     [
       `${m.name} (id: ${m.id})`,
-      `${m.mealType}, ${m.diet}, ${m.servings} servings${m.thirtyMinute ? ", ≤30 min" : ""}${m.favorite ? ", favorite" : ""}`,
+      `${m.mealType}, ${m.diet}, ${m.servings} servings${m.thirtyMinute ? ", ≤30 min" : ""}${m.officeFriendly ? ", office-friendly" : ""}${m.favorite ? ", favorite" : ""}`,
       m.source ? `Source: ${m.source}` : "",
+      m.imageUrl ? `Image: ${m.imageUrl}` : "",
       m.notes ? `Notes: ${m.notes}` : "",
       "Ingredients:",
       ...m.ingredients.map((i) => `- ${i}`),
@@ -239,7 +240,89 @@ async function getRecipe(familyId: string, args: unknown): Promise<ToolResult> {
   )
 }
 
+// Upload / change recipes. Same fields and defaults as the recipe form in the app.
+const MEAL_TYPES = ["Meal", "Snack", "Drink", "Baked", "Aufstrich"] as const
+const DIETS = ["Vegetarian", "Meat", "Fish"] as const
+const lines = z.array(z.string().trim().min(1).max(500)).max(100)
+const RecipeFields = z.object({
+  name: z.string().trim().min(1).max(200),
+  mealType: z.enum(MEAL_TYPES),
+  diet: z.enum(DIETS),
+  servings: z.number().int().min(1).max(100),
+  ingredients: lines,
+  steps: lines,
+  notes: z.string().trim().max(5000),
+  source: z.string().trim().max(1000),
+  imageUrl: z.string().trim().max(2000).refine((v) => v === "" || /^https?:\/\//i.test(v), "must be an http(s) URL or empty"),
+  thirtyMinute: z.boolean(),
+  officeFriendly: z.boolean(),
+  favorite: z.boolean(),
+})
+const CreateRecipe = RecipeFields.partial().required({ name: true }).extend({ allowDuplicate: z.boolean().optional() })
+const UpdateRecipe = RecipeFields.partial().extend({ id: z.string().min(1) })
+
+/** "" clears an optional text field */
+function optionalText(v: string | undefined) {
+  return v === undefined ? undefined : v || null
+}
+
+async function createRecipe(familyId: string, args: unknown): Promise<ToolResult> {
+  const parsed = CreateRecipe.safeParse(args)
+  if (!parsed.success) return invalid(parsed.error)
+  const { allowDuplicate, ...r } = parsed.data
+  if (!allowDuplicate) {
+    const existing = await prisma.meal.findFirst({ where: { familyId, name: { equals: r.name, mode: "insensitive" } }, select: { id: true } })
+    if (existing) return text(`A recipe called "${r.name}" already exists (id: ${existing.id}). Use update_recipe to change it, or pass allowDuplicate: true to add another one.`, true)
+  }
+  const meal = await prisma.meal.create({
+    data: {
+      familyId,
+      name: r.name,
+      mealType: r.mealType ?? "Meal",
+      diet: r.diet ?? "Meat",
+      servings: r.servings ?? 2,
+      ingredients: r.ingredients ?? [],
+      steps: r.steps ?? [],
+      notes: optionalText(r.notes) ?? null,
+      source: optionalText(r.source) ?? null,
+      imageUrl: optionalText(r.imageUrl) ?? null,
+      thirtyMinute: r.thirtyMinute ?? false,
+      officeFriendly: r.officeFriendly ?? false,
+      favorite: r.favorite ?? false,
+    },
+  })
+  return text(`Saved recipe "${meal.name}" (id: ${meal.id}; ${meal.mealType}, ${meal.diet}, ${meal.servings} servings, ${meal.ingredients.length} ingredients, ${meal.steps.length} steps).`)
+}
+
+async function updateRecipe(familyId: string, args: unknown): Promise<ToolResult> {
+  const parsed = UpdateRecipe.safeParse(args)
+  if (!parsed.success) return invalid(parsed.error)
+  const { id, notes, source, imageUrl, ...rest } = parsed.data
+  const existing = await prisma.meal.findFirst({ where: { id, familyId }, select: { id: true } })
+  if (!existing) return text("Recipe not found.", true)
+  const data = { ...rest, notes: optionalText(notes), source: optionalText(source), imageUrl: optionalText(imageUrl) }
+  const changed = Object.entries(data).filter(([, v]) => v !== undefined).map(([k]) => k)
+  if (!changed.length) return text("Nothing to change.", true)
+  const meal = await prisma.meal.update({ where: { id }, data })
+  return text(`Updated recipe "${meal.name}" (id: ${meal.id}): ${changed.join(", ")}.`)
+}
+
 // ---------------------------------------------------------------------------
+
+const recipeProperties = {
+  name: { type: "string" },
+  mealType: { type: "string", enum: [...MEAL_TYPES], description: "Category: Meal (main dish, default), Snack, Drink, Baked (cakes, bread, …), Aufstrich (spreads)" },
+  diet: { type: "string", enum: [...DIETS], description: "Vegetarian (also vegan), Meat (default) or Fish" },
+  servings: { type: "number", description: "How many servings the quantities are for (default 2)" },
+  ingredients: { type: "array", items: { type: "string" }, description: "One ingredient per entry with its quantity, e.g. \"200 g Spaghetti\"" },
+  steps: { type: "array", items: { type: "string" }, description: "One step per entry, in order" },
+  notes: { type: "string", description: "Free notes (\"\" clears)" },
+  source: { type: "string", description: "Where it's from, usually a URL (\"\" clears)" },
+  imageUrl: { type: "string", description: "Link to a photo, http(s) (\"\" clears)" },
+  thirtyMinute: { type: "boolean", description: "Flag: ready in 30 minutes or less" },
+  officeFriendly: { type: "boolean", description: "Flag: good to take to the office" },
+  favorite: { type: "boolean", description: "Flag: family favorite" },
+}
 
 const dateRangeSchema = {
   type: "object",
@@ -320,6 +403,24 @@ export const familyTools: McpTool[] = [
     description: "Get a recipe with ingredients and steps by id.",
     inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
     handler: (auth, args) => getRecipe(auth.familyId, args),
+  },
+  {
+    name: "create_recipe",
+    description:
+      "Upload a new recipe to the family recipe library, with its category (mealType), diet, servings, flags (thirtyMinute, officeFriendly, favorite), ingredients, steps, notes, source and an optional image link. Refuses a name that already exists (use update_recipe, or allowDuplicate: true).",
+    inputSchema: {
+      type: "object",
+      properties: { ...recipeProperties, allowDuplicate: { type: "boolean", description: "Add even if a recipe with this name exists" } },
+      required: ["name"],
+    },
+    handler: (auth, args) => createRecipe(auth.familyId, args),
+  },
+  {
+    name: "update_recipe",
+    description:
+      "Change a recipe by id (from search_recipes): any of name, category, diet, servings, flags, notes, source, image link. Passing ingredients or steps replaces the whole list.",
+    inputSchema: { type: "object", properties: { id: { type: "string" }, ...recipeProperties }, required: ["id"] },
+    handler: (auth, args) => updateRecipe(auth.familyId, args),
   },
 ]
 

@@ -180,6 +180,15 @@
   color: var(--foreground);
 }
 
+/* Assistant toggle: a <button> styled like the heating icon link next to it */
+.assistantBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
 .heatingIconActive {
   background: var(--accent-soft);
   color: var(--primary);
@@ -428,5 +437,22 @@
 
   .mobileSignOutBtn:hover {
     color: var(--foreground);
+  }
+}
+
+/* Assistant + heating icons sit together as one group (the nav gap is meant for links) */
+.assistantBtn + .heatingIcon {
+  margin-left: -1rem;
+}
+
+@media (max-width: 1023px) {
+  .assistantBtn + .heatingIcon {
+    margin-left: -0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .assistantBtn + .heatingIcon {
+    margin-left: -0.5rem;
   }
 }

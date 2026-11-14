@@ -11,6 +11,7 @@ const AddArgs = z.object({
   items: z.array(z.object({
     name: z.string().trim().min(1),
     quantity: z.string().trim().optional(),
+    note: z.string().trim().max(300).optional(),
     tags: z.array(z.enum(SHOPPING_TAGS)).optional(),
   })).min(1),
 })
@@ -23,7 +24,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
   const existing = await prisma.shoppingItem.findMany({ where: { familyId }, select: { name: true } })
   const seen = new Set(existing.map((i) => i.name.toLowerCase()))
   const skipped: string[] = []
-  const toAdd: Array<{ name: string; quantity: string | null; tags: ShoppingTag[]; tagsGiven: boolean }> = []
+  const toAdd: Array<{ name: string; quantity: string | null; note: string | null; tags: ShoppingTag[]; tagsGiven: boolean }> = []
   for (const item of parsed.data.items) {
     const key = item.name.toLowerCase()
     if (seen.has(key)) {
@@ -31,7 +32,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
       continue
     }
     seen.add(key)
-    toAdd.push({ name: item.name, quantity: item.quantity || null, tags: item.tags ?? [], tagsGiven: !!item.tags?.length })
+    toAdd.push({ name: item.name, quantity: item.quantity || null, note: item.note || null, tags: item.tags ?? [], tagsGiven: !!item.tags?.length })
   }
 
   if (toAdd.length > 0) {
@@ -46,6 +47,7 @@ async function addItems(familyId: string, args: unknown): Promise<ToolResult> {
           familyId,
           name: item.name,
           quantity: item.quantity,
+          note: item.note,
           categoryId: categoryMap.get(item.name.toLowerCase()) ?? null,
           tags: item.tags,
           sortOrder: baseOrder + index,
@@ -85,7 +87,8 @@ async function listItems(familyId: string): Promise<ToolResult> {
     const name = item.category?.name ?? "Other"
     if (!groups.has(name)) groups.set(name, { order: item.category?.order ?? Number.MAX_SAFE_INTEGER, lines: [] })
     const tags = item.tags.length ? ` [${item.tags.join(", ")}]` : ""
-    groups.get(name)!.lines.push(`- ${item.name}${item.quantity ? ` (${item.quantity})` : ""}${tags}`)
+    const note = item.note ? ` — ${item.note}` : ""
+    groups.get(name)!.lines.push(`- ${item.name}${item.quantity ? ` (${item.quantity})` : ""}${tags}${note}`)
   }
   const sections = [...groups.entries()]
     .sort((a, b) => a[1].order - b[1].order)
@@ -125,6 +128,7 @@ export const shoppingTools: McpTool[] = [
             properties: {
               name: { type: "string", description: "Item name without quantity, e.g. \"milk\" or \"Zitrone\"" },
               quantity: { type: "string", description: "Optional amount, e.g. \"2\", \"500 g\", \"1 bunch\"" },
+              note: { type: "string", description: "Optional note shown under the item, e.g. which recipes need it (\"Lasagne, Curry\")" },
               tags: {
                 type: "array",
                 items: { type: "string", enum: [...SHOPPING_TAGS] },

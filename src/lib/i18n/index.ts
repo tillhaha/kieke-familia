@@ -273,6 +273,8 @@ export type Translations = {
     cancel: string
     failedToSave: string
     tags: string
+    note: string
+    notePlaceholder: string
     allItems: string
     noItemsWithTag: string
     removeItem: string
@@ -823,6 +825,8 @@ const en: Translations = {
     cancel: "Cancel",
     failedToSave: "Failed to save item",
     tags: "Tags",
+    note: "Note",
+    notePlaceholder: "e.g. for which recipe",
     allItems: "All",
     noItemsWithTag: "No items with this tag.",
     removeItem: "Remove item",
@@ -1114,6 +1118,8 @@ const en: Translations = {
       set_work_location: "Set work location",
       search_recipes: "Searched recipes",
       get_recipe: "Opened a recipe",
+      create_recipe: "Saved a recipe",
+      update_recipe: "Updated a recipe",
       get_calendar: "Checked the calendar",
       list_tasks: "Checked tasks",
       create_task: "Created a task",
@@ -1406,6 +1412,8 @@ const es: Translations = {
     cancel: "Cancelar",
     failedToSave: "Error al guardar el artículo",
     tags: "Etiquetas",
+    note: "Nota",
+    notePlaceholder: "p. ej. para qué receta",
     allItems: "Todos",
     noItemsWithTag: "No hay artículos con esta etiqueta.",
     removeItem: "Eliminar artículo",
@@ -1697,6 +1705,8 @@ const es: Translations = {
       set_work_location: "Fijó el lugar de trabajo",
       search_recipes: "Buscó recetas",
       get_recipe: "Abrió una receta",
+      create_recipe: "Guardó una receta",
+      update_recipe: "Actualizó una receta",
       get_calendar: "Revisó el calendario",
       list_tasks: "Revisó las tareas",
       create_task: "Creó una tarea",
@@ -1989,6 +1999,8 @@ const de: Translations = {
     cancel: "Abbrechen",
     failedToSave: "Artikel konnte nicht gespeichert werden",
     tags: "Tags",
+    note: "Notiz",
+    notePlaceholder: "z. B. für welches Rezept",
     allItems: "Alle",
     noItemsWithTag: "Keine Artikel mit diesem Tag.",
     removeItem: "Artikel entfernen",
@@ -2280,6 +2292,8 @@ const de: Translations = {
       set_work_location: "Arbeitsort eingetragen",
       search_recipes: "Rezepte durchsucht",
       get_recipe: "Rezept geöffnet",
+      create_recipe: "Rezept gespeichert",
+      update_recipe: "Rezept geändert",
       get_calendar: "Kalender angesehen",
       list_tasks: "Aufgaben angesehen",
       create_task: "Aufgabe erstellt",

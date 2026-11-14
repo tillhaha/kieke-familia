@@ -132,6 +132,7 @@ All UI strings go through `src/lib/i18n/index.ts`. The `Translations` type defin
 `src/lib/google/calendar.ts` provides:
 - `getGoogleCalendarClient(userId)` — builds an OAuth2 client from the stored account tokens
 - `listEventsFromCalendars(userId, calendarIds, timeMin, timeMax)` — fetches events from multiple calendars in parallel, deduplicates by event ID
+- Only events the user attends are returned (`isAttending`): invitations show up once **accepted**; unanswered (`needsAction`), tentative and declined ones are dropped. Own events without guests, events the user organises and entries where the user isn't a listed guest (e.g. a shared calendar) stay. This applies everywhere Google events appear (`/calendar`, week planner, home, assistant `get_calendar`)
 
 ### iCal / imported calendars
 `src/lib/ical.ts` — `fetchAndParseIcal(url, calendarId, name, color, timeMin, timeMax)` fetches an iCal URL (normalising `webcal://` → `https://`) and returns `ImportedEvent[]`. Recurring events are expanded via `expandRecurringEvent` from `node-ical`. Imported calendars are stored in the `ImportedCalendar` table (`User` → `ImportedCalendar`). Managed via `calendar/imported/` API routes; events are fetched alongside Google events in `calendar/events/`.

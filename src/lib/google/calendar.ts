@@ -50,6 +50,20 @@ export async function getGoogleCalendarClient(userId: string) {
 
 export type TaggedGoogleEvent = calendar_v3.Schema$Event & { calendarId: string }
 
+/**
+ * Only events the user is actually going to: invitations count once they've accepted them.
+ * Hidden: invitations not answered yet ("needsAction"), "maybe" (tentative) and declined.
+ * Kept: own events without guests, events the user organises, and events where the user isn't
+ * listed as a guest at all (e.g. entries on a shared family calendar).
+ */
+export function isAttending(event: calendar_v3.Schema$Event): boolean {
+  if (event.status === 'cancelled') return false
+  if (event.organizer?.self) return true
+  const me = event.attendees?.find((a) => a.self)
+  if (!me) return true
+  return me.responseStatus === 'accepted'
+}
+
 export async function listEventsFromCalendars(
   userId: string,
   calendarIds: string[],
@@ -83,9 +97,10 @@ export async function listEventsFromCalendars(
     }))
   })
 
-  // Deduplicate by event id (best-effort)
+  // Deduplicate by event id (best-effort) and drop invitations the user hasn't accepted
   const seen = new Set<string>()
   return allEvents.filter((event) => {
+    if (!isAttending(event)) return false
     if (!event.id || seen.has(event.id)) return false
     seen.add(event.id)
     return true

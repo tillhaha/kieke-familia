@@ -9,6 +9,7 @@ import { Bot, CalendarDays, Settings, LogOut, UtensilsCrossed, ChevronDown, Shop
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { HeatingStatusIcon } from "./HeatingStatusIcon"
 import { AssistantPanel } from "./assistant/AssistantPanel"
+import { useFamilyFeatures } from "./FamilyFeatures"
 import styles from "./navbar.module.css"
 
 export function Navbar() {
@@ -21,7 +22,8 @@ export function Navbar() {
   const ref = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
 
-  const navLinks = [
+  const { features } = useFamilyFeatures()
+  const allLinks = [
     { href: "/week", label: t.nav.weekPlanner, icon: CalendarDays },
     { href: "/meals", label: t.nav.recipes, icon: UtensilsCrossed },
     { href: "/shopping", label: t.nav.shopping, icon: ShoppingCart },
@@ -29,6 +31,8 @@ export function Navbar() {
     { href: "/thoughts", label: t.nav.thoughts, icon: Brain },
     { href: "/heating", label: t.nav.heating, icon: Thermometer },
   ]
+  // Heating is an optional module (Settings → Family → Features)
+  const navLinks = allLinks.filter((l) => l.href !== "/heating" || features?.heating)
 
   useEffect(() => {
     if (!open) return
@@ -82,7 +86,7 @@ export function Navbar() {
               <Sparkles size={17} strokeWidth={2} />
             </button>
           )}
-          {session?.user?.familyId && <HeatingStatusIcon active={pathname === "/heating"} />}
+          {session?.user?.familyId && features?.heating && <HeatingStatusIcon active={pathname === "/heating"} />}
 
           {session && (
             <div className={styles.userSection} ref={ref}>

@@ -13,6 +13,8 @@ export type McpTool = {
    * MCP clients like Claude Desktop handle confirmation themselves.
    */
   confirm?: boolean
+  /** Only offered when this optional family module is switched on (Settings → Family → Features) */
+  feature?: "heating"
 }
 
 export function text(t: string, isError = false): ToolResult {

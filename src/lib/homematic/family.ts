@@ -23,8 +23,10 @@ export type HeatingStatus =
   | { status: "pairing"; accessPointId: string; expiresAt: string }
   | { status: "connected"; accessPointId: string }
 
+// Heating switched off for the family (Settings → Family → Features) behaves like "not connected";
+// the stored connection is kept, so switching it back on works right away.
 export async function getHeatingStatus(familyId: string): Promise<HeatingStatus> {
-  const row = await prisma.homematicConnection.findUnique({ where: { familyId } })
+  const row = await prisma.homematicConnection.findFirst({ where: { familyId, family: { heatingEnabled: true } } })
   if (!row) return { status: "disconnected" }
   if (row.authToken) return { status: "connected", accessPointId: row.accessPointId }
   if (row.pairingDeviceId && row.pairingStarted && Date.now() - row.pairingStarted.getTime() < PAIRING_WINDOW_MS) {
@@ -38,7 +40,7 @@ export async function getHeatingStatus(familyId: string): Promise<HeatingStatus>
 }
 
 export async function getFamilyConnection(familyId: string): Promise<Connection | null> {
-  const row = await prisma.homematicConnection.findUnique({ where: { familyId } })
+  const row = await prisma.homematicConnection.findFirst({ where: { familyId, family: { heatingEnabled: true } } })
   if (!row?.authToken) return null
   return { accessPointId: row.accessPointId, restUrl: row.restUrl, authToken: row.authToken }
 }

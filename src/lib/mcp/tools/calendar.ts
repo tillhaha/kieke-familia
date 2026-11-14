@@ -7,6 +7,7 @@ import { fetchAndParseIcal } from "@/lib/ical"
 import { DEFAULT_TIME_ZONE, addDays, dateStr, dbDate, weekday } from "@/lib/localDate"
 import { type McpAuth, type McpTool, type ToolResult, text } from "../types"
 import { dateRangeArgs } from "./family"
+import { getFamilyFeatures } from "@/lib/familyFeatures"
 
 const MAX_DAYS = 62
 
@@ -27,12 +28,13 @@ async function getCalendar(auth: McpAuth, args: unknown): Promise<ToolResult> {
   const timeMin = new Date(dbDate(r.from).getTime() - 86_400_000)
   const timeMax = new Date(dbDate(addDays(r.to, 1)).getTime() + 86_400_000)
 
+  const { custody: custodyEnabled } = await getFamilyFeatures(auth.familyId)
   const [syncs, imported, birthdays, travels, custody, members] = await Promise.all([
     prisma.calendarSync.findMany({ where: { userId: auth.userId }, select: { calendarId: true, name: true } }),
     prisma.importedCalendar.findMany({ where: { familyId: auth.familyId }, select: { id: true, url: true, name: true, color: true } }),
     prisma.birthday.findMany({ where: { familyId: auth.familyId } }),
     prisma.travel.findMany({ where: { user: { familyId: auth.familyId }, startDate: { lte: timeMax }, endDate: { gte: timeMin } } }),
-    prisma.custodySchedule.findMany({ where: { familyId: auth.familyId, date: { gte: dbDate(r.from), lte: dbDate(r.to) } } }),
+    custodyEnabled ? prisma.custodySchedule.findMany({ where: { familyId: auth.familyId, date: { gte: dbDate(r.from), lte: dbDate(r.to) } } }) : [],
     prisma.user.findMany({ where: { familyId: auth.familyId }, select: { id: true, name: true } }),
   ])
 

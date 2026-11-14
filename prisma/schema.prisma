@@ -89,6 +89,11 @@ model Family {
   name             String
   city             String?
   joinCode         String?           @unique
+  // Optional modules (Settings → Family → Features). Existing families keep them on;
+  // families created in onboarding start with both off.
+  heatingEnabled   Boolean           @default(true)
+  custodyEnabled   Boolean           @default(true)
+  calendarTitle    String? // label of the calendar link in the week planner
   users            User[]
   birthdays        Birthday[]
   dayPlans         DayPlan[]

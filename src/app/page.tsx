@@ -7,6 +7,7 @@ import { LogIn, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react"
 import { WeekBlock, WeekData, DayWeather, CustodyEntry, CalendarEvent, WorkLocationEntry, WorkLocationValue } from "./week/WeekBlock"
 import { TaskModal, TaskData } from "./tasks/TaskModal"
 import { QuickThought } from "@/components/QuickThought"
+import { useFamilyFeatures } from "@/components/FamilyFeatures"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./page.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -41,6 +42,7 @@ function formatDate(dateStr: string) {
 export default function Home() {
   const { data: session, status } = useSession()
   const { t } = useTranslation()
+  const { features } = useFamilyFeatures()
 
   const [allWeeks, setAllWeeks] = useState<WeekData[]>([])
   const [weekIndex, setWeekIndex] = useState<number>(0)
@@ -250,7 +252,7 @@ export default function Home() {
           week={week}
           onDayUpdate={handleDayUpdate}
           weather={weather ?? undefined}
-          custodyEntries={custodyEntries}
+          custodyEntries={features?.custody ? custodyEntries : undefined}
           calendarEvents={calendarEvents}
           workLocations={workLocations}
           familyMembers={members}

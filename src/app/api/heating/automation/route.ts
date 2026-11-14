@@ -36,7 +36,8 @@ export async function GET() {
   const [auto, members, custodyPeople] = await Promise.all([
     prisma.heatingAutomation.findUnique({ where: { familyId } }),
     prisma.user.findMany({ where: { familyId, active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
-    prisma.custodySchedule.findMany({ where: { familyId }, distinct: ["personName"], select: { personName: true } }),
+    // Child rules only when the custody module is on
+    prisma.custodySchedule.findMany({ where: { familyId, family: { custodyEnabled: true } }, distinct: ["personName"], select: { personName: true } }),
   ])
   const home = await getFamilyHome(familyId).catch(() => null)
 

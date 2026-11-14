@@ -7,7 +7,8 @@
 import { prisma } from "@/lib/prisma"
 import { buildLifeContext } from "@/lib/personalProfile"
 import { DEFAULT_TIME_ZONE, localClock, weekday } from "@/lib/localDate"
-import { TOOLS } from "@/lib/mcp/tools"
+import { toolsForFamily } from "@/lib/mcp/tools"
+import type { McpTool } from "@/lib/mcp/types"
 import type { McpAuth } from "@/lib/mcp/types"
 import { streamChat } from "./openrouter"
 import { DEFAULT_SERVINGS } from "@/lib/shoppingFromWeek"
@@ -27,13 +28,15 @@ const MAX_ROUNDS = 8
 const MAX_HISTORY = 60
 const MAX_TOOL_RESULT = 15_000
 
-const toolDefs = TOOLS.map((t) => ({
-  type: "function" as const,
-  function: { name: t.name, description: t.description, parameters: t.inputSchema },
-}))
+function toolDefs(tools: McpTool[]) {
+  return tools.map((t) => ({
+    type: "function" as const,
+    function: { name: t.name, description: t.description, parameters: t.inputSchema },
+  }))
+}
 
-async function runTool(auth: McpAuth, call: ToolCall): Promise<{ content: string; ok: boolean }> {
-  const tool = TOOLS.find((t) => t.name === call.function.name)
+async function runTool(tools: McpTool[], auth: McpAuth, call: ToolCall): Promise<{ content: string; ok: boolean }> {
+  const tool = tools.find((t) => t.name === call.function.name)
   if (!tool) return { content: `Unknown tool: ${call.function.name}`, ok: false }
   try {
     const result = await tool.handler(auth, parseArgs(call))
@@ -89,11 +92,13 @@ export async function runAssistant(opts: {
   const awaitingConfirm = new Set<string>()
 
   try {
+    // Only the modules this family has switched on (e.g. no heating tools without heating)
+    const tools = await toolsForFamily(auth.familyId)
     // Answers to a previous Confirm / Cancel
     for (const call of pendingCalls(history)) {
       const approval = opts.approvals.find((a) => a.id === call.id)
       if (approval?.approved) {
-        const r = await runTool(auth, call)
+        const r = await runTool(tools, auth, call)
         emit({ type: "tool", name: call.function.name, ok: r.ok })
         push({ role: "tool", tool_call_id: call.id, content: r.content })
       } else {
@@ -106,7 +111,7 @@ export async function runAssistant(opts: {
       const { content, toolCalls } = await streamChat({
         system,
         messages: trimForRequest(history, MAX_HISTORY),
-        tools: toolDefs,
+        tools: toolDefs(tools),
         onText: (delta) => emit({ type: "text", delta }),
         signal: opts.signal,
       })
@@ -115,11 +120,11 @@ export async function runAssistant(opts: {
 
       const toConfirm: ToolCall[] = []
       for (const call of toolCalls) {
-        if (TOOLS.find((t) => t.name === call.function.name)?.confirm) {
+        if (tools.find((t) => t.name === call.function.name)?.confirm) {
           toConfirm.push(call)
           continue
         }
-        const r = await runTool(auth, call)
+        const r = await runTool(tools, auth, call)
         emit({ type: "tool", name: call.function.name, ok: r.ok })
         push({ role: "tool", tool_call_id: call.id, content: r.content })
       }

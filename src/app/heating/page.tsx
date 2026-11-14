@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
 import { Minus, Plus, Droplets, AppWindow, BatteryLow, Flame, Thermometer, Settings, Gauge, CalendarClock, ChevronDown } from "lucide-react"
+import { useFamilyFeatures } from "@/components/FamilyFeatures"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { Page } from "@/components/ui/Page"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -54,6 +55,7 @@ function fmt(temp: number | null) {
 export default function HeatingPage() {
   const { status: sessionStatus } = useSession()
   const { t, lang } = useTranslation()
+  const { features } = useFamilyFeatures()
   const [state, setState] = useState<State>({ status: "loading" })
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState<Set<string>>(new Set())
@@ -169,7 +171,28 @@ export default function HeatingPage() {
     timers.current.set(roomId, setTimeout(() => send(roomId), immediate ? 0 : SEND_DELAY_MS))
   }, [send, setRooms])
 
-  if (sessionStatus !== "authenticated" || state.status === "loading") return null
+  if (sessionStatus !== "authenticated" || !features) return null
+
+  // Heating is an optional module (Settings → Family → Features)
+  if (!features.heating) {
+    return (
+      <Page width="narrow">
+        <PageHeader title={t.heating.pageTitle} />
+        <EmptyState
+          icon={<Thermometer size={22} strokeWidth={1.75} />}
+          action={
+            <Button variant="primary" size="sm" href="/settings?section=family">
+              {t.heating.enableInSettings}
+            </Button>
+          }
+        >
+          {t.heating.disabled}
+        </EmptyState>
+      </Page>
+    )
+  }
+
+  if (state.status === "loading") return null
 
   const settingsButton = (
     <Button variant="secondary" size="sm" href="/settings?section=heating" icon={<Settings size={14} />}>

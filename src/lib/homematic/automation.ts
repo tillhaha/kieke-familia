@@ -202,7 +202,7 @@ const retryAfter = new Map<string, number>()
 
 /** Run every enabled family's automation whose time has come today and hasn't run yet. */
 export async function runDueAutomations(now: Date = new Date()): Promise<void> {
-  const autos = await prisma.heatingAutomation.findMany({ where: { enabled: true } })
+  const autos = await prisma.heatingAutomation.findMany({ where: { enabled: true, family: { heatingEnabled: true } } })
   for (const auto of autos) {
     const { date, minutes } = localClock(auto.timeZone, now)
     const start = timeToMinutes(auto.time)

@@ -33,6 +33,11 @@ There is no test suite (`npm test` is not configured).
 - Credential users do not have `familyId`/`role` in the initial JWT; the jwt callback re-fetches them from DB when missing (`token.familyId` absent + `token.id` present)
 - Session fields updated client-side via `useSession().update({ familyId, role })` after onboarding
 
+### Optional modules (per family)
+`Family.heatingEnabled`, `Family.custodyEnabled` (both default **true** in the DB so existing families keep them; `family/create` sets both **false** for new families) and `Family.calendarTitle`. Edited in Settings → Family → **Features** (`FeaturesSection.tsx`; `PATCH /api/family { features: { heating, custody, calendarTitle } }`, ADMIN/PARENT only). Server: `getFamilyFeatures(familyId)` (`src/lib/familyFeatures.ts`; type in `familyFeatureTypes.ts` for client use). Client: `useFamilyFeatures()` from `src/components/FamilyFeatures.tsx` (provider in `Providers`; `features` is null until loaded → hide optional UI until then; call `reload()` after changing).
+- **Heating off**: no nav link / status icon / settings section; `/heating` shows a "switched off" state; `getFamilyConnection`/`getHeatingStatus` treat the family as not connected (connection row is kept), pairing is refused, the smart schedule skips it, and tools with `feature: "heating"` are hidden — `toolsForFamily(familyId)` in `src/lib/mcp/tools/index.ts` is what the MCP server and the assistant use.
+- **Custody off**: no custody row in the week planner (`custodyEntries` not passed), no custody controls/filter in `/calendar`, `calendar/events` returns no custody entries, and the assistant/MCP tools and the heating rule's child list leave custody out.
+
 ### Onboarding
 New users without a `familyId` should be sent to `/onboarding`. There they can:
 - **Create** a family (`POST /api/family/create`) — creates Family + sets user role to ADMIN in a `$transaction`
@@ -65,7 +70,7 @@ Prisma client is initialized once globally (`src/lib/prisma.ts`) using the `@pri
 |-------|-------------|
 | `/` | Home — greeting + current week summary (read-only `WeekBlock`) + tasks widget |
 | `/onboarding` | Family create/join flow for new users without a family |
-| `/week` | Week planning — editable `WeekBlock` with day notes, lunch/dinner. Header: "+ next week" button right after the title (`PageHeader` `addon`), "Laura und Till Calendar" link to `/calendar` top right |
+| `/week` | Week planning — editable `WeekBlock` with day notes, lunch/dinner. Header: "+ next week" button right after the title (`PageHeader` `addon`), calendar link to `/calendar` top right (label = family's `calendarTitle`, default "Family calendar") |
 | `/calendar` | Calendar view with Google Calendar events, birthdays, travel. Not in the main menu — reached via the link on `/week` |
 | `/meals` | Recipe library list |
 | `/meals/new` | Create recipe |

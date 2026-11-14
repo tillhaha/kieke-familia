@@ -10,7 +10,8 @@ import { DEFAULT_TIME_ZONE, localClock, weekday } from "@/lib/localDate"
 import { TOOLS } from "@/lib/mcp/tools"
 import type { McpAuth } from "@/lib/mcp/types"
 import { streamChat } from "./openrouter"
-import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls } from "./messages"
+import { DEFAULT_SERVINGS } from "@/lib/shoppingFromWeek"
+import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls, trimForRequest } from "./messages"
 
 /** What the browser receives, one JSON object per line */
 export type AssistantEvent =
@@ -23,7 +24,7 @@ export type AssistantEvent =
 export type Approval = { id: string; approved: boolean }
 
 const MAX_ROUNDS = 8
-const MAX_HISTORY = 40
+const MAX_HISTORY = 60
 const MAX_TOOL_RESULT = 15_000
 
 const toolDefs = TOOLS.map((t) => ({
@@ -66,15 +67,9 @@ How to work:
 - Look things up with the tools instead of guessing, and never invent data. Combine sources when useful (e.g. calendar + week plan + tasks for "what's on this week?").
 - Make everyday changes directly when asked (shopping list, family tasks, private todos, week planner meals and notes, work locations), then say in one line what you changed.
 - Heating changes and deletions need the user's OK: just call the tool — the app shows ${name} Confirm/Cancel buttons. Don't ask for permission in text first. If an action was declined, don't retry it.
+- Shopping list from meals: we cook ${DEFAULT_SERVINGS} servings by default, so scale a recipe's quantities from its servings (a recipe for 4 is halved). If the meal's note in the week planner says "x servings" / "x Portionen", cook x instead. A planned meal without a linked recipe has its ingredients in its note. A meal whose cell says "Reste" (leftovers) needs nothing — ignore its note. Merge identical ingredients before adding them.
 - Private todos and the "About me" profile belong to ${name} only. Family tasks, week plan and shopping list are shared with the family.
 - If something can't be done with the tools, say so plainly.${lifeContext ? `\n\nAbout ${name} (private context):\n${lifeContext}` : ""}`
-}
-
-/** Keep the request small: the last messages, starting at a user message (never mid tool exchange). */
-function trimHistory(messages: ChatMessage[]): ChatMessage[] {
-  if (messages.length <= MAX_HISTORY) return messages
-  const start = messages.findIndex((m, i) => i >= messages.length - MAX_HISTORY && m.role === "user")
-  return start >= 0 ? messages.slice(start) : messages.slice(-1)
 }
 
 export async function runAssistant(opts: {
@@ -110,7 +105,7 @@ export async function runAssistant(opts: {
     for (let round = 0; round < MAX_ROUNDS; round++) {
       const { content, toolCalls } = await streamChat({
         system,
-        messages: trimHistory(history),
+        messages: trimForRequest(history, MAX_HISTORY),
         tools: toolDefs,
         onText: (delta) => emit({ type: "text", delta }),
         signal: opts.signal,

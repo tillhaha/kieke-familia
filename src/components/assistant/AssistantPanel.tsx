@@ -12,12 +12,14 @@ import { ArrowLeft, ArrowUp, Check, History, Mic, Plus, Sparkles, Square, X } fr
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { Button } from "@/components/ui/Button"
 import { VoiceInputButton } from "@/components/VoiceInputButton"
-import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls } from "@/lib/assistant/messages"
+import { type ChatMessage, DECLINED_RESULT, type ToolCall, parseArgs, pendingCalls, trimForRequest } from "@/lib/assistant/messages"
 import { type Conversation, RESUME_WITHIN_MS, loadConversations, newConversation, saveConversation } from "./storage"
 import { MAX_RECORDING_MS, type Recording, startRecording } from "./recorder"
 import styles from "./AssistantPanel.module.css"
 
 type Config = { enabled: boolean; voice: boolean }
+
+const MAX_SENT_MESSAGES = 150
 /** What is streaming in right now, in order: text and tool steps */
 type Live = ({ kind: "text"; text: string } | { kind: "tool"; name: string; ok: boolean })[]
 type StreamEvent =
@@ -132,7 +134,8 @@ export function AssistantPanel({ open, onClose }: { open: boolean; onClose: () =
         const res = await fetch("/api/assistant/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: base, approvals }),
+          // The whole chat stays in the browser; only the recent part is sent (the server trims further)
+          body: JSON.stringify({ messages: trimForRequest(base, MAX_SENT_MESSAGES), approvals }),
           signal: ac.signal,
         })
         if (!res.ok || !res.body) {

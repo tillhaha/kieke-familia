@@ -6,8 +6,14 @@
 //   servings to 2 (a recipe for 4 is halved).
 // - If the meal's note in the week planner says "x servings" / "x Portionen", we cook x instead.
 // - A meal without a linked recipe takes its ingredients from that note.
+// - "Reste" (leftovers) in the cell: nothing to buy — the note is ignored.
 
 export const DEFAULT_SERVINGS = 2
+
+/** "Reste", "Reste vom Curry", "reste" … — leftovers, nothing to shop for */
+export function isLeftovers(cell: string | null | undefined): boolean {
+  return !!cell && /(^|[^\p{L}])reste($|[^\p{L}])/iu.test(cell)
+}
 
 /** "3 servings", "4 Portionen", "für 6 Personen", "2 porciones" → the number, else null */
 export function servingsFromNote(note: string | null | undefined): number | null {
@@ -47,7 +53,9 @@ export function mealSources(
     for (const slot of ["lunch", "dinner"] as const) {
       const recipe = slot === "lunch" ? day.lunchMeal : day.dinnerMeal
       const note = (slot === "lunch" ? day.lunchNote : day.dinnerNote)?.trim() || null
-      const title = (slot === "lunch" ? day.lunch : day.dinner)?.trim() || recipe?.name || ""
+      const cell = (slot === "lunch" ? day.lunch : day.dinner)?.trim() || ""
+      const title = cell || recipe?.name || ""
+      if (isLeftovers(cell)) continue
       if (recipe) {
         if (!recipe.ingredients.length) continue
         const recipeServings = recipe.servings > 0 ? recipe.servings : DEFAULT_SERVINGS

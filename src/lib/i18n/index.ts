@@ -273,6 +273,8 @@ export type Translations = {
     cancel: string
     failedToSave: string
     tags: string
+    note: string
+    notePlaceholder: string
     allItems: string
     noItemsWithTag: string
     removeItem: string
@@ -823,6 +825,8 @@ const en: Translations = {
     cancel: "Cancel",
     failedToSave: "Failed to save item",
     tags: "Tags",
+    note: "Note",
+    notePlaceholder: "e.g. for which recipe",
     allItems: "All",
     noItemsWithTag: "No items with this tag.",
     removeItem: "Remove item",
@@ -1406,6 +1410,8 @@ const es: Translations = {
     cancel: "Cancelar",
     failedToSave: "Error al guardar el artículo",
     tags: "Etiquetas",
+    note: "Nota",
+    notePlaceholder: "p. ej. para qué receta",
     allItems: "Todos",
     noItemsWithTag: "No hay artículos con esta etiqueta.",
     removeItem: "Eliminar artículo",
@@ -1989,6 +1995,8 @@ const de: Translations = {
     cancel: "Abbrechen",
     failedToSave: "Artikel konnte nicht gespeichert werden",
     tags: "Tags",
+    note: "Notiz",
+    notePlaceholder: "z. B. für welches Rezept",
     allItems: "Alle",
     noItemsWithTag: "Keine Artikel mit diesem Tag.",
     removeItem: "Artikel entfernen",

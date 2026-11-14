@@ -269,6 +269,7 @@ model ShoppingItem {
   family     Family            @relation(fields: [familyId], references: [id])
   name       String
   quantity   String?
+  note       String? // e.g. which recipes need it ("Lasagne, Curry"), set by "Add to shopping list"
   categoryId String?
   category   ShoppingCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   tags       String[]          @default([])

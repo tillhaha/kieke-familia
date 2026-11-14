@@ -127,6 +127,15 @@
   cursor: default;
 }
 
+/* Which recipes need the item, under its name */
+.itemNote {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--secondary);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
 /* Desktop (real hover): underline the name to show it opens the editor */
 @media (hover: hover) {
   .itemName:hover:not(:disabled) {

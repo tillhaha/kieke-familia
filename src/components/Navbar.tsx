@@ -73,7 +73,7 @@ export function Navbar() {
           {session?.user?.familyId && (
             <button
               type="button"
-              className={`${styles.heatingIcon} ${assistant === "open" ? styles.heatingIconActive : ""}`}
+              className={`${styles.heatingIcon} ${styles.assistantBtn} ${assistant === "open" ? styles.heatingIconActive : ""}`}
               onClick={() => setAssistant((a) => (a === "open" ? "closed" : "open"))}
               aria-label={t.assistant.open}
               aria-expanded={assistant === "open"}

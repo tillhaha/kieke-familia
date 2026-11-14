@@ -29,7 +29,7 @@ import {
 
 type Category = { id: string; name: string; order: number }
 type AddOp = Extract<OutboxOp, { kind: "add" }>
-type ShoppingItem = { id: string; name: string; quantity: string | null; categoryId: string | null; category: Category | null; tags: ShoppingTag[] }
+type ShoppingItem = { id: string; name: string; quantity: string | null; note?: string | null; categoryId: string | null; category: Category | null; tags: ShoppingTag[] }
 
 export default function ShoppingPage() {
   const { data: session, status } = useSession()
@@ -406,6 +406,7 @@ export default function ShoppingPage() {
                       title={t.shopping.editItem}
                     >
                       {item.name}
+                      {item.note && <span className={styles.itemNote}>{item.note}</span>}
                     </button>
                     {item.tags.map((tag) => (
                       <span key={tag} className={styles.tagChip}>{tag}</span>

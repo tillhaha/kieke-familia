@@ -15,9 +15,16 @@ const UnifiedSchema = z.object({
     z.object({
       name: z.string(),
       quantity: z.string().nullable(),
+      recipes: z.array(z.string()),
     })
   ),
 })
+
+/** "Lasagne, Curry" — which meals an item is for (shown under the item on the list) */
+function recipeNote(recipes: string[]): string | null {
+  const unique = [...new Set(recipes.map((r) => r.trim()).filter(Boolean))]
+  return unique.length ? unique.join(", ").slice(0, 300) : null
+}
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
@@ -59,7 +66,7 @@ export async function POST(request: Request) {
   }
 
   // Call Claude to normalise, merge, and order ingredients
-  let unified: Array<{ name: string; quantity: string | null }>
+  let unified: Array<{ name: string; quantity: string | null; recipes: string[] }>
   try {
     const response = await client.messages.parse({
       model: "claude-haiku-4-5-20251001",
@@ -77,6 +84,7 @@ Rules:
 - Strip quantities and units from the name field — put them in the quantity field (null if none).
 - Strip all preparation descriptors from the name field — only keep the core ingredient (e.g. "garlic cloves, crushed" → "garlic", "olives, pitted and quartered lengthways" → "olive", "finely chopped onion" → "onion", "bone-in chicken thighs" → "chicken thigh").
 - Normalise names to lowercase, singular where natural (e.g. "tomatoes" → "tomato").
+- In "recipes", list the meal titles (exactly as written after "## ", without the part in brackets) that need this item, each title once.
 - Return items in a logical shopping order (produce together, proteins together, etc.).`,
       messages: [
         {
@@ -143,6 +151,7 @@ ${describeSources(sources)}`,
           familyId: familyId as string,
           name: item.name,
           quantity: item.quantity ?? null,
+          note: recipeNote(item.recipes),
           categoryId: categoryMap.get(item.name.trim().toLowerCase()) ?? null,
           sortOrder: baseOrder + index,
         })),

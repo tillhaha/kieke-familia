@@ -9,8 +9,8 @@ import { categoryLabel } from "@/lib/shoppingCategories"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
 type Category = { id: string; name: string; order: number }
-export type EditableItem = { id: string; name: string; quantity: string | null; categoryId: string | null; tags: ShoppingTag[] }
-export type ItemChanges = { name?: string; quantity?: string | null; categoryId?: string | null; tags?: ShoppingTag[] }
+export type EditableItem = { id: string; name: string; quantity: string | null; note?: string | null; categoryId: string | null; tags: ShoppingTag[] }
+export type ItemChanges = { name?: string; quantity?: string | null; note?: string | null; categoryId?: string | null; tags?: ShoppingTag[] }
 
 type Props = {
   item: EditableItem
@@ -24,6 +24,7 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
   const [qty, setQty] = useState(item.quantity ?? "")
   const [name, setName] = useState(item.name)
   const [categoryId, setCategoryId] = useState(item.categoryId ?? "")
+  const [note, setNote] = useState(item.note ?? "")
   const [tags, setTags] = useState<ShoppingTag[]>(item.tags)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
@@ -44,6 +45,7 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
     const changes: ItemChanges = {}
     if (name.trim() !== item.name) changes.name = name.trim()
     if ((qty.trim() || null) !== item.quantity) changes.quantity = qty.trim() || null
+    if ((note.trim() || null) !== (item.note ?? null)) changes.note = note.trim() || null
     if ((categoryId || null) !== item.categoryId) changes.categoryId = categoryId || null
     if (tags.length !== item.tags.length || tags.some((tag) => !item.tags.includes(tag))) changes.tags = tags
     if (Object.keys(changes).length === 0) {
@@ -80,6 +82,18 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
             />
           </label>
         </div>
+
+        <label className={styles.modalField}>
+          <span className={styles.modalLabel}>{t.shopping.note}</span>
+          <input
+            className={styles.modalInput}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder={t.shopping.notePlaceholder}
+            maxLength={300}
+            autoComplete="off"
+          />
+        </label>
 
         <label className={styles.modalField}>
           <span className={styles.modalLabel}>{t.shopping.category}</span>

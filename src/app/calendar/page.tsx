@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Plus, Baby, Link2 } from "lucide-react"
+import { useFamilyFeatures } from "@/components/FamilyFeatures"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./calendar.module.css"
 import { Page } from "@/components/ui/Page"
@@ -99,6 +100,8 @@ function CustodyPill({
 export default function CalendarPage() {
   const { status } = useSession()
   const { t } = useTranslation()
+  const { features } = useFamilyFeatures()
+  const custodyOn = !!features?.custody
   const [currentDate, setCurrentDate] = useState(new Date())
   const [events, setEvents] = useState<{
     googleEvents: GoogleEvent[]
@@ -233,7 +236,7 @@ export default function CalendarPage() {
 
     return {
       google: showGoogle ? google : [],
-      custody: showCustody ? custody : [],
+      custody: showCustody && custodyOn ? custody : [],
       imported: showImported ? imported : [],
     }
   }
@@ -249,7 +252,7 @@ export default function CalendarPage() {
           <h1 className={styles.monthTitle}>
             {currentDate.toLocaleString("default", { month: "long", year: "numeric" })}
           </h1>
-          <Button variant="secondary" size="sm" iconOnly
+          {custodyOn && <Button variant="secondary" size="sm" iconOnly
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]
               const sixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split("T")[0]
@@ -266,7 +269,7 @@ export default function CalendarPage() {
             aria-label={t.calendar.custodyModalTitle}
           >
             <Plus size={16} />
-          </Button>
+          </Button>}
         </div>
         <div className={styles.headerControls}>
           <Button variant="secondary" size="sm" iconOnly onClick={prevMonth} aria-label="Previous month">
@@ -285,13 +288,15 @@ export default function CalendarPage() {
       {/* Filters */}
       <div className={styles.filterBar}>
         <span className={styles.filterLabel}>{t.calendar.showLabel}</span>
-        <button
-          className={`${styles.filterBtn} ${styles.filterCustody} ${showCustody ? styles.filterBtnActive : ""}`}
-          onClick={() => setShowCustody((v) => !v)}
-        >
-          <Baby size={12} strokeWidth={2} />
-          {t.calendar.filterCustody}
-        </button>
+        {custodyOn && (
+          <button
+            className={`${styles.filterBtn} ${styles.filterCustody} ${showCustody ? styles.filterBtnActive : ""}`}
+            onClick={() => setShowCustody((v) => !v)}
+          >
+            <Baby size={12} strokeWidth={2} />
+            {t.calendar.filterCustody}
+          </button>
+        )}
         <button
           className={`${styles.filterBtn} ${styles.filterGoogle} ${showGoogle ? styles.filterBtnActive : ""}`}
           onClick={() => setShowGoogle((v) => !v)}

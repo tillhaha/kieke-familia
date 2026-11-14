@@ -318,6 +318,19 @@ export type Translations = {
     errorGeneric: string
   }
   settings: {
+    featuresTitle: string
+    featuresDesc: string
+    featuresOnlyAdmins: string
+    featureHeating: string
+    featureHeatingHint: string
+    featureCustody: string
+    featureCustodyHint: string
+    calendarTitleLabel: string
+    calendarTitleHint: string
+    featuresSave: string
+    featuresSaving: string
+    featuresSaved: string
+    featuresSaveFailed: string
     title: string
     lastRelease: string
     profile: string
@@ -408,6 +421,8 @@ export type Translations = {
     copy: string
   }
   heating: {
+    disabled: string
+    enableInSettings: string
     section: string
     title: string
     desc: string
@@ -587,7 +602,7 @@ const en: Translations = {
   week: {
     title: "Week Planner",
     planNextWeek: "next week",
-    calendarLink: "Laura und Till Calendar",
+    calendarLink: "Family calendar",
     planning: "Planning…",
     noWeeksYet: "No weeks planned yet. Click \"+ next week\" to get started.",
     generateShopping: "Generate shopping list",
@@ -797,7 +812,7 @@ const en: Translations = {
     aboutTitle: "About me",
     aboutEmpty: "Tell the assistant who you are — it will file your thoughts better.",
     aboutHint: "Private, only for you and your assistant. Write freely: who you are, work, hobbies, routines, friends and family. Tip: write birth years instead of ages (\"Mia (2016)\") so they stay correct. Your family members, city and the birthdays saved in the calendar are included automatically.",
-    aboutPlaceholder: "e.g. I'm Till, product manager, working from home Mon/Fri. Wife Anna (1985), kids Mia (2016) and Leo (2019) — Mia has swimming on Tuesdays. Best friends: Jonas (Berlin), Sarah. I like running and cooking, and I'm renovating the bathroom. Dentist: Dr. Weber.",
+    aboutPlaceholder: "e.g. I'm Alex, product manager, working from home Mon/Fri. Wife Anna (1985), kids Mia (2016) and Leo (2019) — Mia has swimming on Tuesdays. Best friends: Jonas (Berlin), Sarah. I like running and cooking, and I'm renovating the bathroom. Dentist: Dr. Weber.",
     aboutSaving: "Saving…",
     aboutSaved: "Saved",
     manageCategories: "Categories",
@@ -881,6 +896,19 @@ const en: Translations = {
     errorGeneric: "Something went wrong. Please try again.",
   },
   settings: {
+    featuresTitle: "Features",
+    featuresDesc: "Switch optional modules on or off for your whole family.",
+    featuresOnlyAdmins: "Only admins and parents can change these.",
+    featureHeating: "Heating (Homematic IP)",
+    featureHeatingHint: "Heating page, status icon, smart schedule and heating control in the assistant.",
+    featureCustody: "Shared custody",
+    featureCustodyHint: "Plan which days a child is with you or at the other parent's: row in the week planner, entries in the calendar, heating rule.",
+    calendarTitleLabel: "Calendar name",
+    calendarTitleHint: "Shown as the calendar link in the week planner.",
+    featuresSave: "Save",
+    featuresSaving: "Saving…",
+    featuresSaved: "Saved",
+    featuresSaveFailed: "Couldn't save.",
     title: "Settings",
     lastRelease: "Last release",
     profile: "Profile",
@@ -971,6 +999,8 @@ const en: Translations = {
     copy: "Copy",
   },
   heating: {
+    disabled: "Heating is switched off for your family.",
+    enableInSettings: "Switch on in settings",
     section: "Heating",
     title: "Homematic IP heating",
     desc: "Connect your Homematic IP Access Point so you can see and change room temperatures in Kieke.",
@@ -1090,7 +1120,7 @@ const en: Translations = {
     placeholder: "Ask me anything…",
     send: "Send",
     stop: "Stop",
-    greeting: "Hi {name}! I know your week plan, calendar, tasks, recipes, shopping list and heating. How can I help?",
+    greeting: "Hi {name}! I know your week plan, calendar, tasks, recipes and shopping list. How can I help?",
     suggestion1: "What's on this week?",
     suggestion2: "Suggest dinners for next week from our recipes",
     suggestion3: "Which tasks are due soon?",
@@ -1174,7 +1204,7 @@ const es: Translations = {
   week: {
     title: "Planificador semanal",
     planNextWeek: "próxima semana",
-    calendarLink: "Laura und Till Calendar",
+    calendarLink: "Calendario familiar",
     planning: "Planificando…",
     noWeeksYet: "Sin semanas planificadas. Haz clic en \"+ próxima semana\" para empezar.",
     generateShopping: "Generar lista de compras",
@@ -1384,7 +1414,7 @@ const es: Translations = {
     aboutTitle: "Sobre mí",
     aboutEmpty: "Cuéntale al asistente quién eres: así ordenará mejor tus pensamientos.",
     aboutHint: "Privado, solo para ti y tu asistente. Escribe libremente: quién eres, trabajo, aficiones, rutinas, amigos y familia. Consejo: escribe años de nacimiento en lugar de edades (\"Mia (2016)\") para que sigan siendo correctas. Tus familiares, tu ciudad y los cumpleaños guardados en el calendario se incluyen automáticamente.",
-    aboutPlaceholder: "p. ej. Soy Till, jefe de producto, teletrabajo lunes y viernes. Mi mujer Anna (1985), hijos Mia (2016) y Leo (2019): Mia tiene natación los martes. Mejores amigos: Jonas (Berlín), Sarah. Me gusta correr y cocinar, y estoy reformando el baño. Dentista: Dr. Weber.",
+    aboutPlaceholder: "p. ej. Soy Alex, jefe de producto, teletrabajo lunes y viernes. Mi mujer Anna (1985), hijos Mia (2016) y Leo (2019): Mia tiene natación los martes. Mejores amigos: Jonas (Berlín), Sarah. Me gusta correr y cocinar, y estoy reformando el baño. Dentista: Dr. Weber.",
     aboutSaving: "Guardando…",
     aboutSaved: "Guardado",
     manageCategories: "Categorías",
@@ -1468,6 +1498,19 @@ const es: Translations = {
     errorGeneric: "Algo salió mal. Por favor, inténtalo de nuevo.",
   },
   settings: {
+    featuresTitle: "Funciones",
+    featuresDesc: "Activa o desactiva módulos opcionales para toda la familia.",
+    featuresOnlyAdmins: "Solo los administradores y los padres pueden cambiarlas.",
+    featureHeating: "Calefacción (Homematic IP)",
+    featureHeatingHint: "Página de calefacción, icono de estado, programación inteligente y control desde el asistente.",
+    featureCustody: "Custodia compartida",
+    featureCustodyHint: "Planifica qué días un niño está contigo o con el otro progenitor: fila en el planificador, entradas en el calendario, regla de calefacción.",
+    calendarTitleLabel: "Nombre del calendario",
+    calendarTitleHint: "Se muestra como enlace al calendario en el planificador semanal.",
+    featuresSave: "Guardar",
+    featuresSaving: "Guardando…",
+    featuresSaved: "Guardado",
+    featuresSaveFailed: "No se pudo guardar.",
     title: "Ajustes",
     lastRelease: "Última versión",
     profile: "Perfil",
@@ -1558,6 +1601,8 @@ const es: Translations = {
     copy: "Copiar",
   },
   heating: {
+    disabled: "La calefacción está desactivada para tu familia.",
+    enableInSettings: "Activar en ajustes",
     section: "Calefacción",
     title: "Calefacción Homematic IP",
     desc: "Conecta tu Access Point de Homematic IP para ver y cambiar la temperatura de las habitaciones en Kieke.",
@@ -1677,7 +1722,7 @@ const es: Translations = {
     placeholder: "Pregúntame algo…",
     send: "Enviar",
     stop: "Detener",
-    greeting: "¡Hola {name}! Conozco vuestro plan semanal, calendario, tareas, recetas, lista de la compra y calefacción. ¿En qué te ayudo?",
+    greeting: "¡Hola {name}! Conozco vuestro plan semanal, calendario, tareas, recetas y lista de la compra. ¿En qué te ayudo?",
     suggestion1: "¿Qué hay esta semana?",
     suggestion2: "Sugiere cenas para la próxima semana con nuestras recetas",
     suggestion3: "¿Qué tareas vencen pronto?",
@@ -1761,7 +1806,7 @@ const de: Translations = {
   week: {
     title: "Wochenplaner",
     planNextWeek: "nächste Woche",
-    calendarLink: "Laura und Till Calendar",
+    calendarLink: "Familienkalender",
     planning: "Plane…",
     noWeeksYet: "Noch keine Wochen geplant. Klicke auf \"+ nächste Woche\", um zu beginnen.",
     generateShopping: "Einkaufsliste erstellen",
@@ -1971,7 +2016,7 @@ const de: Translations = {
     aboutTitle: "Über mich",
     aboutEmpty: "Erzähl dem Assistenten, wer du bist – dann sortiert er deine Gedanken besser.",
     aboutHint: "Privat, nur für dich und deinen Assistenten. Schreib frei: wer du bist, Arbeit, Hobbys, Routinen, Freunde und Familie. Tipp: Geburtsjahre statt Alter angeben („Mia (2016)“), dann stimmt es auch nächstes Jahr noch. Deine Familienmitglieder, euer Wohnort und die im Kalender gespeicherten Geburtstage werden automatisch berücksichtigt.",
-    aboutPlaceholder: "z. B. Ich bin Till, Produktmanager, Homeoffice Mo/Fr. Frau Anna (1985), Kinder Mia (2016) und Leo (2019) – Mia hat dienstags Schwimmen. Beste Freunde: Jonas (Berlin), Sarah. Ich laufe und koche gern und renoviere gerade das Bad. Zahnarzt: Dr. Weber.",
+    aboutPlaceholder: "z. B. Ich bin Alex, Produktmanager, Homeoffice Mo/Fr. Frau Anna (1985), Kinder Mia (2016) und Leo (2019) – Mia hat dienstags Schwimmen. Beste Freunde: Jonas (Berlin), Sarah. Ich laufe und koche gern und renoviere gerade das Bad. Zahnarzt: Dr. Weber.",
     aboutSaving: "Speichern…",
     aboutSaved: "Gespeichert",
     manageCategories: "Kategorien",
@@ -2055,6 +2100,19 @@ const de: Translations = {
     errorGeneric: "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
   },
   settings: {
+    featuresTitle: "Funktionen",
+    featuresDesc: "Schalte optionale Module für die ganze Familie ein oder aus.",
+    featuresOnlyAdmins: "Nur Admins und Eltern können das ändern.",
+    featureHeating: "Heizung (Homematic IP)",
+    featureHeatingHint: "Heizungsseite, Status-Icon, intelligenter Zeitplan und Heizungssteuerung im Assistenten.",
+    featureCustody: "Wechselmodell",
+    featureCustodyHint: "Plane, an welchen Tagen ein Kind bei euch oder beim anderen Elternteil ist: Zeile im Wochenplaner, Einträge im Kalender, Heizungsregel.",
+    calendarTitleLabel: "Name des Kalenders",
+    calendarTitleHint: "Erscheint als Kalender-Link im Wochenplaner.",
+    featuresSave: "Speichern",
+    featuresSaving: "Speichern…",
+    featuresSaved: "Gespeichert",
+    featuresSaveFailed: "Konnte nicht gespeichert werden.",
     title: "Einstellungen",
     lastRelease: "Letztes Release",
     profile: "Profil",
@@ -2145,6 +2203,8 @@ const de: Translations = {
     copy: "Kopieren",
   },
   heating: {
+    disabled: "Die Heizung ist für eure Familie ausgeschaltet.",
+    enableInSettings: "In den Einstellungen einschalten",
     section: "Heizung",
     title: "Homematic IP Heizung",
     desc: "Verbinde deinen Homematic IP Access Point, um Raumtemperaturen in Kieke zu sehen und zu ändern.",
@@ -2264,7 +2324,7 @@ const de: Translations = {
     placeholder: "Frag mich etwas…",
     send: "Senden",
     stop: "Stopp",
-    greeting: "Hallo {name}! Ich kenne euren Wochenplan, Kalender, Aufgaben, Rezepte, die Einkaufsliste und die Heizung. Wobei kann ich helfen?",
+    greeting: "Hallo {name}! Ich kenne euren Wochenplan, Kalender, Aufgaben, Rezepte und die Einkaufsliste. Wobei kann ich helfen?",
     suggestion1: "Was steht diese Woche an?",
     suggestion2: "Schlag Abendessen für nächste Woche aus unseren Rezepten vor",
     suggestion3: "Welche Aufgaben sind bald fällig?",

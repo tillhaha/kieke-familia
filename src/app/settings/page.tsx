@@ -15,6 +15,8 @@ import { ApiTokensSection } from "./ApiTokensSection"
 import { HeatingSection } from "./HeatingSection"
 import { LanguageSection } from "./LanguageSection"
 import { AppearanceSection } from "./AppearanceSection"
+import { FeaturesSection } from "./FeaturesSection"
+import { useFamilyFeatures } from "@/components/FamilyFeatures"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import { useTheme } from "@/lib/theme/ThemeContext"
 import styles from "./settings.module.css"
@@ -38,6 +40,7 @@ export default function SettingsPage() {
   const [mobileView, setMobileView] = useState<"index" | "detail">("index")
   const { t, lang } = useTranslation()
   const { theme } = useTheme()
+  const { features } = useFamilyFeatures()
 
   // Deep link: /settings?section=heating opens that section directly
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function SettingsPage() {
     ? new Intl.DateTimeFormat(lang, { dateStyle: "medium", timeStyle: "short" }).format(new Date(process.env.NEXT_PUBLIC_RELEASE_TIME))
     : null
 
-  const sections: { id: Section; icon: React.ReactNode; label: string; status?: string }[] = [
+  const allSections: { id: Section; icon: React.ReactNode; label: string; status?: string }[] = [
     { id: "profile",    icon: <User size={18} strokeWidth={1.75} />,     label: t.settings.profile,       status: session?.user?.name ?? undefined },
     { id: "import",     icon: <Download size={18} strokeWidth={1.75} />, label: t.settings.calendarImport },
     { id: "family",     icon: <Home size={18} strokeWidth={1.75} />,     label: t.settings.family },
@@ -71,6 +74,8 @@ export default function SettingsPage() {
     { id: "language",   icon: <Globe size={18} strokeWidth={1.75} />,    label: t.settings.language,      status: langLabel },
     { id: "appearance", icon: <Palette size={18} strokeWidth={1.75} />,  label: t.settings.appearance,    status: themeLabel },
   ]
+  // Heating is an optional module (Settings → Family → Features)
+  const sections = allSections.filter((sec) => sec.id !== "heating" || features?.heating)
 
   const handleMobileSelect = (section: Section) => {
     setActiveSection(section)
@@ -136,10 +141,11 @@ export default function SettingsPage() {
             <>
               <UsersSection />
               <LocationSection />
+              <FeaturesSection />
             </>
           )}
           {activeSection === "shopping"   && <ShoppingSection />}
-          {activeSection === "heating"    && <HeatingSection />}
+          {activeSection === "heating"    && features?.heating && <HeatingSection />}
           {activeSection === "integrations" && <ApiTokensSection />}
           {activeSection === "language"   && <LanguageSection />}
           {activeSection === "appearance" && <AppearanceSection />}

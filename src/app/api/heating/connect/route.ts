@@ -3,6 +3,7 @@
 //   POST   { sgtin, pin? } — register a pending client; the user then presses the blue button
 //   GET    — check whether the button was pressed; stores the auth token once it was
 //   DELETE — disconnect (forget the token)
+import { getFamilyFeatures } from "@/lib/familyFeatures"
 import { getServerSession } from "next-auth/next"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -25,6 +26,10 @@ export async function POST(request: Request) {
   const auth = await requireFamily()
   if ("error" in auth) return auth.error
   const { familyId } = auth
+
+  if (!(await getFamilyFeatures(familyId)).heating) {
+    return NextResponse.json({ error: "Heating is turned off for this family", code: "DISABLED" }, { status: 403 })
+  }
 
   const parsed = StartBody.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: "Invalid request body" }, { status: 400 })

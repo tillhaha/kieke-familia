@@ -4,6 +4,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { ISO_DATE, addDays, dateStr, dbDate, localClock, weekday } from "@/lib/localDate"
 import { type McpTool, type ToolResult, text } from "../types"
+import { getFamilyFeatures } from "@/lib/familyFeatures"
 
 const MAX_RANGE_DAYS = 31
 
@@ -34,13 +35,14 @@ function range(args: unknown, defaultDays: number, maxDays = MAX_RANGE_DAYS): { 
 // ---------------------------------------------------------------------------
 
 async function listMembers(familyId: string): Promise<ToolResult> {
+  const { custody } = await getFamilyFeatures(familyId)
   const [members, children] = await Promise.all([
     prisma.user.findMany({
       where: { familyId, active: true },
       select: { id: true, name: true, role: true },
       orderBy: { name: "asc" },
     }),
-    prisma.custodySchedule.findMany({ where: { familyId }, distinct: ["personName"], select: { personName: true } }),
+    custody ? prisma.custodySchedule.findMany({ where: { familyId }, distinct: ["personName"], select: { personName: true } }) : [],
   ])
   const lines = members.map((m) => `- ${m.name ?? "?"} (id: ${m.id}, role: ${m.role.toLowerCase()})`)
   if (children.length) {
@@ -57,6 +59,7 @@ async function getWeekPlan(familyId: string, args: unknown): Promise<ToolResult>
   const r = range(args, 7)
   if ("content" in r) return r
   const where = { gte: dbDate(r.from), lte: dbDate(r.to) }
+  const features = await getFamilyFeatures(familyId)
   const [days, members, work, custody] = await Promise.all([
     prisma.dayPlan.findMany({
       where: { familyId, date: where },
@@ -64,7 +67,7 @@ async function getWeekPlan(familyId: string, args: unknown): Promise<ToolResult>
     }),
     prisma.user.findMany({ where: { familyId, active: true }, select: { id: true, name: true } }),
     prisma.workLocation.findMany({ where: { user: { familyId }, date: where } }),
-    prisma.custodySchedule.findMany({ where: { familyId, date: where } }),
+    features.custody ? prisma.custodySchedule.findMany({ where: { familyId, date: where } }) : [],
   ])
   const name = (userId: string) => members.find((m) => m.id === userId)?.name ?? "?"
 

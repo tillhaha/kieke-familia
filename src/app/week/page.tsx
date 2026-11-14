@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, CalendarDays, Calendar } from "lucide-react"
 import { WeekBlock, WeekData, CalendarEvent, CustodyEntry, WorkLocationEntry, WorkLocationValue, FamilyMember } from "./WeekBlock"
+import { useFamilyFeatures } from "@/components/FamilyFeatures"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./week.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -18,6 +19,7 @@ export default function WeekPage() {
   const { status } = useSession()
   const router = useRouter()
   const { t } = useTranslation()
+  const { features } = useFamilyFeatures()
   const [weeks, setWeeks] = useState<WeekData[]>([])
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([])
   const [custodyEntries, setCustodyEntries] = useState<CustodyEntry[]>([])
@@ -158,7 +160,7 @@ export default function WeekPage() {
         actions={
           <Link href="/calendar" className={styles.calendarLink}>
             <Calendar size={15} strokeWidth={2} />
-            {t.week.calendarLink}
+            {features?.calendarTitle || t.week.calendarLink}
           </Link>
         }
       />
@@ -181,9 +183,9 @@ export default function WeekPage() {
               calendarEvents={calendarEvents.filter(
                 (e) => e.date <= week.endDate && e.endDate > week.startDate
               )}
-              custodyEntries={custodyEntries.filter(
+              custodyEntries={features?.custody ? custodyEntries.filter(
                 (c) => c.date >= week.startDate && c.date <= week.endDate
-              )}
+              ) : undefined}
               workLocations={workLocations.filter(
                 (w) => w.date >= week.startDate && w.date <= week.endDate
               )}

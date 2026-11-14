@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { listEventsFromCalendars } from "@/lib/google/calendar"
 import { fetchAndParseIcal } from "@/lib/ical"
 import { prisma } from "@/lib/prisma"
+import { getFamilyFeatures } from "@/lib/familyFeatures"
 import { NextResponse } from "next/server"
 
 export async function GET(request: Request) {
@@ -55,7 +56,8 @@ export async function GET(request: Request) {
       ? await prisma.travel.findMany({ where: { user: { familyId } } })
       : await prisma.travel.findMany({ where: { userId } })
 
-    const custodyEntries = familyId
+    const custodyEnabled = familyId ? (await getFamilyFeatures(familyId)).custody : false
+    const custodyEntries = familyId && custodyEnabled
       ? await prisma.custodySchedule.findMany({
           where: {
             familyId,

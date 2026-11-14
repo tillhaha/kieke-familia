@@ -42,6 +42,9 @@ export async function POST(request: Request) {
           name: name || "My Family",
           city: city || null,
           joinCode,
+          // Optional modules start off; switch them on in Settings → Family → Features
+          heatingEnabled: false,
+          custodyEnabled: false,
         },
       })
       await tx.user.update({

@@ -6,7 +6,7 @@
 // which can't send custom headers). Tools are grouped per feature in ./tools.
 import { NextResponse } from "next/server"
 import { type McpAuth, type ToolResult, text } from "./types"
-import { TOOLS } from "./tools"
+import { toolsForFamily } from "./tools"
 
 const SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
 
@@ -14,7 +14,7 @@ type JsonRpcRequest = { jsonrpc: "2.0"; id?: string | number | null; method: str
 
 async function callTool(auth: McpAuth, params: Record<string, unknown> | undefined): Promise<ToolResult> {
   const name = params?.name
-  const tool = TOOLS.find((t) => t.name === name)
+  const tool = (await toolsForFamily(auth.familyId)).find((t) => t.name === name)
   if (!tool) return text(`Unknown tool: ${String(name)}`, true)
   try {
     return await tool.handler(auth, params?.arguments ?? {})
@@ -48,7 +48,7 @@ async function handleMessage(auth: McpAuth, msg: JsonRpcRequest): Promise<object
     case "ping":
       return reply({})
     case "tools/list":
-      return reply({ tools: TOOLS.map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) })
+      return reply({ tools: (await toolsForFamily(auth.familyId)).map(({ name, description, inputSchema }) => ({ name, description, inputSchema })) })
     case "tools/call":
       return reply(await callTool(auth, msg.params))
     default:

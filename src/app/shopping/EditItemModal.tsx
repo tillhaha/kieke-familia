@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import { Button } from "@/components/ui/Button"
+import { FilterPill } from "@/components/ui/FilterPill"
+import { Check } from "lucide-react"
 import { categoryLabel } from "@/lib/shoppingCategories"
 import { SHOPPING_TAGS, type ShoppingTag } from "@/lib/shoppingTags"
 
@@ -108,17 +110,20 @@ export default function EditItemModal({ item, categories, onClose, onSave }: Pro
         <div className={styles.modalField}>
           <span className={styles.modalLabel}>{t.shopping.tags}</span>
           <div className={styles.modalTags}>
-            {SHOPPING_TAGS.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                className={`${styles.tagFilterPill} ${tags.includes(tag) ? styles.tagFilterPillActive : ""}`}
-                onClick={() => setTags((prev) => prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag])}
-                aria-pressed={tags.includes(tag)}
-              >
-                {tag}
-              </button>
-            ))}
+            {SHOPPING_TAGS.map((tag) => {
+              const on = tags.includes(tag)
+              return (
+                <FilterPill
+                  key={tag}
+                  active={on}
+                  icon={on ? <Check size={13} strokeWidth={2.5} /> : undefined}
+                  onClick={() => setTags((prev) => prev.includes(tag) ? prev.filter((x) => x !== tag) : [...prev, tag])}
+                  aria-pressed={on}
+                >
+                  {tag}
+                </FilterPill>
+              )
+            })}
           </div>
         </div>
 

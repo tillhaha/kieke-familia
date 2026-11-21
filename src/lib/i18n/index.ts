@@ -283,6 +283,8 @@ export type Translations = {
     offlineNotice: string
     tagOnlyHint: string
     tagHiddenHint: string
+    showRecipeNotes: string
+    hideRecipeNotes: string
     pendingSync: string
     // Display names for the built-in categories, keyed by the English name stored in the DB
     defaultCategories: Record<string, string>
@@ -851,6 +853,8 @@ const en: Translations = {
     pendingSync: "{n} change(s) waiting to sync",
     tagOnlyHint: "Only {tag} items — tap again to hide them",
     tagHiddenHint: "{tag} items hidden — tap to show them again",
+    showRecipeNotes: "Show which recipes need the items",
+    hideRecipeNotes: "Hide which recipes need the items",
     defaultCategories: {
       "Fruit/Vegetables": "Fruit & Vegetables",
       "Meat": "Meat",
@@ -1453,6 +1457,8 @@ const es: Translations = {
     pendingSync: "{n} cambio(s) pendientes de sincronizar",
     tagOnlyHint: "Solo artículos de {tag}: toca otra vez para ocultarlos",
     tagHiddenHint: "Artículos de {tag} ocultos: toca para mostrarlos",
+    showRecipeNotes: "Mostrar para qué recetas son",
+    hideRecipeNotes: "Ocultar para qué recetas son",
     defaultCategories: {
       "Fruit/Vegetables": "Frutas y verduras",
       "Meat": "Carne",
@@ -2055,6 +2061,8 @@ const de: Translations = {
     pendingSync: "{n} Änderung(en) warten auf Synchronisierung",
     tagOnlyHint: "Nur {tag}-Artikel – nochmal tippen zum Ausblenden",
     tagHiddenHint: "{tag}-Artikel ausgeblendet – tippen zum Einblenden",
+    showRecipeNotes: "Rezepte zu den Einträgen anzeigen",
+    hideRecipeNotes: "Rezepte zu den Einträgen ausblenden",
     defaultCategories: {
       "Fruit/Vegetables": "Obst & Gemüse",
       "Meat": "Fleisch",

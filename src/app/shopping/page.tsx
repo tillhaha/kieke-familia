@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw, Eye, EyeOff } from "lucide-react"
+import { Plus, X, ShoppingCart, CloudOff, RefreshCw, Eye, EyeOff } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -434,28 +434,24 @@ export default function ShoppingPage() {
                       className={styles.checkbox}
                       onChange={() => handleDelete(item.id)}
                     />
-                    {item.quantity && <span className={styles.itemQty}>{item.quantity}</span>}
+                    {/* The whole row (name, tags, note, quantity) opens the editor */}
                     <button
                       type="button"
-                      className={styles.itemName}
+                      className={styles.itemMain}
                       onClick={() => setEditingItemId(item.id)}
                       disabled={item.id.startsWith(TEMP_PREFIX)}
                       title={t.shopping.editItem}
                     >
-                      {item.name}
-                      {showNotes && item.note && <span className={styles.itemNote}>{item.note}</span>}
-                    </button>
-                    {item.tags.map((tag) => (
-                      <span key={tag} className={styles.tagChip}>{tag}</span>
-                    ))}
-                    <button
-                      className={styles.editBtn}
-                      onClick={() => setEditingItemId(item.id)}
-                      aria-label={t.shopping.editItem}
-                      title={t.shopping.editItem}
-                      disabled={item.id.startsWith(TEMP_PREFIX)}
-                    >
-                      <Pencil size={14} strokeWidth={2} />
+                      <span className={styles.itemText}>
+                        <span className={styles.itemName}>
+                          {item.name}
+                          {item.tags.map((tag) => (
+                            <span key={tag} className={styles.tagChip}>{tag}</span>
+                          ))}
+                        </span>
+                        {showNotes && item.note && <span className={styles.itemNote}>{item.note}</span>}
+                      </span>
+                      {item.quantity && <span className={styles.itemQty}>{item.quantity}</span>}
                     </button>
                     <button
                       className={styles.deleteBtn}

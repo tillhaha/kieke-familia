@@ -142,7 +142,10 @@ export default function WeekPage() {
     if (res.ok) {
       router.push("/shopping")
     } else {
-      setError("Failed to generate shopping list.")
+      // Show why (step + real error) so problems can be told apart, e.g. AI vs. database
+      const data = await res.json().catch(() => null)
+      const reason = data?.detail ? ` (${data.stage}): ${data.detail}` : ` (HTTP ${res.status})`
+      setError(`Failed to generate shopping list${reason}`)
     }
   }
 

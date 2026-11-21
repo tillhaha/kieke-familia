@@ -27,7 +27,12 @@ type Stage = "load-week" | "ai" | "blacklist" | "existing-items" | "categorize" 
 function errorDetail(err: unknown): string {
   // Anthropic errors already start with the HTTP status, e.g. "404 {…not_found_error…}"
   if (err instanceof Anthropic.APIError) return `Anthropic ${err.message}`.slice(0, 500)
-  return (err instanceof Error ? err.message : String(err)).slice(0, 500)
+  const message = err instanceof Error ? err.message : String(err)
+  // The answer was cut off (output limit) — say so instead of only the JSON parse error
+  if (/structured output|Unterminated|Unexpected end of JSON/i.test(message)) {
+    return `The AI answer was incomplete (probably too long): ${message}`.slice(0, 500)
+  }
+  return message.slice(0, 500)
 }
 
 function fail(stage: Stage, err: unknown) {
@@ -88,7 +93,9 @@ export async function POST(request: Request) {
     try {
       const response = await client.messages.parse({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 2048,
+        // A full week with recipe notes per item easily needs more than 2k tokens; a cut-off
+        // answer is invalid JSON. Only the tokens actually generated are billed.
+        max_tokens: 16000,
         output_config: {
           format: zodOutputFormat(UnifiedSchema),
         },

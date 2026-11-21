@@ -41,7 +41,8 @@ export async function categorizeShoppingItems(familyId: string, names: string[])
   try {
     const response = await client.messages.parse({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
+      // One line per item — long lists need room, otherwise the JSON is cut off and nothing gets a category
+      max_tokens: 8000,
       output_config: {
         format: zodOutputFormat(CategorySchema),
       },

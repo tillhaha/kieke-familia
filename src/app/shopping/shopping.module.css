@@ -104,27 +104,51 @@
   accent-color: var(--primary);
 }
 
-.itemQty {
-  font-size: var(--text-sm);
-  color: var(--secondary);
-  white-space: nowrap;
-}
-
-.itemName {
+/* Name (+ tags, note) on the left, quantity in a right-aligned column — like a receipt.
+   The whole block is one button that opens the editor. */
+.itemMain {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   padding: 0;
   border: none;
   background: none;
   color: inherit;
   font: inherit;
-  font-size: var(--text-base);
   text-align: left;
   cursor: pointer;
 }
 
-.itemName:disabled {
+.itemMain:disabled {
   cursor: default;
+}
+
+.itemText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.itemName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--text-base);
+  overflow-wrap: anywhere;
+}
+
+.itemQty {
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  text-align: right;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+  white-space: nowrap;
 }
 
 /* Which recipes need the item, under its name */
@@ -136,13 +160,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Desktop (real hover): underline the name to show it opens the editor */
-@media (hover: hover) {
-  .itemName:hover:not(:disabled) {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-}
 
 .tagChip {
   font-size: var(--text-2xs);
@@ -151,28 +168,6 @@
   border: 1px solid var(--border);
   color: var(--secondary);
   white-space: nowrap;
-}
-
-.editBtn {
-  background: none;
-  border: none;
-  padding: 0.25rem;
-  cursor: pointer;
-  color: var(--secondary);
-  opacity: 0.4;
-  transition: opacity 150ms, color 150ms;
-  display: flex;
-  align-items: center;
-}
-
-.editBtn:hover:not(:disabled) {
-  opacity: 1;
-  color: var(--primary);
-}
-
-.editBtn:disabled {
-  cursor: default;
-  opacity: 0.15;
 }
 
 .deleteBtn {
@@ -417,4 +412,7 @@
   }
   /* checking the box already removes an item */
   .deleteBtn { display: none; }
+  /* the row button is the 44px tap target; a narrower quantity column leaves room for names */
+  .itemMain { min-height: 44px; padding: var(--space-1) 0; }
+  .itemQty { min-width: 3.5rem; }
 }

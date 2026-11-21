@@ -3,7 +3,7 @@
 
 import { useSession } from "next-auth/react"
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
-import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw, EyeOff } from "lucide-react"
+import { Pencil, Plus, X, ShoppingCart, CloudOff, RefreshCw, Eye, EyeOff } from "lucide-react"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "./shopping.module.css"
 import { EmptyState } from "@/components/ui/EmptyState"
@@ -27,6 +27,8 @@ import {
   type OutboxOp,
 } from "@/lib/shoppingOffline"
 
+const SHOW_NOTES_KEY = "kieke-shopping-show-notes"
+
 type Category = { id: string; name: string; order: number }
 type AddOp = Extract<OutboxOp, { kind: "add" }>
 type ShoppingItem = { id: string; name: string; quantity: string | null; note?: string | null; categoryId: string | null; category: Category | null; tags: ShoppingTag[] }
@@ -35,6 +37,25 @@ export default function ShoppingPage() {
   const { data: session, status } = useSession()
   const { t } = useTranslation()
   const [categories, setCategories] = useState<Category[]>([])
+  // Recipe notes under items ("Lasagne, Curry") can be hidden; remembered on this device
+  const [showNotes, setShowNotes] = useState(true)
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(SHOW_NOTES_KEY) === "0") setShowNotes(false)
+    } catch {
+      // storage blocked — keep showing them
+    }
+  }, [])
+  const toggleNotes = () => {
+    setShowNotes((v) => {
+      try {
+        localStorage.setItem(SHOW_NOTES_KEY, v ? "0" : "1")
+      } catch {
+        // storage blocked — only for this visit
+      }
+      return !v
+    })
+  }
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -316,7 +337,23 @@ export default function ShoppingPage() {
 
   return (
     <Page width="narrow">
-      <PageHeader title={t.shopping.title} />
+      <PageHeader
+        title={t.shopping.title}
+        actions={
+          items.some((i) => i.note) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              iconOnly
+              icon={showNotes ? <Eye size={16} /> : <EyeOff size={16} />}
+              onClick={toggleNotes}
+              aria-pressed={showNotes}
+              aria-label={showNotes ? t.shopping.hideRecipeNotes : t.shopping.showRecipeNotes}
+              title={showNotes ? t.shopping.hideRecipeNotes : t.shopping.showRecipeNotes}
+            />
+          )
+        }
+      />
 
       {(!online || connectionProblem || pendingCount > 0) && (
         <div className={styles.syncBanner} role="status">
@@ -406,7 +443,7 @@ export default function ShoppingPage() {
                       title={t.shopping.editItem}
                     >
                       {item.name}
-                      {item.note && <span className={styles.itemNote}>{item.note}</span>}
+                      {showNotes && item.note && <span className={styles.itemNote}>{item.note}</span>}
                     </button>
                     {item.tags.map((tag) => (
                       <span key={tag} className={styles.tagChip}>{tag}</span>

@@ -101,6 +101,8 @@ export type Translations = {
     saveSchedule: string
   }
   meals: {
+    copyLink: string
+    linkCopied: string
     title: string
     newRecipe: string
     backLink: string
@@ -670,6 +672,8 @@ const en: Translations = {
     saveSchedule: "Save Schedule",
   },
   meals: {
+    copyLink: "Copy link to this recipe",
+    linkCopied: "Link copied",
     title: "Recipes",
     newRecipe: "New Recipe",
     backLink: "Recipes",
@@ -1274,6 +1278,8 @@ const es: Translations = {
     saveSchedule: "Guardar horario",
   },
   meals: {
+    copyLink: "Copiar enlace a esta receta",
+    linkCopied: "Enlace copiado",
     title: "Recetas",
     newRecipe: "Nueva receta",
     backLink: "Recetas",
@@ -1878,6 +1884,8 @@ const de: Translations = {
     saveSchedule: "Zeitplan speichern",
   },
   meals: {
+    copyLink: "Link zu diesem Rezept kopieren",
+    linkCopied: "Link kopiert",
     title: "Rezepte",
     newRecipe: "Neues Rezept",
     backLink: "Rezepte",

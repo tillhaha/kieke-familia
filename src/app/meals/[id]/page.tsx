@@ -8,6 +8,7 @@ import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
 import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 } from "lucide-react"
+import { ShareLinkButton } from "@/components/ShareLinkButton"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
 import { Button } from "@/components/ui/Button"
@@ -339,6 +340,7 @@ export default function MealDetailPage() {
           <h1 className={styles.titleInput}>{name}</h1>
         )}
         <div className={styles.detailHeaderActions}>
+          <ShareLinkButton path={`/meals/${meal.id}`} title={meal.name} label={t.meals.copyLink} copiedLabel={t.meals.linkCopied} />
           {isOwner && (
             <button
               className={`${styles.detailStarBtn} ${favorite ? styles.detailStarBtnActive : ""}`}

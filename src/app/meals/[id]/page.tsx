@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkBreaks from "remark-breaks"
-import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, Star, Trash2, Wand2 } from "lucide-react"
+import { ChevronLeft, ImagePlus, Link as LinkIcon, Pencil, ShoppingCart, Star, Trash2, Wand2 } from "lucide-react"
 import { ShareLinkButton } from "@/components/ShareLinkButton"
 import { useTranslation } from "@/lib/i18n/LanguageContext"
 import styles from "../meals.module.css"
@@ -67,6 +67,8 @@ export default function MealDetailPage() {
   const [thirtyMinute, setThirtyMinute] = useState(false)
   const [favorite, setFavorite] = useState(false)
   const [editingField, setEditingField] = useState<EditingField>(null)
+  // "Add to shopping list": ingredients 1:1 (the recipe's own servings), merged into the list
+  const [shopping, setShopping] = useState<{ busy: boolean; message?: string; error?: boolean; done?: boolean }>({ busy: false })
   const [draftNotes, setDraftNotes] = useState("")
   const [draftIngredients, setDraftIngredients] = useState("")
   const [draftSteps, setDraftSteps] = useState("")
@@ -319,6 +321,27 @@ export default function MealDetailPage() {
   }
 
   if (loading) return null
+  const addToShoppingList = async () => {
+    if (!meal) return
+    setShopping({ busy: true })
+    try {
+      const res = await fetch(`/api/meals/${meal.id}/shopping`, { method: "POST" })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        const reason = data?.detail ? ` (${data.stage}): ${data.detail}` : ` (HTTP ${res.status})`
+        setShopping({ busy: false, error: true, message: `${t.meals.addToShoppingFailed}${reason}` })
+        return
+      }
+      setShopping({
+        busy: false,
+        done: true,
+        message: data.added > 0 ? t.meals.addedToShopping.replace("{n}", String(data.added)) : t.meals.nothingToAdd,
+      })
+    } catch {
+      setShopping({ busy: false, error: true, message: t.meals.addToShoppingFailed })
+    }
+  }
+
   if (notFound) return <Page width="narrow"><p>{t.meals.notFound}</p></Page>
   if (!meal) return null
 
@@ -568,7 +591,31 @@ export default function MealDetailPage() {
       </div>
 
       <div className={styles.fieldSection}>
-        <span className={styles.fieldLabel}>{t.meals.ingredientsLabel}</span>
+        <div className={styles.ingredientsHeader}>
+          <span className={styles.fieldLabel}>{t.meals.ingredientsLabel}</span>
+          {meal.ingredients.length > 0 && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<ShoppingCart size={14} />}
+              disabled={shopping.busy}
+              onClick={addToShoppingList}
+            >
+              {shopping.busy ? t.meals.addingToShopping : t.meals.addToShopping}
+            </Button>
+          )}
+        </div>
+        {shopping.message && (
+          <p className={shopping.error ? styles.shoppingError : styles.shoppingDone}>
+            {shopping.message}
+            {shopping.done && (
+              <>
+                {" "}
+                <Link href="/shopping">{t.meals.openShoppingList}</Link>
+              </>
+            )}
+          </p>
+        )}
         {isOwner && editingField === "ingredients" ? (
           <textarea
             autoFocus

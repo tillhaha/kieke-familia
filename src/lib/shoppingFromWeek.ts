@@ -27,8 +27,9 @@ export function servingsFromNote(note: string | null | undefined): number | null
 type Recipe = { name: string; servings: number; ingredients: string[] }
 
 export type MealSource = {
-  date: string
-  slot: "lunch" | "dinner"
+  /** Planner day and meal; absent for a single recipe added from its page */
+  date?: string
+  slot?: "lunch" | "dinner"
   title: string
 } & (
   | { kind: "recipe"; ingredients: string[]; recipeServings: number; targetServings: number; factor: number }
@@ -74,7 +75,14 @@ function factorText(f: number): string {
 }
 
 /** The ingredient list as given to the model that merges it into a shopping list */
+/** A single recipe added from its own page: quantities 1:1, no scaling */
+export function recipeSource(recipe: Recipe): MealSource {
+  const servings = recipe.servings > 0 ? recipe.servings : DEFAULT_SERVINGS
+  return { title: recipe.name, kind: "recipe", ingredients: recipe.ingredients, recipeServings: servings, targetServings: servings, factor: 1 }
+}
+
 export function describeSources(sources: MealSource[]): string {
+  const when = (s: MealSource) => (s.date ? `${s.date} ${s.slot ?? ""}`.trim() + "; " : "")
   return sources
     .map((s) => {
       if (s.kind === "recipe") {
@@ -82,9 +90,9 @@ export function describeSources(sources: MealSource[]): string {
           s.factor === 1
             ? `recipe is for ${s.recipeServings} servings, we cook ${s.targetServings} — use quantities as written`
             : `recipe is for ${s.recipeServings} servings, we cook ${s.targetServings} — multiply every quantity by ${factorText(s.factor)}`
-        return `## ${s.title} (${s.date} ${s.slot}; ${scale})\n${s.ingredients.map((i) => `- ${i}`).join("\n")}`
+        return `## ${s.title} (${when(s)}${scale})\n${s.ingredients.map((i) => `- ${i}`).join("\n")}`
       }
-      return `## ${s.title || "Meal"} (${s.date} ${s.slot}; no recipe — ingredients written in the planner note, quantities as written; ignore anything in the note that isn't an ingredient, e.g. a servings remark)\n${s.noteText}`
+      return `## ${s.title || "Meal"} (${when(s)}no recipe — ingredients written in the planner note, quantities as written; ignore anything in the note that isn't an ingredient, e.g. a servings remark)\n${s.noteText}`
     })
     .join("\n\n")
 }

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { ISO_DATE, addDays, dateStr, dbDate, localClock, weekday } from "@/lib/localDate"
 import { type McpTool, type ToolResult, text } from "../types"
 import { getFamilyFeatures } from "@/lib/familyFeatures"
+import { recipeUrl } from "@/lib/appUrl"
 
 const MAX_RANGE_DAYS = 31
 
@@ -215,7 +216,7 @@ async function searchRecipes(familyId: string, args: unknown): Promise<ToolResul
     meals
       .map((m) => {
         const tags = [m.mealType !== "Meal" ? m.mealType : null, m.diet, `serves ${m.servings}`, m.favorite && "favorite", m.thirtyMinute && "≤30 min", m.officeFriendly && "office-friendly"]
-        return `- ${m.name} (id: ${m.id}; ${tags.filter(Boolean).join(", ")})`
+        return `- ${m.name} (id: ${m.id}; ${tags.filter(Boolean).join(", ")}) ${recipeUrl(m.id)}`
       })
       .join("\n") + (more ? `\n… more than ${limit} found — narrow the search or raise limit (max 200).` : ""),
   )
@@ -229,6 +230,7 @@ async function getRecipe(familyId: string, args: unknown): Promise<ToolResult> {
   return text(
     [
       `${m.name} (id: ${m.id})`,
+      `Link: ${recipeUrl(m.id)}`,
       `${m.mealType}, ${m.diet}, ${m.servings} servings${m.thirtyMinute ? ", ≤30 min" : ""}${m.officeFriendly ? ", office-friendly" : ""}${m.favorite ? ", favorite" : ""}`,
       m.source ? `Source: ${m.source}` : "",
       m.imageUrl ? `Image: ${m.imageUrl}` : "",
@@ -294,7 +296,7 @@ async function createRecipe(familyId: string, args: unknown): Promise<ToolResult
       favorite: r.favorite ?? false,
     },
   })
-  return text(`Saved recipe "${meal.name}" (id: ${meal.id}; ${meal.mealType}, ${meal.diet}, ${meal.servings} servings, ${meal.ingredients.length} ingredients, ${meal.steps.length} steps).`)
+  return text(`Saved recipe "${meal.name}" (id: ${meal.id}; ${meal.mealType}, ${meal.diet}, ${meal.servings} servings, ${meal.ingredients.length} ingredients, ${meal.steps.length} steps). Link: ${recipeUrl(meal.id)}`)
 }
 
 async function updateRecipe(familyId: string, args: unknown): Promise<ToolResult> {
@@ -307,7 +309,7 @@ async function updateRecipe(familyId: string, args: unknown): Promise<ToolResult
   const changed = Object.entries(data).filter(([, v]) => v !== undefined).map(([k]) => k)
   if (!changed.length) return text("Nothing to change.", true)
   const meal = await prisma.meal.update({ where: { id }, data })
-  return text(`Updated recipe "${meal.name}" (id: ${meal.id}): ${changed.join(", ")}.`)
+  return text(`Updated recipe "${meal.name}" (id: ${meal.id}): ${changed.join(", ")}. Link: ${recipeUrl(meal.id)}`)
 }
 
 // ---------------------------------------------------------------------------
@@ -386,7 +388,7 @@ export const familyTools: McpTool[] = [
   {
     name: "search_recipes",
     description:
-      "Search the family recipe library by name, ingredient or notes, and filter by diet, servings, favorites or quick (≤30 min). Without a query it lists recipes (favorites first). Each line shows type, diet and servings, so you rarely need get_recipe just to compare recipes.",
+      "Search the family recipe library by name, ingredient or notes, and filter by diet, servings, favorites or quick (≤30 min). Without a query it lists recipes (favorites first). Each line shows type, diet, servings and a link to the recipe in Kieke (use it when the user wants to share or link a recipe), so you rarely need get_recipe just to compare recipes.",
     inputSchema: {
       type: "object",
       properties: {
@@ -403,7 +405,7 @@ export const familyTools: McpTool[] = [
   },
   {
     name: "get_recipe",
-    description: "Get a recipe with ingredients and steps by id.",
+    description: "Get a recipe with ingredients, steps and its link in Kieke by id.",
     inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
     handler: (auth, args) => getRecipe(auth.familyId, args),
   },

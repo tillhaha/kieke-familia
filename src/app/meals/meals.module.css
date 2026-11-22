@@ -341,6 +341,32 @@
   color: var(--secondary);
 }
 
+/* Ingredients heading with the "Add to shopping list" button on the right */
+.ingredientsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.shoppingDone,
+.shoppingError {
+  font-size: var(--text-sm);
+}
+
+.shoppingDone {
+  color: var(--secondary);
+}
+
+.shoppingDone a {
+  color: var(--primary);
+}
+
+.shoppingError {
+  color: var(--danger);
+}
+
 .fieldLabelRow {
   display: flex;
   align-items: center;

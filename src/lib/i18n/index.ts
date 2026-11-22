@@ -101,6 +101,14 @@ export type Translations = {
     saveSchedule: string
   }
   meals: {
+    addToShopping: string
+    addingToShopping: string
+    addedToShopping: string
+    nothingToAdd: string
+    openShoppingList: string
+    addToShoppingFailed: string
+    copyLink: string
+    linkCopied: string
     title: string
     newRecipe: string
     backLink: string
@@ -670,6 +678,14 @@ const en: Translations = {
     saveSchedule: "Save Schedule",
   },
   meals: {
+    addToShopping: "Add to shopping list",
+    addingToShopping: "Adding…",
+    addedToShopping: "{n} ingredients added to the shopping list.",
+    nothingToAdd: "Everything is already on the shopping list.",
+    openShoppingList: "Open shopping list",
+    addToShoppingFailed: "Couldn't add to the shopping list",
+    copyLink: "Copy link to this recipe",
+    linkCopied: "Link copied",
     title: "Recipes",
     newRecipe: "New Recipe",
     backLink: "Recipes",
@@ -1274,6 +1290,14 @@ const es: Translations = {
     saveSchedule: "Guardar horario",
   },
   meals: {
+    addToShopping: "Añadir a la lista de la compra",
+    addingToShopping: "Añadiendo…",
+    addedToShopping: "{n} ingredientes añadidos a la lista de la compra.",
+    nothingToAdd: "Todo ya está en la lista de la compra.",
+    openShoppingList: "Abrir lista de la compra",
+    addToShoppingFailed: "No se pudo añadir a la lista de la compra",
+    copyLink: "Copiar enlace a esta receta",
+    linkCopied: "Enlace copiado",
     title: "Recetas",
     newRecipe: "Nueva receta",
     backLink: "Recetas",
@@ -1878,6 +1902,14 @@ const de: Translations = {
     saveSchedule: "Zeitplan speichern",
   },
   meals: {
+    addToShopping: "Auf die Einkaufsliste",
+    addingToShopping: "Wird hinzugefügt…",
+    addedToShopping: "{n} Zutaten auf die Einkaufsliste gesetzt.",
+    nothingToAdd: "Steht schon alles auf der Einkaufsliste.",
+    openShoppingList: "Zur Einkaufsliste",
+    addToShoppingFailed: "Konnte nicht zur Einkaufsliste hinzugefügt werden",
+    copyLink: "Link zu diesem Rezept kopieren",
+    linkCopied: "Link kopiert",
     title: "Rezepte",
     newRecipe: "Neues Rezept",
     backLink: "Rezepte",
